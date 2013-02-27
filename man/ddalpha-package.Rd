@@ -1,0 +1,86 @@
+\name{ddalpha-package}
+\alias{ddalpha-package}
+\alias{ddalpha}
+\docType{package}
+\title{
+DD\eqn{\alpha}-Classifier
+}
+\description{
+The package implements the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharovskyi, 2012), a nonparametric procedure for supervised binary classification with \eqn{q\ge 2} classes. In the training step, the sample is first transformed into a \eqn{q}-dimensional cube of depth vectors, then a linear separation rule in its polynomial extension is constructed with the \eqn{\alpha}-procedure. The classification step involves alternative treatments of 'outsiders'.
+}
+\details{
+\tabular{ll}{
+Package: \tab ddalpha\cr
+Type: \tab Package\cr
+Version: \tab 1.0.3\cr
+Date: \tab 2013-02-27\cr
+License: \tab GPL-2\cr
+}
+Use \code{\link{ddalpha.train}} to train the DD\eqn{\alpha}-classifier and \code{\link{ddalpha.classify}} to classify with it. Either the zonoid or Tukey depth can be used for the depth transformation. The zonoid depth is exactly computed by the function \code{\link{depth.zonoid}}, the Tukey depth is approximated by the function \code{\link{depth.randomTukey}}. Corresponding to them depth representations (\code{\link{depth.space.zonoid}} and \code{\link{depth.space.randomTukey}} for zonoid and the random Tukey depth respectively) are obtained, check by \code{\link{is.in.convex}} whether an object is no 'outsider', i.e. can be classified by its depth values. Outsiders are alternatively classified by LDA, kNN and maximum Mahalanobis depth as well as by random assignment.
+}
+\author{
+Oleksii Pokotylo, Pavlo Mozharovskyi
+
+Maintainer: Oleksii Pokotylo <alexey.pokotylo@gmail.com>
+}
+\references{
+Lange, T., Mosler, K. and Mozharovskyi, P. (2012), Fast nonparametric classification based on data depth, \emph{Statistical Papers}.
+
+Lange, T., Mosler, K. and Mozharovskyi, P. (2013), DD\eqn{\alpha}-classification of asymmetric and fat-tailed data, Proceedings of the \emph{36th Annual Conference of the German Classification Society} on "Data Analysis, Machine Learning and Knowledge Discovery", Hildesheim, 1-3 August 2012.
+
+Mozharovskyi, P., Mosler, K. and Lange, T. (2013), Classifying real-world data with the DD\eqn{\alpha}-procedure, \emph{Mimeo}.
+}
+\keyword{ package }
+\keyword{ robust }
+\keyword{ multivariate }
+\keyword{ nonparametric }
+\keyword{ classif }
+\seealso{
+\code{\link{ddalpha.train}}, \code{\link{ddalpha.classify}}, \code{\link{depth.zonoid}}, \code{\link{depth.randomTukey}}, \code{\link{depth.space.zonoid}}, \code{\link{depth.space.randomTukey}}, \code{\link{is.in.convex}}.
+}
+\examples{
+# Generate a bivariate normal location-shift classification task
+# containing 200 training objects and 200 to test with
+class1 <- mvrnorm(200, c(0,0), 
+                  matrix(c(1,1,1,4), nrow = 2, ncol = 2, byrow = TRUE))
+class2 <- mvrnorm(200, c(2,2), 
+                  matrix(c(1,1,1,4), nrow = 2, ncol = 2, byrow = TRUE))
+trainIndices <- c(1:100)
+testIndices <- c(101:200)
+propertyVars <- c(1:2)
+classVar <- 3
+trainData <- rbind(cbind(class1[trainIndices,], rep(1, 100)), 
+                   cbind(class2[trainIndices,], rep(2, 100)))
+testData <- rbind(cbind(class1[testIndices,], rep(1, 100)), 
+                  cbind(class2[testIndices,], rep(2, 100)))
+data <- list(train = trainData, test = testData)
+
+# Train the DDalpha-classifier
+ddalpha <- ddalpha.train(data$train)
+
+# Classify by means of DDalpha-classifier
+classes <- ddalpha.classify(data$test[,propertyVars], ddalpha)
+cat("Classification error rate:", 
+    sum(unlist(classes) != data$test[,classVar])/200, "\n")
+
+# Calculate zonoid depth of top 10 testing objects w.r.t. 1st class
+depths.zonoid <- depth.zonoid(data$test[1:10,propertyVars], 
+                              data$train[trainIndices,propertyVars])
+cat("Zonoid depths:", depths.zonoid, "\n")
+
+# Calculate the random Tukey depth of top 10 testing objects w.r.t. 1st class
+depths.randomTukey <- depth.randomTukey(data$test[1:10,propertyVars], 
+                                        data$train[trainIndices,propertyVars])
+cat("Random Tukey depths:", depths.randomTukey, "\n")
+
+# Calculate depth space with zonoid depth
+dspace.zonoid <- depth.space.zonoid(data$train, c(100, 100))
+
+# Calculate depth space with the random Tukey depth
+dspace.randomTukey <- depth.space.randomTukey(data$train, c(100, 100))
+
+# Count outsiders
+numOutsiders = sum(is.in.convex(data$test[,propertyVars], 
+                                data$train[,propertyVars], c(100, 100)) == 0)
+cat(numOutsiders, "outsiders found in the testing sample.\n")
+}

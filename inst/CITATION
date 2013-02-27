@@ -1,0 +1,29 @@
+citHeader("To cite ddalpha in publications use:")
+
+citEntry(entry = "Article",
+  title        = "Fast nonparametric classification based on data depth",
+  author       = personList(as.person("Tatjana Lange"),
+                            as.person("Karl Mosler"),
+                            as.person("Pavlo Mozharovskyi")),
+  journal      = "Statistical Papers",  
+  year         = "2012",
+  
+  textVersion  = 
+  paste("Lange, T., Mosler, K. and Mozharovskyi, P. (2012).",
+        "Fast nonparametric classification based on data depth.",
+        "Statistical Papers")
+)
+
+citEntry(entry = "Article",
+  title        = "Classifying real-world data with the DDalpha-procedure",
+  author       = personList(as.person("Pavlo Mozharovskyi"),
+                            as.person("Karl Mosler"),
+                            as.person("Tatjana Lange")),
+  journal      = "Mimeo",
+  year         = "2013",
+  
+  textVersion  = 
+  paste("Mozharovskyi, P., Mosler, K. and Lange, T. (2013).",
+        "Classifying real-world data with the DDalpha-procedure.", 
+        "Mimeo")
+)
