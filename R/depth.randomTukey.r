@@ -1,3 +1,12 @@
+################################################################################
+# File:             depth.randomTukey.r
+# Created by:       Pavlo Mozharovskyi
+# First published:  28.02.2013
+# Last revised:     28.02.2013
+# 
+# Computation of the random Tukey data depth.
+################################################################################
+
 depth.randomTukey <- function(x, data, num.directions = 1000){
   if (!is.matrix(x) 
       && is.vector(x)){

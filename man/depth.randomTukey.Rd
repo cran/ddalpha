@@ -21,7 +21,7 @@ Number of random directions to be generated.
 }
 }
 \details{
-Calculates Tukey (= halfspace, location) depth (Tukey, 1975) approximately using the random Tukey depth method proposed by Cuesta-Albertos and Nieto-Reyes (2008). Here the depth is determined as the minimum univariate Tukey depth of the - on lines in several directions - projected data. The directions are distributed uniformly on the unit sphere \eqn{S^(d-1)}; the same direction set is used for all points.
+Calculates Tukey (= halfspace, location) depth (Tukey, 1975) approximately using the random Tukey depth method proposed by Cuesta-Albertos and Nieto-Reyes (2008). Here the depth is determined as the minimum univariate Tukey depth of the - on lines in several directions - projected data. The directions are distributed uniformly on the \eqn{(d-1)}-sphere; the same direction set is used for all points.
 }
 \value{
 Numerical vector of depths, one for each row in \code{x}; or one depth value if \code{x} is a numerical vector.

@@ -1,7 +1,7 @@
 /*
   File:         depth.cpp
   Created by:   Rainer Dyckerhoff
-  Last revised: 15.11.1996
+  Last revised: 15.05.2013
 
   Computation of the zonoid data depth.
 
@@ -15,7 +15,7 @@
 #include "stdafx.h"
 
 /* Definition of constants */
-static const double eps = 1e-12;
+static const double eps = 1e-8;
 static const double accuracy = 1e-10;
 static const int MaxIt = 1000;
 /* Definition of types */
@@ -245,6 +245,51 @@ found, it is returned in '*PivcotColumn'. */
   return false;
 }
 
+/* Standardizing functions */
+
+int GetMeansSds(vector<TPoint> x, TPoint *means, TPoint *sds){
+/*
+	Get means and standard deviations, coordinatewise
+*/
+	int _n = x.size();int _d = x[0].size();means->resize(_d);sds->resize(_d);
+	for (int j = 0; j < _d; j++){
+		double tmpMean = 0;double tmpVar = 0;
+		for (int i = 0; i < _n; i++){
+			tmpMean += x[i][j];
+		}
+		(*means)[j] = tmpMean/_n;
+		for (int i = 0; i < _n; i++){
+			tmpVar += pow(x[i][j] - (*means)[j], 2);
+		}
+		(*sds)[j] = sqrt(tmpVar/(_n - 1));
+	}
+	return 0;
+}
+
+int Standardize(vector<TPoint> &x, TPoint means, TPoint sds){
+/*
+	Standardize data cloud, coordinatewise
+*/
+	int _n = x.size();int _d = x[0].size();
+	for (int i = 0; i < _n; i++){
+		for (int j = 0; j < _d; j++){
+			x[i][j] = (x[i][j] - means[j])/sds[j];
+		}
+	}
+	return 0;
+}
+
+int Standardize(TPoint &x, TPoint means, TPoint sds){
+/*
+	Standardize point, coordinatewise
+*/
+	int _d = x.size();
+	for (int i = 0; i < _d; i++){
+			x[i] = (x[i] - means[i])/sds[i];
+	}
+	return 0;
+}
+
 /* Definition of public functions */
 
 double ZonoidDepth(vector<TPoint> x, TPoint z, int& Error)
@@ -346,6 +391,12 @@ int InConvexes(TMatrix points, TVariables cardinalities, TMatrix objects, int& E
 		for (int j = 0; j < m; j++){ // Cycling through points
 			int PivotColumn;
 			TPoint z = objects[j];
+
+			/* Standardize */
+			TPoint means;TPoint sds;
+			GetMeansSds(x, &means, &sds);
+			Standardize(x, means, sds);
+			Standardize(z, means, sds);
 
 			/* Rainer's codes (slightly modified) */
 			Error = 0;

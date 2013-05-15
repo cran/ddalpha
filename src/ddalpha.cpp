@@ -1,5 +1,15 @@
-// ddalpha.cpp : Defines the exported functions.
-// Pavlo Mozharovskyi
+/*
+  File:             ddalpha.cpp
+  Created by:       Pavlo Mozharovskyi
+  First published:  28.02.2013
+  Last revised:     15.05.2013
+
+  Defines the exported functions for the 'ddalpha'-package.
+
+  For a description of the algorithm, see:
+    Lange, T., Mosler, K. and Mozharovskyi, P. (2012). Fast nonparametric classification based on data depth. Statistical Papers.
+    Mozharovskyi, P., Mosler, K. and Lange, T. (2013). Classifying real-world data with the DDalpha-procedure. Mimeo.
+*/
 
 #include "stdafx.h"
 
@@ -49,12 +59,16 @@ void ZDepth(double *points, double *objects, int *numPoints, int *numObjects, in
 			x[i][j] = points[i * dimension[0] + j];
 		}
 	}
+	TPoint means;TPoint sds;
+	GetMeansSds(x, &means, &sds);
+	Standardize(x, means, sds);
 	TMatrix z(numObjects[0]);
 	for (int i = 0; i < numObjects[0]; i++){z[i] = TPoint(dimension[0]);}
 	for (int i = 0; i < numObjects[0]; i++){
 		for (int j = 0; j < dimension[0]; j++){
 			z[i][j] = objects[i * dimension[0] + j];
-		}
+		}		
+		Standardize(z[i], means, sds);
 		int error;
 		depths[i] = ZonoidDepth(x, z[i], error);
 	}

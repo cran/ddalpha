@@ -1,3 +1,12 @@
+################################################################################
+# File:             is.in.convex.r
+# Created by:       Pavlo Mozharovskyi
+# First published:  28.02.2013
+# Last revised:     28.02.2013
+# 
+# Check if points lie in the convex hulls of the data clouds.
+################################################################################
+
 is.in.convex <- function(x, data, cardinalities){
   if (!is.numeric(data)
       || !is.matrix(data) 

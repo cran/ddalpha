@@ -1,3 +1,18 @@
+################################################################################
+# File:             ddalpha.classify.r
+# Created by:       Pavlo Mozharovskyi
+# First published:  28.02.2013
+# Last revised:     15.05.2013
+# 
+# Contains the classification function of the DDalpha-classifier.
+# 
+# For a description of the algorithm, see:
+#   Lange, T., Mosler, K. and Mozharovskyi, P. (2012). Fast nonparametric 
+#     classification based on data depth. Statistical Papers.
+#   Mozharovskyi, P., Mosler, K. and Lange, T. (2013). Classifying real-world 
+#     data with the DDalpha-procedure. Mimeo.
+################################################################################
+
 ddalpha.classify <- function(objects, 
                              ddalpha, 
                              outsider.method = "LDA", 
@@ -45,7 +60,8 @@ ddalpha.classify <- function(objects,
       if (ddalpha$methodDepth == "zonoid"){
         depths <- .zonoid_depths(ddalpha, objects[classifiableIndices,], 0)
       }
-      freePoints <- objects[-classifiableIndices,]
+      freePoints <- matrix(objects[-classifiableIndices,], 
+                           nrow=nrow(objects)-length(classifiableIndices))
     }
   }else{
     if (ddalpha$methodDepth == "randomTukey"){
@@ -64,34 +80,45 @@ ddalpha.classify <- function(objects,
       depths <- matrix(nrow=0, ncol=ddalpha$numPatterns)
       freePoints <- objects
     }else{
-      depths <- depths[classifiableIndices,]
-      freePoints <- objects[-classifiableIndices,]
+      depths <- matrix(depths[classifiableIndices,], 
+                       nrow=length(classifiableIndices), ncol=ddalpha$numPatterns)
+      freePoints <- matrix(objects[-classifiableIndices,], 
+                           nrow=nrow(objects)-length(classifiableIndices), 
+                           ncol=ncol(objects))
     }
   }
   
   # Classify with the pure DD-ALpha
   resultsDepths <- list()
-  votes <- matrix(rep(0, nrow(depths)*ddalpha$numPatterns), nrow=nrow(depths))
-  toClassify <- as.double(as.vector(t(depths)))
-  m <- as.integer(nrow(depths))
-  q <- as.integer(ncol(depths))
-  for (i in 1:ddalpha$numClassifiers){
-    result <- .C("AlphaClassify", toClassify, m, q, as.integer(ddalpha$classifiers[[i]]$degree), as.double(ddalpha$classifiers[[i]]$hyperplane), output=integer(m))$output
-    for (j in 1:m){
-      if (result[j] > 0){
-        votes[j,ddalpha$classifiers[[i]]$index0] <- votes[j,ddalpha$classifiers[[i]]$index0] + 1
-      }else{
-        votes[j,ddalpha$classifiers[[i]]$index1] <- votes[j,ddalpha$classifiers[[i]]$index1] + 1
+  if (nrow(depths) > 0){
+    votes <- matrix(rep(0, nrow(depths)*ddalpha$numPatterns), nrow=nrow(depths), ncol=ddalpha$numPatterns)
+    toClassify <- as.double(as.vector(t(depths)))
+    m <- as.integer(nrow(depths))
+    q <- as.integer(ncol(depths))
+    for (i in 1:ddalpha$numClassifiers){
+      result <- .C("AlphaClassify", 
+                   toClassify, 
+                   m, 
+                   q, 
+                   as.integer(ddalpha$classifiers[[i]]$degree), 
+                   as.double(ddalpha$classifiers[[i]]$hyperplane), 
+                   output=integer(m))$output
+      for (j in 1:m){
+        if (result[j] > 0){
+          votes[j,ddalpha$classifiers[[i]]$index0] <- votes[j,ddalpha$classifiers[[i]]$index0] + 1
+        }else{
+          votes[j,ddalpha$classifiers[[i]]$index1] <- votes[j,ddalpha$classifiers[[i]]$index1] + 1
+        }
       }
     }
-  }
-  for (i in 1:m){
-    resultsDepths[[i]] <- ddalpha$patterns[[which.max(votes[i,])]]$name
+    for (i in 1:m){
+      resultsDepths[[i]] <- ddalpha$patterns[[which.max(votes[i,])]]$name
+    }
   }
   
   # Classify Outsiders
   resultsOutsiders <- as.list(rep("Ignored", nrow(freePoints)))
-  if (!is.null(outsider.method)){
+  if (length(resultsOutsiders) > 0 && !is.null(outsider.method)){
     for (i in 1:length(ddalpha$methodsOutsider)){
       if (toupper(ddalpha$methodsOutsider[[i]]$name) == toupper(outsider.method)){
         resultsOutsiders <- .ddalpha.classify.outsiders(freePoints, ddalpha, ddalpha$methodsOutsider[[i]])

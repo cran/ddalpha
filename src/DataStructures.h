@@ -1,3 +1,12 @@
+/*
+  File:             DataStructures.cpp
+  Created by:       Pavlo Mozharovskyi
+  First published:  28.02.2013
+  Last revised:     28.02.2013
+
+  Defines the data structures used in the package.
+*/
+
 typedef vector<double> TPoint;
 typedef vector<vector<double> > TMatrix;
 typedef vector<int> TVariables;

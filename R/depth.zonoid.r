@@ -1,3 +1,12 @@
+################################################################################
+# File:             depth.zonoid.r
+# Created by:       Pavlo Mozharovskyi
+# First published:  28.02.2013
+# Last revised:     15.05.2013
+# 
+# Computation of the zonoid data depth.
+################################################################################
+
 depth.zonoid <- function(x, data){
   if (!is.matrix(x) 
       && is.vector(x)){
@@ -28,7 +37,6 @@ depth.zonoid <- function(x, data){
            as.integer(nrow(x)), 
            as.integer(ncol(data)), 
            depths=double(nrow(x)))$depths
-  ds <- replace(ds, which(ds < 1/nrow(data)), 0)
   
   return (ds)
 }

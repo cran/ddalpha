@@ -1,3 +1,18 @@
+################################################################################
+# File:             ddalpha-internal.r
+# Created by:       Pavlo Mozharovskyi
+# First published:  28.02.2013
+# Last revised:     15.05.2013
+# 
+# Contains the internal functions of the DDalpha-classifier.
+# 
+# For a description of the algorithm, see:
+#   Lange, T., Mosler, K. and Mozharovskyi, P. (2012). Fast nonparametric 
+#     classification based on data depth. Statistical Papers.
+#   Mozharovskyi, P., Mosler, K. and Lange, T. (2013). Classifying real-world 
+#     data with the DDalpha-procedure. Mimeo.
+################################################################################
+
 .ddalpha.create.structure <- function(data){
   # Elemantary statistics
   dimension <- ncol(data) - 1
@@ -298,9 +313,9 @@
     y <- as.vector(t(objects))
     ds <- .C("ZDepth", as.double(x), as.double(y), as.integer(nrow(pattern)), as.integer(nrow(objects)), as.integer(ncol(pattern)), depths=double(nrow(objects)))$depths
     if (i == ownPattern){
-      ds <- replace(ds, which(ds < 1/nrow(pattern)), 1/nrow(pattern))
+      ds <- replace(ds, which(ds < 1/nrow(pattern) - sqrt(.Machine$double.eps)), 1/nrow(pattern))
     }else{
-      ds <- replace(ds, which(ds < 1/nrow(pattern)), 0)
+      ds <- replace(ds, which(ds < 1/nrow(pattern) - sqrt(.Machine$double.eps)), 0)
     }
     depths <- cbind(depths, ds)
   }
@@ -743,7 +758,7 @@
     objects <- matrix(objects, nrow=1)
   }
   # Initialization of the vote array
-  votes <- matrix(rep(0, nrow(objects)*ddalpha$numPatterns), nrow=nrow(objects))
+  votes <- matrix(rep(0, nrow(objects)*ddalpha$numPatterns), nrow=nrow(objects), ncol=ddalpha$numPatterns)
   for (i in 1:length(settings$knnAff.classifiers)){
     res <- .C("KnnAffInvClassify", 
               as.double(t(objects)), 
@@ -835,7 +850,7 @@
     objects <- matrix(objects, nrow=1)
   }
   # Initialization of the vote array
-  votes <- matrix(rep(0, nrow(objects)*ddalpha$numPatterns), nrow=nrow(objects))
+  votes <- matrix(rep(0, nrow(objects)*ddalpha$numPatterns), nrow=nrow(objects), ncol=ddalpha$numPatterns)
   for (i in 1:nrow(objects)){
     for (j in 1:length(settings$mah.classes)){
       votes[i,j] <- settings$mah.classes[[j]]$prior*.mahalanobis_depth(objects[i,], settings$mah.classes[[j]]$mean, settings$mah.classes[[j]]$sigma)

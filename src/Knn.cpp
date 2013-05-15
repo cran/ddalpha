@@ -1,3 +1,12 @@
+/*
+  File:             Knn.cpp
+  Created by:       Pavlo Mozharovskyi
+  First published:  28.02.2013
+  Last revised:     28.02.2013
+
+  The realization of the fast binary affine-invariante KNN classifier.
+*/
+
 #include "stdafx.h"
 
 static int Compare(UPoint a, UPoint b)

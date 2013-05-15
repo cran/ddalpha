@@ -1,3 +1,12 @@
+################################################################################
+# File:             depth.space.zonoid.r
+# Created by:       Pavlo Mozharovskyi
+# First published:  28.02.2013
+# Last revised:     15.05.2013
+# 
+# Computation of the depth space based on the zonoid data depth.
+################################################################################
+
 depth.space.zonoid <- function(data, cardinalities){
   if (!is.numeric(data)
       || !is.matrix(data) 
@@ -30,9 +39,9 @@ depth.space.zonoid <- function(data, cardinalities){
                as.integer(dim), 
                depths=double(cardinalities[i]))$depths
       if (j == i){
-        ds <- replace(ds, which(ds < 1/cardinalities[j]), 1/cardinalities[j])
+        ds <- replace(ds, which(ds < 1/cardinalities[j] - sqrt(.Machine$double.eps)), 1/cardinalities[j])
       }else{
-        ds <- replace(ds, which(ds < 1/cardinalities[j]), 0)
+        ds <- replace(ds, which(ds < 1/cardinalities[j] - sqrt(.Machine$double.eps)), 0)
       }
       pattern.depths <- cbind(pattern.depths, ds, deparse.level = 0)
     }

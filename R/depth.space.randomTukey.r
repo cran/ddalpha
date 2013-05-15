@@ -1,3 +1,12 @@
+################################################################################
+# File:             depth.space.randomTukey.r
+# Created by:       Pavlo Mozharovskyi
+# First published:  28.02.2013
+# Last revised:     28.02.2013
+# 
+# Computation of depth space based on the random Tukey data depth.
+################################################################################
+
 depth.space.randomTukey <- function(data, cardinalities, num.directions = 1000){
   if (!is.numeric(data)
       || !is.matrix(data) 

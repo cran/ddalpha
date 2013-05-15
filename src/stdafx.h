@@ -1,3 +1,12 @@
+/*
+  File:             stdafx.h
+  Created by:       Oleksii Pokotylo
+  First published:  28.02.2013
+  Last revised:     28.02.2013
+  
+  Defines the Includes needed.
+*/
+
 #pragma once
 
 #include <time.h>
