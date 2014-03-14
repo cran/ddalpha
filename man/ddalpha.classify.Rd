@@ -26,15 +26,15 @@ Logical variable indicating whether outsiders should be determined as the points
 \details{
 Only one outsider treatment can be specified.
 
-See Lange, Mosler and Mozharovskyi (2012) for details and additional information.
+See Lange, Mosler and Mozharovskyi (2014) for details and additional information.
 }
 \value{
 List containing class labels, or character string "Ignored" for the outsiders if "Ignore" was specified as the outsider treating method.
 }
 \references{
-Dyckerhoff, R., Koshevoy, G. and Mosler, K. (1996), Zonoid data depth: theory and computation. In: \emph{Prat A. (ed) COMPSTAT 1996 Proceedings in computational statistics}, Physica-Verlag, Heidelberg, pp 235--240.
+Dyckerhoff, R., Koshevoy, G. and Mosler, K. (1996), Zonoid data depth: theory and computation. In: Prat A. (ed), \emph{COMPSTAT 1996. Proceedings in computational statistics}, Physica-Verlag (Heidelberg), 235--240.
 
-Lange, T., Mosler, K. and Mozharovskyi, P. (2012), Fast nonparametric classification based on data depth, \emph{Statistical Papers}.
+Lange, T., Mosler, K. and Mozharovskyi, P. (2014), Fast nonparametric classification based on data depth, \emph{Statistical Papers}, \bold{55}, 49--69.
 }
 \author{
 The algorithm for computation of zonoid depth (Dyckerhoff, Koshevoy and Mosler, 1996) has been implemented in C++ by Rainer Dyckerhoff.

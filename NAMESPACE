@@ -2,3 +2,6 @@ export(ddalpha.train, ddalpha.classify, depth.zonoid, depth.randomTukey, depth.s
 useDynLib(ddalpha, IsInConvexes, ZDepth, HDepth, HDSpace, AlphaLearn, AlphaLearnCV, AlphaClassify, KnnAffInvLearnJK, KnnAffInvClassify)
 S3method(print, ddalpha)
 S3method(print, ddalpha.pattern)
+import(MASS)
+import(class)
+import(robustbase)

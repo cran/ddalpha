@@ -27,3 +27,5 @@ using namespace std;
 #include "TukeyDepth.h"
 #include "ZonoidDepth.h"
 #include "Knn.h"
+#include "ProjectionDepth.h"
+#include "Common.h"

@@ -6,12 +6,15 @@ citEntry(entry = "Article",
                             as.person("Karl Mosler"),
                             as.person("Pavlo Mozharovskyi")),
   journal      = "Statistical Papers",  
-  year         = "2012",
+  year         = "2014",
+  volume       = "55",
+  number       = "1",
+  pages        = "49-69",
   
   textVersion  = 
-  paste("Lange, T., Mosler, K. and Mozharovskyi, P. (2012).",
+  paste("Lange, T., Mosler, K. and Mozharovskyi, P. (2014).",
         "Fast nonparametric classification based on data depth.",
-        "Statistical Papers")
+        "Statistical Papers, 55, 49-69")
 )
 
 citEntry(entry = "Article",

@@ -11,7 +11,7 @@
     Mozharovskyi, P., Mosler, K. and Lange, T. (2013). Classifying real-world data with the DDalpha-procedure. Mimeo.
 */
 
-int ExtendWithProducts(TMatrix x, int upToPower, TMatrix *_x);
+int ExtendWithProducts(TMatrix x, unsigned int upToPower, TMatrix *_x);
 int Learn(TMatrix input, TVariables output, unsigned int minFeatures, TPoint *ray);
-int LearnCV(TMatrix input, TVariables output, unsigned int minFeatures, int upToPower, unsigned int folds, TPoint *ray, int *power);
+int LearnCV(TMatrix input, TVariables output, unsigned int minFeatures, unsigned int upToPower, unsigned int folds, TPoint *ray, unsigned int *power);
 int Classify(TMatrix input, TPoint weights, TVariables *output);

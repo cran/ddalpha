@@ -29,7 +29,7 @@ double ZonoidDepth(vector<TPoint> x, TPoint z, int& Error);
 */
 
 int IsInConvex(vector<TPoint> x, TPoint z, int& Error);
-int InConvexes(TMatrix points, TVariables cardinalities, TMatrix objects, int& Error, TVariables *areInConvexes);
+int InConvexes(TMatrix points, TVariables cardinalities, TMatrix objects, int& Error, TMatrix *areInConvexes);
 
 int GetMeansSds(vector<TPoint> x, TPoint *means, TPoint *sds);
 int Standardize(vector<TPoint> &x, TPoint means, TPoint sds);

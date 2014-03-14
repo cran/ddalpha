@@ -43,12 +43,13 @@ void IsInConvexes(double *points, int *dimension, int *cardinalities, int *numCl
 	for (int i = 0; i < numClasses[0]; i++){
 		cars[i] = cardinalities[i];
 	}
-	TVariables answers;
+	TMatrix answers;
 	int error = 0;
 	InConvexes(x, cars, o, error, &answers);
-	for (int i = 0; i < numObjects[0]; i++){
-		isInConvexes[i] = answers[i];
-	}
+	for (int i = 0; i < numObjects[0]; i++)
+    for (int j = 0; j < numClasses[0]; j++){
+  		isInConvexes[numClasses[0]*i+j] = answers[i][j];
+  	}
 }
 
 void ZDepth(double *points, double *objects, int *numPoints, int *numObjects, int *dimension, double *depths){
@@ -67,7 +68,7 @@ void ZDepth(double *points, double *objects, int *numPoints, int *numObjects, in
 	for (int i = 0; i < numObjects[0]; i++){
 		for (int j = 0; j < dimension[0]; j++){
 			z[i][j] = objects[i * dimension[0] + j];
-		}		
+		}
 		Standardize(z[i], means, sds);
 		int error;
 		depths[i] = ZonoidDepth(x, z[i], error);
@@ -165,7 +166,7 @@ void AlphaLearn(double *points, int *numPoints, int *dimension, int *cardinaliti
 	TPoint direction;
 	Learn(_x, y, minFeatures[0], &direction);
 	ray[0] = degree[0];
-	for (int i = 0; i < direction.size(); i++){
+	for (unsigned i = 0; i < direction.size(); i++){
 		ray[i + 1] = direction[i];
 	}
 }
@@ -181,10 +182,10 @@ void AlphaLearnCV(double *points, int *numPoints, int *dimension, int *cardinali
 	TVariables y(numPoints[0]);
 	for (int i = 0; i < cardinalities[0]; i++){y[i] = 1;}
 	for (int i = cardinalities[0]; i < numPoints[0]; i++){y[i] = -1;}
-	TPoint direction;int power;
+	TPoint direction; unsigned int power;
 	LearnCV(x, y, minFeatures[0], upToPower[0], numFolds[0], &direction, &power);
 	ray[0] = power;
-	for (int i = 0; i < direction.size(); i++){
+	for (unsigned i = 0; i < direction.size(); i++){
 		ray[i + 1] = direction[i];
 	}
 }
@@ -193,7 +194,6 @@ void AlphaClassify(double *points, int *numPoints, int *dimension, int *degree, 
 	TMatrix x(numPoints[0]);
 	for (int i = 0; i < numPoints[0]; i++){x[i] = TPoint(dimension[0]);}
 	for (int i = 0; i < numPoints[0]; i++){
-		TPoint curPoint();
 		for (int j = 0; j < dimension[0]; j++){
 			x[i][j] = points[i * dimension[0] + j];
 		}
@@ -201,7 +201,7 @@ void AlphaClassify(double *points, int *numPoints, int *dimension, int *degree, 
 	TMatrix _x;
 	ExtendWithProducts(x, degree[0], &_x);
 	TPoint direction(_x[0].size());
-	for (int i = 0; i < _x[0].size(); i++){
+	for (unsigned i = 0; i < _x[0].size(); i++){
 		direction[i] = ray[i + 1];
 	}
 	TVariables y;
@@ -237,7 +237,6 @@ void KnnAffInvClassify(double *objects, int *numObjects, double *points, int *di
 	TMatrix y(numObjects[0]);
 	for (int i = 0; i < numObjects[0]; i++){y[i] = TPoint(dimension[0]);}
 	for (int i = 0; i < numObjects[0]; i++){
-		TPoint curPoint();
 		for (int j = 0; j < dimension[0]; j++){
 			y[i][j] = objects[i * dimension[0] + j];
 		}
@@ -246,6 +245,99 @@ void KnnAffInvClassify(double *objects, int *numObjects, double *points, int *di
 	Knn_Classify_Binary(y, x, cars, k[0], &result);
 	for (int i = 0; i < numObjects[0]; i++){
 		output[i] = result[i];
+	}
+}
+
+void KnnLearnJK(double *points, int *labels, int *numPoints, int *dimension, int *kmax, int *distType, int *k){
+	TMatrix x(numPoints[0]);TVariables y(numPoints[0]);
+	for (int i = 0; i < numPoints[0]; i++){
+		x[i] = TPoint(dimension[0]);
+		for (int j = 0; j < dimension[0]; j++){
+			x[i][j] = points[i * dimension[0] + j];
+		}
+		y[i] = labels[i];
+	}
+	k[0] = KnnCv(x, y, kmax[0], distType[0], 0);
+}
+
+void KnnClassify(double *objects, int *numObjects, double *points, int *labels, int *numPoints, int *dimension, int *k, int *distType, int *output){
+	TMatrix x(numPoints[0]);TVariables y(numPoints[0]);
+	for (int i = 0; i < numPoints[0]; i++){
+		x[i] = TPoint(dimension[0]);
+		for (int j = 0; j < dimension[0]; j++){
+			x[i][j] = points[i * dimension[0] + j];
+		}
+		y[i] = labels[i];
+	}
+	TMatrix z(numObjects[0]);
+	for (int i = 0; i < numObjects[0]; i++){
+		z[i] = TPoint(dimension[0]);
+		for (int j = 0; j < dimension[0]; j++){
+			z[i][j] = objects[i * dimension[0] + j];
+		}
+	}
+	TVariables result;
+	Knn(z, x, y, k[0], distType[0], &result);
+	for (int i = 0; i < numObjects[0]; i++){
+		output[i] = result[i];
+	}
+}
+
+void ProjectionDepth(double *points, double *objects, int *numObjects,
+					 int *dimension, int *cardinalities, int *numClasses,
+					 double *directions, double *projections, int *k,
+					 int *newDirs, double *depths){
+	int numPoints = 0;
+	for (int i = 0; i < numClasses[0]; i++){
+		numPoints += cardinalities[i];
+	}
+	TMatrix x(numPoints);
+	for (int i = 0; i < numPoints; i++){x[i] = TPoint(dimension[0]);}
+	for (int i = 0; i < numPoints; i++){
+		for (int j = 0; j < dimension[0]; j++){
+			x[i][j] = points[i * dimension[0] + j];
+		}
+	}
+	TMatrix z(numObjects[0]);
+	for (int i = 0; i < numObjects[0]; i++){z[i] = TPoint(dimension[0]);}
+	for (int i = 0; i < numObjects[0]; i++){
+		for (int j = 0; j < dimension[0]; j++){
+			z[i][j] = objects[i * dimension[0] + j];
+		}
+	}
+	TVariables cars(numClasses[0]);
+	for (int i = 0; i < numClasses[0]; i++){
+		cars[i] = cardinalities[i];
+	}
+	TMatrix dirs(0);
+	TMatrix prjs(0);
+	if (!newDirs[0]){
+		dirs.resize(k[0]);prjs.resize(k[0]);
+		for (int i = 0; i < k[0]; i++){
+			dirs[i].resize(dimension[0]);
+			for (int j = 0; j < dimension[0]; j++){
+				dirs[i][j] = directions[i * dimension[0] + j];
+			}
+			prjs[i].resize(numPoints);
+			for (int j = 0; j < numPoints; j++){
+				prjs[i][j] = projections[i * numPoints + j];
+			}
+		}
+	}
+	TMatrix _depths;
+	GetDepthsPrj(x, z, cars, k[0], newDirs[0], &_depths, &dirs, &prjs);
+	for (int i = 0; i < numObjects[0]; i++){
+		for (int j = 0; j < numClasses[0]; j++){
+			depths[i * numClasses[0] + j] = _depths[i][j];
+		}
+	}
+	if (newDirs[0]){
+		for (int i = 0; i < k[0]*dimension[0]; i++){
+			directions[i] = dirs[i/dimension[0]][i%dimension[0]];
+		}
+		for (int i = 0; i < k[0]*numPoints; i++){
+			projections[i] = prjs[i/numPoints][i%numPoints];
+		}
 	}
 }
 

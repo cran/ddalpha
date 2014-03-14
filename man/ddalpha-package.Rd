@@ -3,30 +3,30 @@
 \alias{ddalpha}
 \docType{package}
 \title{
-DD\eqn{\alpha}-Classifier
+DDalpha-classifier, depth-calculating methods and associated functions
 }
 \description{
-The package implements the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharovskyi, 2012), a nonparametric procedure for supervised binary classification with \eqn{q\ge 2} classes. In the training step, the sample is first transformed into a \eqn{q}-dimensional cube of depth vectors, then a linear separation rule in its polynomial extension is constructed with the \eqn{\alpha}-procedure. The classification step involves alternative treatments of 'outsiders'.
+The package implements the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharovskyi, 2014), a nonparametric procedure for supervised binary classification with \eqn{q\ge 2} classes. In the training step, the sample is first transformed into a \eqn{q}-dimensional cube of depth vectors, then a linear separation rule in its polynomial extension is constructed with the \eqn{\alpha}-procedure. The classification step involves alternative treatments of 'outsiders'.
 }
 \details{
 \tabular{ll}{
 Package: \tab ddalpha\cr
 Type: \tab Package\cr
-Version: \tab 1.0.3\cr
-Date: \tab 2013-02-27\cr
+Version: \tab 1.0.5\cr
+Date: \tab 2014-03-14\cr
 License: \tab GPL-2\cr
 }
 Use \code{\link{ddalpha.train}} to train the DD\eqn{\alpha}-classifier and \code{\link{ddalpha.classify}} to classify with it. Either the zonoid or Tukey depth can be used for the depth transformation. The zonoid depth is exactly computed by the function \code{\link{depth.zonoid}}, the Tukey depth is approximated by the function \code{\link{depth.randomTukey}}. Corresponding to them depth representations (\code{\link{depth.space.zonoid}} and \code{\link{depth.space.randomTukey}} for zonoid and the random Tukey depth respectively) are obtained, check by \code{\link{is.in.convex}} whether an object is no 'outsider', i.e. can be classified by its depth values. Outsiders are alternatively classified by LDA, kNN and maximum Mahalanobis depth as well as by random assignment.
 }
 \author{
-Oleksii Pokotylo, Pavlo Mozharovskyi
+Oleksii Pokotylo, <alexey.pokotylo at gmail.com>
 
-Maintainer: Oleksii Pokotylo <alexey.pokotylo@gmail.com>
+Pavlo Mozharovskyi, <mozharovskyi at statistik.uni-koeln.de>
 }
 \references{
-Lange, T., Mosler, K. and Mozharovskyi, P. (2012), Fast nonparametric classification based on data depth, \emph{Statistical Papers}.
+Lange, T., Mosler, K. and Mozharovskyi, P. (2014), DD\eqn{\alpha}-classification of asymmetric and fat-tailed data, In: Spiliopoulou, M., Schmidt-Thieme, L., Janning, R. (eds), \emph{Data Analysis, Machine Learning and Knowledge Discovery}, Springer (Berlin), 71--78.
 
-Lange, T., Mosler, K. and Mozharovskyi, P. (2013), DD\eqn{\alpha}-classification of asymmetric and fat-tailed data, Proceedings of the \emph{36th Annual Conference of the German Classification Society} on "Data Analysis, Machine Learning and Knowledge Discovery", Hildesheim, 1-3 August 2012.
+Lange, T., Mosler, K. and Mozharovskyi, P. (2014), Fast nonparametric classification based on data depth, \emph{Statistical Papers}, \bold{55}, 49--69.
 
 Mozharovskyi, P., Mosler, K. and Lange, T. (2013), Classifying real-world data with the DD\eqn{\alpha}-procedure, \emph{Mimeo}.
 }

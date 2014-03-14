@@ -4,7 +4,7 @@
 Train DD\eqn{\alpha}-Classifier
 }
 \description{
-Trains the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharovskyi, 2012; Mozharovskyi, Mosler and Lange, 2013) using a training sample according to given parameters. The DD\eqn{\alpha}-classifier is a nonparametric procedure that first transforms the training sample into the depth space calculating for that depth of each point w.r.t each class (dimension of this space equals the number of classes in the training sample then), and then constructs a linear separating rule in the polynomial extension of the depth space with the \eqn{\alpha}-procedure (Vasil'ev, 2003); maximum degree of the polynomial products is determined via cross-validation (in the depth space). If in the classification phase an object does not belong to the convex hull of at least one class (we mention such an object as an 'outsider'), it is mapped into the origin of the depth space and hence cannot be classified in the depth space. For these objects, after 'outsiderness' has been assured, an outsider treatment, i.e. a classification procedure functioning outside convex hulls of the classes is applied; it has to be trained first too.
+Trains the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharovskyi, 2014; Mozharovskyi, Mosler and Lange, 2013) using a training sample according to given parameters. The DD\eqn{\alpha}-classifier is a nonparametric procedure that first transforms the training sample into the depth space calculating for that depth of each point w.r.t each class (dimension of this space equals the number of classes in the training sample then), and then constructs a linear separating rule in the polynomial extension of the depth space with the \eqn{\alpha}-procedure (Vasil'ev, 2003); maximum degree of the polynomial products is determined via cross-validation (in the depth space). If in the classification phase an object does not belong to the convex hull of at least one class (we mention such an object as an 'outsider'), it is mapped into the origin of the depth space and hence cannot be classified in the depth space. For these objects, after 'outsiderness' has been assured, an outsider treatment, i.e. a classification procedure functioning outside convex hulls of the classes is applied; it has to be trained first too.
 
 The current realization of the DD\eqn{\alpha}-classifier allows for several alternative outsider treatments; they involve different traditional classification methods, see 'Details' and 'Arguments' for parameters needed. 
 
@@ -13,13 +13,18 @@ The function allows for classification with \eqn{q\ge 2} classes, see \code{aggr
 \usage{
 ddalpha.train(data, 
               depth = "randomTukey", 
+              separator = "alpha", 
               outsider.methods = "LDA", 
               outsider.settings = NULL, 
               aggregation.method = "majority", 
-              num.chunks = 50, 
+              knnrange = NULL, 
+              num.chunks = 10, 
               num.directions = 1000, 
               use.convex = FALSE, 
-              max.degree = 3)
+              max.degree = 3, 
+              mah.estimate = "moment", 
+              mah.parMcd = 0.75, 
+              mah.priors = NULL)
 }
 \arguments{
   \item{data}{
@@ -27,6 +32,9 @@ Matrix containing training sample where each row is one object of the training s
 }
   \item{depth}{
 Character string determining which depth notion to use; can be \code{"randomTukey"} (the default) or \code{"zonoid"}.
+}
+  \item{separator}{
+The method used for separation on the DD-plot; can be \code{"alpha"} (the default) or \code{"knnlm"}.
 }
   \item{outsider.methods}{
 Vector of character strings each being a name of a basic outsider method for eventual classification; possible names are: \code{"LDA"} (the default), \code{"kNN"}, \code{"kNNAff"}, \code{"depth.Mahalanobis"}, \code{"RandProp"}, \code{"RandEqual"} and \code{"Ignore"}. Each method can be specified only once, replications are ignored. By specifying treatments in such a way only a basic treatment method can be chosen (by the name), and the default settings for each of the methods are applied, see 'Details'.
@@ -36,6 +44,9 @@ List containing outsider treatments each described by a list of parameters inclu
 }
   \item{aggregation.method}{
 Character string determining which method to apply to aggregate binary classification results during multiclass classification; can be \code{"majority"} (the default) or \code{"sequent"}. If \code{"majority"}, \eqn{q(q-1)/2} (with \eqn{q} being the number of classes in the training sample) binary classifiers are trained, the classification results are aggregated using the majority voting, where classes with larger proportions in the training sample (eventually with the earlier entries in the \code{data}) are preferred when tied. If \code{"sequent"}, \eqn{q} binary 'one against all'-classifiers are trained and ties during the classification are resolved as before.
+}
+  \item{knnrange}{
+The maximal number of neighbours for kNN separation.
 }
   \item{num.chunks}{
 Number of chunks to split data into when cross-validating the \eqn{\alpha}-procedure; should be \eqn{>0}, and smaller than the total number of points in the two smallest classes when \code{aggregation.method =} \code{"majority"} and smaller than the total number of points in the training sample when \code{aggregation.method =} \code{"sequent"}.
@@ -48,6 +59,15 @@ Logical variable indicating whether outsiders should be determined exactly, i.e.
 }
   \item{max.degree}{
 Maximum of the range of degrees of the polynomial depth space extension over which the \eqn{\alpha}-procedure is to be cross-validated; can be 1, 2 or 3.
+}
+  \item{mah.estimate}{
+%%     ~~Describe \code{num.directions} here~~
+}
+  \item{mah.parMcd}{
+%%     ~~Describe \code{use.convex} here~~
+}
+  \item{mah.priors}{
+%%     ~~Describe \code{max.degree} here~~
 }
 }
 \details{
@@ -91,9 +111,9 @@ Trained DD\eqn{\alpha}-classifier containing following - rather informative - fi
 \item{outsider.methods}{Treatments to be used to classify outsiders.}
 }
 \references{
-Dyckerhoff, R., Koshevoy, G. and Mosler, K. (1996), Zonoid data depth: theory and computation. In: \emph{Prat A. (ed) COMPSTAT 1996 Proceedings in computational statistics}, Physica-Verlag, Heidelberg, pp 235--240.
+Dyckerhoff, R., Koshevoy, G. and Mosler, K. (1996), Zonoid data depth: theory and computation. In: Prat A. (ed), \emph{COMPSTAT 1996. Proceedings in computational statistics}, Physica-Verlag (Heidelberg), 235--240.
 
-Lange, T., Mosler, K. and Mozharovskyi, P. (2012), Fast nonparametric classification based on data depth, \emph{Statistical Papers}.
+Lange, T., Mosler, K. and Mozharovskyi, P. (2014), Fast nonparametric classification based on data depth, \emph{Statistical Papers}, \bold{55}, 49--69.
 
 Mozharovskyi, P., Mosler, K. and Lange, T. (2013), Classifying real-world data with the DD\eqn{\alpha}-procedure, \emph{Mimeo}.
 

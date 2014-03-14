@@ -28,11 +28,11 @@ static Features features;
 static TPoint curFeature;
 static int numStartFeatures;
 
-static int GetProducts(TPoint values, int power, TPoint *output){
-	unsigned int d = values.size();
+static int GetProducts(TPoint values, unsigned int power, TPoint *output){
+	int d = values.size();
 	if (power == 1){
 		output->resize(d);
-		for (unsigned int i = 0; i < d; i++){(*output)[i] = values[i];}
+		for (int i = 0; i < d; i++){(*output)[i] = values[i];}
 		return 0;
 	}
 	output->resize(0);
@@ -78,7 +78,7 @@ static unsigned int DGetMinError(unsigned int yAxisNumber, Feature *yFeature){
 
 	/* Look for the optimal threshold */
 	int leftDiff = 0; unsigned int optThreshold = 0; int maxCorr = 0; double nextValue = angles[0].value;
-	for (int i = 0; i < n - 1; i++){leftDiff+=angles[i].pattern;
+	for (unsigned i = 0; i < n - 1; i++){leftDiff+=angles[i].pattern;
 		if (angles[i + 1].value == nextValue){continue;} nextValue = angles[i].value;
 		int corr = abs(leftDiff) + abs(difference - leftDiff); if (corr > maxCorr){maxCorr = corr; optThreshold = i;}
 	}
@@ -210,7 +210,7 @@ int Classify(TMatrix input, TPoint weights, TVariables *output){
 	return 0;
 }
 
-int ExtendWithProducts(TMatrix input, int upToPower, TMatrix *output){
+int ExtendWithProducts(TMatrix input, unsigned int upToPower, TMatrix *output){
 	unsigned int n = input.size();
 	output->resize(n);
 	for (unsigned int i = 0; i < n; i++){
@@ -230,7 +230,7 @@ int Learn(TMatrix input, TVariables output, unsigned int minFeatures, TPoint *ra
 	return Alpha(ray);
 }
 
-int LearnCV(TMatrix input,  TVariables output, unsigned int minFeatures, int upToPower, unsigned int folds, TPoint *ray, int *power){
+int LearnCV(TMatrix input,  TVariables output, unsigned int minFeatures, unsigned int upToPower, unsigned int folds, TPoint *ray, unsigned int *power){
 	unsigned int optDegree = 0;
 	unsigned int optError = INT_MAX;
 	unsigned int shortFolds = folds - 1;
@@ -241,7 +241,7 @@ int LearnCV(TMatrix input,  TVariables output, unsigned int minFeatures, int upT
 		ExtendWithProducts(input, i + 1, &spaceExtensions[i]); // get the (i + 1)-th space extention
 		Initialization(spaceExtensions[i], output, minFeatures); // initialize
 		/* Prepare slider and start to cut data */
-		unsigned int sliderSize = ceil((double)n/folds); int chSizeVal = n%folds - 1;
+		unsigned int sliderSize = ceil((double)n/folds); unsigned chSizeVal = n%folds - 1;
 		TMatrix xSlider(sliderSize); TPoint ySlider(sliderSize);
 		for (unsigned int j = 0; j < sliderSize; j++){
 			xSlider[j] = TPoint(d);

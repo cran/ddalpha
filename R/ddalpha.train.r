@@ -15,13 +15,18 @@
 
 ddalpha.train <- function(data, 
                           depth = "randomTukey", 
+                          separator = "alpha", 
                           outsider.methods = "LDA", 
                           outsider.settings = NULL, 
                           aggregation.method = "majority", 
-                          num.chunks = 50, 
+                          knnrange = NULL, 
+                          num.chunks = 10, 
                           num.directions = 1000, 
                           use.convex = FALSE, 
-                          max.degree = 3){
+                          max.degree = 3, 
+                          mah.estimate = "moment", 
+                          mah.parMcd = 0.75, 
+                          mah.priors = NULL){
   # Check for data consistency #1
   if (!is.matrix(data) 
       || !is.numeric(data)){
@@ -37,6 +42,7 @@ ddalpha.train <- function(data,
     warning("Number of patterns is < 2. Classifier can not be trained!!!")
     return (NULL)
   }
+  # TODO ddalpha$numPatterns should be restricted from above as well
   if (ddalpha$dimension < 2){
     warning("Data dimension is < 2. Classifier can not be trained!!!")
     return (NULL)
@@ -51,11 +57,19 @@ ddalpha.train <- function(data,
   # Reassigning the properties
   if (!is.character(depth)
       || length(depth) != 1
-      || !(depth %in% c("zonoid", "randomTukey"))){
+      || !(depth %in% c("zonoid", "randomTukey", "Mahalanobis", "projectionRandom", "projectionLinearize", "spatial"))){
     ddalpha$methodDepth <- "randomTukey"
     warning("Argument \"depth\" not specified correctly. \"randomTukey\" is used as a default value")
   }else{
     ddalpha$methodDepth <- depth
+  }
+  if (!is.character(separator)
+      || length(separator) != 1
+      || !(separator %in% c("alpha", "knnlm"))){
+    ddalpha$methodSeparator <- "alpha"
+    warning("Argument \"separator\" not specified correctly. \"alpha\" is used as a default value")
+  }else{
+    ddalpha$methodSeparator <- separator
   }
   if (!is.character(aggregation.method)
       || length(aggregation.method) != 1
@@ -79,6 +93,23 @@ ddalpha.train <- function(data,
     warning("Argument \"num.chunks\" not specified correctly. ", maxChunks, " is used instead")
   }else{
     ddalpha$numChunks <- num.chunks
+  }
+  if (is.null(knnrange)
+      || !is.numeric(knnrange) 
+      || is.na(knnrange) 
+      || length(knnrange) != 1 
+      || !.is.wholenumber(knnrange) 
+      || !(knnrange >=2 && knnrange <= ceiling(ddalpha$numPoints/2))){
+    
+    if (is.null(knnrange))      knnrange <- 10*( (ddalpha$numPoints)^(1/ddalpha$numPatterns) ) + 1
+    
+    knnrange <- min(knnrange, ceiling(ddalpha$numPoints/2))
+    knnrange <- max(knnrange, 2)
+    
+    ddalpha$knnrange <- knnrange
+    if (!is.null(knnrange)) warning("Argument \"knnrange\" not specified correctly. ", knnrange, " is used instead")
+  }else{
+    ddalpha$knnrange <- knnrange
   }
   if (ddalpha$methodDepth == "randomTukey" 
       && (!is.numeric(num.directions) 
@@ -110,16 +141,57 @@ ddalpha.train <- function(data,
   }else{
     ddalpha$maxDegree <- max.degree
   }
+  if (!is.character(mah.estimate) 
+      || length(mah.estimate) != 1 
+      || !(mah.estimate %in% c("moment", "MCD"))){
+    warning("In treatment number ", i, ": Argument \"mah.estimate\" not specified correctly. \"moment\" is used as a default value")
+    ddalpha$mahEstimate <- "moment"
+  }else{
+    ddalpha$mahEstimate <- mah.estimate
+  }
+  if (!is.vector(mah.priors, mode = "double") 
+      || is.na(min(mah.priors)) 
+      || length(mah.priors) != ddalpha$numPatterns 
+      || min(mah.priors) <= 0 
+      || max(mah.priors) <= 0){
+    if (!is.null(mah.priors)){
+      warning("In treatment number ", i, ": Argument \"mah.priors\" not specified correctly. Defaults in the form of class portions are applied")
+    }
+    ddalpha$mahPriors <- NULL
+  }else{
+    ddalpha$mahPriors <- mah.priors/sum(mah.priors)
+  }
+  if (!is.vector(mah.parMcd, mode = "double") 
+      || is.na(min(mah.parMcd)) 
+      || length(mah.parMcd) != 1 
+      || mah.parMcd < 0.5 
+      || mah.parMcd > 1){
+    if (ddalpha$mahEstimate == "MCD"){
+      warning("In treatment number ", i, ": Argument \"mah.parMcd\" not specified correctly. 0.75 is used as a default value")
+    }
+    ddalpha$mahParMcd <- 0.75
+  }else{
+    ddalpha$mahParMcd <- mah.parMcd
+  }
   
   # Calculate depths
   ddalpha <- .ddalpha.learn.depth(ddalpha)
   
-  # Learn DDAlpha classification machine
-  ddalpha <- .ddalpha.learn.alpha(ddalpha)
+  # Learn classification machine
+  if (ddalpha$methodSeparator == "alpha"){
+    ddalpha <- .ddalpha.learn.alpha(ddalpha)
+  }
+  if (ddalpha$methodSeparator == "knnlm"){
+    ddalpha <- .ddalpha.learn.knnlm(ddalpha)
+  }
   
-  # Learn outsider treatments
-  ddalpha <- .ddalpha.learn.outsiders(ddalpha = ddalpha, methodsOutsider = outsider.methods, settingsOutsider = outsider.settings)
-  
+  # Learn outsider treatments if needed
+  if (!(ddalpha$methodDepth %in% 
+          c("Mahalanobis", "projectionRandom", "projectionLinearize", "spatial"))){
+    ddalpha <- .ddalpha.learn.outsiders(ddalpha = ddalpha, 
+                                        methodsOutsider = outsider.methods, 
+                                        settingsOutsider = outsider.settings)
+  }
   class(ddalpha) <- "ddalpha"
   
   return (ddalpha)

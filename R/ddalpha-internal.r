@@ -41,8 +41,16 @@
         name = pattern.name, 
         cardinality = pattern.cardinality, 
         depths = pattern.depths, 
-        votes = pattern.votes), 
-      .Names = c("index", "points", "name", "cardinality", "depths", "votes"))
+        votes = pattern.votes, 
+        center = 0, 
+        cov = 0, 
+        sigma = 0, 
+        centerMcd = 0, 
+        covMcd = 0, 
+        sigmaMcd = 0), 
+      .Names = c("index", "points", "name", "cardinality", "depths", 
+                 "votes", "center", "cov", "sigma", "centerMcd", 
+                 "covMcd", "sigmaMcd"))
     # Adding pattern template to the list of patterns
     class(pattern)<-"ddalpha.pattern"
     patterns[[i]] <- pattern
@@ -58,21 +66,32 @@
          patterns = patterns, 
          classifiers = list(), 
          numClassifiers = 0, 
-         methodDepth <- "randomTukey",
+         methodDepth = "randomTukey", 
+         methodSeparator = "alpha", 
          methodAggregation = "majority", 
          methodsOutsider = NULL, 
          numDirections = 1000, 
-         directions <- NULL, 
-         projections <- NULL, 
-         sameDirections <- TRUE, 
-         useConvex <- FALSE, 
+         directions = NULL, 
+         projections = NULL, 
+         sameDirections = TRUE, 
+         useConvex = FALSE, 
          maxDegree = 3, 
          numChunks = numOfPoints, 
+         knnrange = NULL,
+         mahEstimate = "moment", 
+         mahParMcd = 0.75, 
+         mahPriors = NULL, 
+         knnK = 1, 
+         knnX = NULL, 
+         knnY = NULL, 
+         knnD = NULL, 
          treatments <- c("LDA", "KNNAFF", "KNN", "DEPTH.MAHALANOBIS", "RANDEQUAL", "RANDPROP", "IGNORE")), 
     .Names = c("raw", "dimension", "numPatterns", "numPoints", "patterns", 
-               "classifiers", "numClassifiers", "methodDepth", "methodAggregation", "methodsOutsider", 
-               "numDirections", "directions", "projections", "sameDirections", "useConvex", 
-               "maxDegree", "numChunks", "treatments"))
+               "classifiers", "numClassifiers", "methodDepth", "methodSeparator", "methodAggregation", 
+               "methodsOutsider", "numDirections", "directions", "projections", "sameDirections", 
+               "useConvex", "maxDegree", "numChunks", "knnrange", "mahEstimate", "mahParMcd", 
+               "mahPriors", "knnK", "knnX", "knnY", "knnD", 
+               "treatments"))
 
   return (ddalpha)
 }
@@ -85,16 +104,65 @@
     ddalpha$projections <- dSpaceStructure$projections
     tmpDSpace <- dSpaceStructure$dspace
   }
+  if (ddalpha$methodDepth == "Mahalanobis"){
+    if (is.null(ddalpha$mahPriors)){
+      ddalpha$mahPriors <- c()
+      for (i in 1:ddalpha$numPatterns){
+        ddalpha$mahPriors[i] <- ddalpha$patterns[[i]]$cardinality/ddalpha$numPoints
+      }
+    }
+    for (i in 1:ddalpha$numPatterns){
+      if (ddalpha$mahEstimate == "moment"){
+        
+        ddalpha$patterns[[i]]$center <- colMeans(ddalpha$patterns[[i]]$points)
+        ddalpha$patterns[[i]]$cov    <- cov(ddalpha$patterns[[i]]$points)
+        try(
+          ddalpha$patterns[[i]]$sigma  <- solve(ddalpha$patterns[[i]]$cov)
+        )        
+      }
+      if (ddalpha$mahEstimate == "MCD"){
+        try(
+          estimate <- covMcd(ddalpha$patterns[[i]]$points, ddalpha$mcdAlpha)
+        )
+        try(
+          ddalpha$patterns[[i]]$centerMcd <- estimate$center
+        )
+        try(
+          ddalpha$patterns[[i]]$covMcd    <- estimate$cov
+        )
+        try(
+          ddalpha$patterns[[i]]$sigmaMcd  <- solve(estimate$cov)
+        )
+      }
+    }
+  }
+  if (ddalpha$methodDepth == "projectionRandom" || ddalpha$methodDepth == "projectionLinearize"){
+    dSpaceStructure <- .projection_space(ddalpha)
+    tmpDSpace <- dSpaceStructure$dspace
+    if (ddalpha$methodDepth == "projectionRandom"){
+      ddalpha$directions <- dSpaceStructure$directions
+      ddalpha$projections <- dSpaceStructure$projections
+    }
+  }
   # Calculating depths in each pattern
   for (i in 1:ddalpha$numPatterns){
-    if (ddalpha$methodDepth == "randomTukey"){
-      # The random Tukey depth is already calculated, just distribute
+    if (   ddalpha$methodDepth == "randomTukey" 
+        || ddalpha$methodDepth == "projectionRandom" 
+        || ddalpha$methodDepth == "projectionLinearize"){
+      # Random depth is already calculated, just distribute
       ddalpha$patterns[[i]]$depths <- tmpDSpace[1:ddalpha$patterns[[i]]$cardinality,]
       tmpDSpace <- tmpDSpace[-(1:ddalpha$patterns[[i]]$cardinality),]
     }
     if (ddalpha$methodDepth == "zonoid"){
       # Calculate depths for the class w.r.t all classes, saying to which of the classes the chunk belongs
       ddalpha$patterns[[i]]$depths <- .zonoid_depths(ddalpha, ddalpha$patterns[[i]]$points, i)
+    }
+    if (ddalpha$methodDepth == "Mahalanobis"){
+      ddalpha$patterns[[i]]$depths <- .Mahalanobis_depths(ddalpha, ddalpha$patterns[[i]]$points)
+    }
+    if (ddalpha$methodDepth == "spatial"){
+      # Calculate depths for the class w.r.t all classes, saying to which of the classes the chunk belongs
+      ddalpha$patterns[[i]]$depths <- .spatial_depths(ddalpha, ddalpha$patterns[[i]]$points)
     }
   }
 
@@ -109,7 +177,12 @@
     for (i in 1:(ddalpha$numPatterns - 1)){
       for (j in (i + 1):ddalpha$numPatterns){
         # Creating a classifier
-        hyperplane <- .alpha_learn(ddalpha$maxDegree, rbind(ddalpha$patterns[[i]]$depths, ddalpha$patterns[[j]]$depths), ddalpha$patterns[[i]]$cardinality, ddalpha$patterns[[j]]$cardinality, ddalpha$numChunks)
+        hyperplane <- .alpha_learn(ddalpha$maxDegree, 
+                                   rbind(ddalpha$patterns[[i]]$depths, 
+                                         ddalpha$patterns[[j]]$depths), 
+                                   ddalpha$patterns[[i]]$cardinality, 
+                                   ddalpha$patterns[[j]]$cardinality, 
+                                   ddalpha$numChunks)
         classifier.index          <- counter
         classifier.index0         <- i
         classifier.index1         <- j
@@ -163,6 +236,33 @@
     ddalpha$numClassifiers <- ddalpha$numPatterns
   }
 
+  return (ddalpha)
+}
+
+.ddalpha.learn.knnlm <- function(ddalpha, knnrange = NULL){
+  
+  x <- NULL
+  y <- NULL
+  for (i in 1:ddalpha$numPatterns){
+    x <- rbind(x, ddalpha$patterns[[i]]$depths)
+    y <- c(y, rep(i - 1, ddalpha$patterns[[i]]$cardinality))
+  }
+  x <- as.vector(t(x))
+  y <- as.vector(y)
+
+  k <- .C("KnnLearnJK", 
+          as.double(x), 
+          as.integer(y), 
+          as.integer(ddalpha$numPoints), 
+          as.integer(ddalpha$numPatterns), 
+          as.integer(knnrange), 
+          as.integer(2), 
+          k=integer(1))$k
+  # Collect results
+  ddalpha$knnK <- k
+  ddalpha$knnX <- x
+  ddalpha$knnY <- y
+  
   return (ddalpha)
 }
 
@@ -228,6 +328,11 @@
 ################################################################################
 
 .are_classifiable <- function(objects, points, cardinalities){
+  convexes <- .count_convexes(objects, points, cardinalities)
+  return (ifelse(rowSums(convexes)>0,1,0))
+}
+
+.count_convexes <- function(objects, points, cardinalities){
   x <- as.vector(t(points))
   dimension <- ncol(points)
   numClasses <- length(cardinalities)
@@ -240,7 +345,8 @@
                as.integer(numClasses), 
                as.double(o), 
                as.integer(numObjects), 
-               isInConvexes=integer(numObjects))$isInConvexes
+               isInConvexes=integer(numObjects*numClasses))$isInConvexes
+  result <- matrix(result, byrow = T, ncol = numClasses)
   return (result)
 }
 
@@ -322,9 +428,137 @@
   return (depths)
 }
 
-.mahalanobis_depth <- function(point, center, sigma){
-  d <- 1/(1 + (point - center) %*% sigma %*% (point - center))
+.Mahalanobis_depths <- function(ddalpha, objects){
+  depths <- matrix(nrow = nrow(objects), ncol = ddalpha$numPatterns)
+  if (ddalpha$mahEstimate == "moment"){
+    for (i in 1:nrow(objects)){
+      for (j in 1:ddalpha$numPatterns){
+        depths[i,j] <- 1/(1 + (objects[i,] - ddalpha$patterns[[j]]$center) 
+                          %*% ddalpha$patterns[[j]]$sigma 
+                          %*% (objects[i,] - ddalpha$patterns[[j]]$center))
+      }
+    }
+  }
+  if (ddalpha$mahEstimate == "MCD"){
+    for (i in 1:nrow(objects)){
+      for (j in 1:ddalpha$numPatterns){
+        depths[i,j] <- 1/(1 + (objects[i,] - ddalpha$patterns[[j]]$centerMcd) 
+                          %*% ddalpha$patterns[[j]]$sigmaMcd 
+                          %*% (objects[i,] - ddalpha$patterns[[j]]$centerMcd))
+      }
+    }
+  }
+  return (depths)
+}
+
+.Mahalanobis_depth <- function(points, center, sigma){
+  if (is.matrix(points)){
+    tmp1 <- t(t(points) - center)
+    d <- diag(tmp1 %*% sigma %*% t(tmp1))
+    d <- 1/(1 + d)
+#     d <- rep(0, nrow(points))
+#     for (i in 1:nrow(points)){
+#       d[i] <- 1/(1 + (points[i,] - center) %*% sigma %*% (points[i,] - center))
+#     }
+  }else{
+    d <- 1/(1 + (points - center) %*% sigma %*% (points - center))
+  }
   return (d)
+}
+
+.projection_space <- function(ddalpha){
+  points <- NULL
+  cardinalities <- NULL
+  for (i in 1:ddalpha$numPatterns){
+    points <- rbind(points, ddalpha$patterns[[i]]$points)
+    cardinalities <- c(cardinalities, ddalpha$patterns[[i]]$cardinality)
+  }
+  if (ddalpha$methodDepth == "projectionRandom"){
+    x <- as.vector(t(points))
+    y <- as.vector(t(points))
+    c <- as.vector(cardinalities)
+    k <- ddalpha$numDirections
+    result <- .C("ProjectionDepth", 
+                 as.double(x), 
+                 as.double(y), 
+                 as.integer(nrow(points)), 
+                 as.integer(ncol(points)), 
+                 as.integer(c), 
+                 as.integer(ddalpha$numPatterns), 
+                 dirs=double(k*ncol(points)), 
+                 prjs=double(k*nrow(points)), 
+                 as.integer(k), 
+                 as.integer(1), 
+                 dspc=double(ddalpha$numPatterns*nrow(points)))
+    return (list(dspace=matrix(result$dspc, nrow=nrow(points), 
+                               ncol=ddalpha$numPatterns, byrow=TRUE), 
+                 directions=result$dirs, projections=result$prjs))
+  }
+  if (ddalpha$methodDepth == "projectionLinearize"){
+    depths <- NULL
+    for (i in 1:ddalpha$numPatterns){
+      ds <- .zdepth(ddalpha$patterns[[i]]$points, points)
+      depths <- cbind(depths, ds)
+    }
+    return (list(dspace=depths))
+  }
+}
+
+.projection_depths <- function(ddalpha, objects){
+  points <- NULL
+  cardinalities <- NULL
+  for (i in 1:ddalpha$numPatterns){
+    points <- rbind(points, ddalpha$patterns[[i]]$points)
+    cardinalities <- c(cardinalities, ddalpha$patterns[[i]]$cardinality)
+  }
+  if (ddalpha$methodDepth == "projectionRandom"){
+    x <- as.vector(t(points))
+    y <- as.vector(t(objects))
+    c <- as.vector(cardinalities)
+    k <- ddalpha$numDirections
+    result <- .C("ProjectionDepth", 
+                 as.double(x), 
+                 as.double(y), 
+                 as.integer(nrow(objects)), 
+                 as.integer(ncol(points)), 
+                 as.integer(c), 
+                 as.integer(ddalpha$numPatterns), 
+                 as.double(ddalpha$directions), 
+                 as.double(ddalpha$projections), 
+                 as.integer(k), 
+                 as.integer(0), 
+                 depths=double(ddalpha$numPatterns*nrow(objects)))
+    return (matrix(result$depths, nrow=nrow(objects), ncol=ddalpha$numPatterns, byrow=TRUE))
+  }
+  if (ddalpha$methodDepth == "projectionLinearize"){
+    depths <- NULL
+    for (i in 1:ddalpha$numPatterns){
+      ds <- .zdepth(ddalpha$patterns[[i]]$points, objects)
+      depths <- cbind(depths, ds)
+    }
+    return (depths)
+  }
+}
+
+.spatial_depths <- function(ddalpha, objects){
+  depths <- NULL
+  for (i in 1:ddalpha$numPatterns){
+    pattern <- ddalpha$patterns[[i]]$points
+    mean <- colMeans(pattern)
+    cov <- cov(pattern)
+    cov.eig <- eigen(cov)
+    B <- cov.eig$vectors %*% diag(sqrt(cov.eig$values))
+    lambda <- solve(B)
+    ds <- rep(-1, nrow(objects))
+    for (i in 1:nrow(objects)){
+      tmp1 <- t(lambda %*% (objects[i,] - t(pattern)))
+      tmp1 <- tmp1[which(rowSums(tmp1) != 0),]
+      tmp2 <- 1/sqrt(rowSums(tmp1^2))
+      ds[i] <- 1 - sqrt(sum((colSums(tmp2*tmp1)/nrow(pattern))^2))
+    }
+    depths <- cbind(depths, ds)
+  }
+  return (depths)
 }
 
 .alpha_learn <- function(maxDegree, data, numClass1, numClass2, numChunks){
@@ -853,7 +1087,7 @@
   votes <- matrix(rep(0, nrow(objects)*ddalpha$numPatterns), nrow=nrow(objects), ncol=ddalpha$numPatterns)
   for (i in 1:nrow(objects)){
     for (j in 1:length(settings$mah.classes)){
-      votes[i,j] <- settings$mah.classes[[j]]$prior*.mahalanobis_depth(objects[i,], settings$mah.classes[[j]]$mean, settings$mah.classes[[j]]$sigma)
+      votes[i,j] <- settings$mah.classes[[j]]$prior*.Mahalanobis_depth(objects[i,], settings$mah.classes[[j]]$mean, settings$mah.classes[[j]]$sigma)
     }
   }
   # Collect results
@@ -917,38 +1151,42 @@ print.ddalpha <- function(x, ...){
   }
   cat("num.classifiers =", x$numClassifiers, "\n")
   cat("outsider.methods:\n")
-  for (i in 1:length(x$methodsOutsider)){
-    cat ("\t \"",x$methodsOutsider[[i]]$name, "\":\n", sep="")
-    cat("\t\t method = \"", x$methodsOutsider[[i]]$method, "\"\n", sep="")
-    if (x$methodsOutsider[[i]]$method == "LDA" 
-     || x$methodsOutsider[[i]]$method == "RandProp" 
-     || x$methodsOutsider[[i]]$method == "depth.Mahalanobis"){
-      cat("\t\t priors =", x$methodsOutsider[[i]]$priors, "\n")
-    }
-    if (x$methodsOutsider[[i]]$method == "KNNAff"){
-      cat("\t\t aggregation.method = \"", 
-          x$methodsOutsider[[i]]$knnAff.methodAggregation, "\"\n", sep="")
-      for (j in 1:length(x$methodsOutsider[[i]]$knnAff.classifiers)){
-        cat("\t\t k.range = ", format(paste("1:", 
-          x$methodsOutsider[[i]]$knnAff.classifiers[[j]]$range, sep=""), 
-          justify="right", width=10), sep="")
+  if (is.null(x$methodsOutsider)){
+    cat ("\t Absent\n", sep="")
+  }else{
+    for (i in 1:length(x$methodsOutsider)){
+      cat ("\t \"",x$methodsOutsider[[i]]$name, "\":\n", sep="")
+      cat("\t\t method = \"", x$methodsOutsider[[i]]$method, "\"\n", sep="")
+      if (   x$methodsOutsider[[i]]$method == "LDA" 
+          || x$methodsOutsider[[i]]$method == "RandProp" 
+          || x$methodsOutsider[[i]]$method == "depth.Mahalanobis"){
+        cat("\t\t priors =", x$methodsOutsider[[i]]$priors, "\n")
       }
-      cat("\n")
-      for (j in 1:length(x$methodsOutsider[[i]]$knnAff.classifiers)){
-        cat("\t\t k       = ", format( 
-          x$methodsOutsider[[i]]$knnAff.classifiers[[j]]$k, 
-          justify="right", width=10), sep="")
+      if (x$methodsOutsider[[i]]$method == "KNNAff"){
+        cat("\t\t aggregation.method = \"", 
+            x$methodsOutsider[[i]]$knnAff.methodAggregation, "\"\n", sep="")
+        for (j in 1:length(x$methodsOutsider[[i]]$knnAff.classifiers)){
+          cat("\t\t k.range = ", format(paste("1:", 
+                                              x$methodsOutsider[[i]]$knnAff.classifiers[[j]]$range, sep=""), 
+                                        justify="right", width=10), sep="")
+        }
+        cat("\n")
+        for (j in 1:length(x$methodsOutsider[[i]]$knnAff.classifiers)){
+          cat("\t\t k       = ", format( 
+            x$methodsOutsider[[i]]$knnAff.classifiers[[j]]$k, 
+            justify="right", width=10), sep="")
+        }
+        cat("\n")
       }
-      cat("\n")
-    }
-    if (x$methodsOutsider[[i]]$method == "KNN"){
-      cat("\t\t k.range = 1:", x$methodsOutsider[[i]]$knn.range, "\n", sep="")
-      cat("\t\t k =", x$methodsOutsider[[i]]$knn.k, "\n")
-    }
-    if (x$methodsOutsider[[i]]$method == "depth.Mahalanobis"){
-      cat("\t\t estimate = \"", x$methodsOutsider[[i]]$mah.estimate, "\"\n", sep="")
-      if (x$methodsOutsider[[i]]$mah.estimate == "MCD"){
-        cat("\t\t mcd.alpha = ", x$methodsOutsider[[i]]$mcd.alpha, "\n")
+      if (x$methodsOutsider[[i]]$method == "KNN"){
+        cat("\t\t k.range = 1:", x$methodsOutsider[[i]]$knn.range, "\n", sep="")
+        cat("\t\t k =", x$methodsOutsider[[i]]$knn.k, "\n")
+      }
+      if (x$methodsOutsider[[i]]$method == "depth.Mahalanobis"){
+        cat("\t\t estimate = \"", x$methodsOutsider[[i]]$mah.estimate, "\"\n", sep="")
+        if (x$methodsOutsider[[i]]$mah.estimate == "MCD"){
+          cat("\t\t mcd.alpha = ", x$methodsOutsider[[i]]$mcd.alpha, "\n")
+        }
       }
     }
   }
@@ -958,3 +1196,48 @@ print.ddalpha.pattern <- function(x, ...){
   cat("pattern[", x$index, "]:", sep="")
   cat("\t ", x$cardinality, " points, label = \"", x$name, "\"\n", sep="")
 }
+
+# .ddalpha.learn.knnlm <- function(ddalpha){
+#   
+#   # Prepare outputs and distance matrix
+#   y <- NULL
+#   allPoints <- NULL
+#   for (i in 1:ddalpha$numPatterns){
+#     allPoints<- rbind(allPoints, ddalpha$patterns[[i]]$depths)
+#     y <- c(y, rep(ddalpha$patterns[[i]]$name, ddalpha$patterns[[i]]$cardinality))
+#   }
+#   #  print(y)
+#   dists <- knn.dist(allPoints, dist.meth="maximum")
+#   #  plot(ddalpha$patterns[[1]]$depths, col = "red", xlim=c(0,1), ylim=c(0,1))
+#   #  points(ddalpha$patterns[[2]]$depths, col = "blue", xlim=c(0,1), ylim=c(0,1))
+#   # Cross-validate knn
+#   cvErr  <- c()
+#   allIndices <- 1:ddalpha$numPoints
+#   krange <- 10*( (ddalpha$numPoints)^(1/ddalpha$numPatterns) ) + 1
+#   krange <- min(krange, ceiling(ddalpha$numPoints/2))
+#   if (ddalpha$numPatterns == 2){krange <- min(krange, 50)}
+#   krange <- max(krange, 2)
+#   #  cat("Range: 1:", krange, ".\n", sep="")
+#   for (i in 1:krange){
+#     curPreErr <- 0
+#     for (j in 0:(ddalpha$numChunks - 1)){
+#       testSel <- allIndices[allIndices%%ddalpha$numChunks == j]
+#       test <- allIndices[testSel]
+#       train <- allIndices[-test]
+#       #      cat("1. Train: ", train, ", test: ", test, ".\n")
+#       curPreErr <- curPreErr + sum(knn.predict(train, test, y, dists, k=i, agg.meth="majority", ties.meth="first") != y[test])
+#     }
+#     cvErr <- c(cvErr, curPreErr)
+#     #    cat("i = ", i, "done.\n")
+#     #    print(cvErr)
+#   }
+#   # Collect results
+#   ddalpha$knnK <- (1:krange)[which.min(cvErr)]
+#   ddalpha$knnX <- allPoints
+#   ddalpha$knnY <- y
+#   ddalpha$knnD <- dists
+#   
+#   #  print(ddalpha$knnK)
+#   
+#   return (ddalpha)
+# }

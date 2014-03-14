@@ -59,6 +59,16 @@ ddalpha.classify <- function(objects,
       }
       if (ddalpha$methodDepth == "zonoid"){
         depths <- .zonoid_depths(ddalpha, objects[classifiableIndices,], 0)
+      }      
+      if (ddalpha$methodDepth == "Mahalanobis"){
+        depths <- .Mahalanobis_depths(ddalpha, objects[classifiableIndices,])
+      }
+      if (   ddalpha$methodDepth == "projectionRandom" 
+          || ddalpha$methodDepth == "projectionLinearize"){
+        depths <- .projection_depths(ddalpha, objects[classifiableIndices,])
+      }
+      if (ddalpha$methodDepth == "spatial"){
+        depths <- .spatial_depths(ddalpha, objects[classifiableIndices,])
       }
       freePoints <- matrix(objects[-classifiableIndices,], 
                            nrow=nrow(objects)-length(classifiableIndices))
@@ -69,6 +79,16 @@ ddalpha.classify <- function(objects,
     }
     if (ddalpha$methodDepth == "zonoid"){
       depths <- .zonoid_depths(ddalpha, objects, 0)
+    }
+    if (ddalpha$methodDepth == "Mahalanobis"){
+      depths <- .Mahalanobis_depths(ddalpha, objects)
+    }
+    if (   ddalpha$methodDepth == "projectionRandom" 
+           || ddalpha$methodDepth == "projectionLinearize"){
+      depths <- .projection_depths(ddalpha, objects)
+    }
+    if (ddalpha$methodDepth == "spatial"){
+      depths <- .spatial_depths(ddalpha, objects)
     }
     classifiableIndices <- c()
     for (i in 1:nrow(depths)){
@@ -91,28 +111,68 @@ ddalpha.classify <- function(objects,
   # Classify with the pure DD-ALpha
   resultsDepths <- list()
   if (nrow(depths) > 0){
-    votes <- matrix(rep(0, nrow(depths)*ddalpha$numPatterns), nrow=nrow(depths), ncol=ddalpha$numPatterns)
-    toClassify <- as.double(as.vector(t(depths)))
-    m <- as.integer(nrow(depths))
-    q <- as.integer(ncol(depths))
-    for (i in 1:ddalpha$numClassifiers){
-      result <- .C("AlphaClassify", 
-                   toClassify, 
-                   m, 
-                   q, 
-                   as.integer(ddalpha$classifiers[[i]]$degree), 
-                   as.double(ddalpha$classifiers[[i]]$hyperplane), 
-                   output=integer(m))$output
-      for (j in 1:m){
-        if (result[j] > 0){
-          votes[j,ddalpha$classifiers[[i]]$index0] <- votes[j,ddalpha$classifiers[[i]]$index0] + 1
-        }else{
-          votes[j,ddalpha$classifiers[[i]]$index1] <- votes[j,ddalpha$classifiers[[i]]$index1] + 1
+    if (ddalpha$methodSeparator == "alpha"){
+      votes <- matrix(rep(0, nrow(depths)*ddalpha$numPatterns), nrow=nrow(depths), ncol=ddalpha$numPatterns)
+      toClassify <- as.double(as.vector(t(depths)))
+      m <- as.integer(nrow(depths))
+      q <- as.integer(ncol(depths))
+      for (i in 1:ddalpha$numClassifiers){
+        result <- .C("AlphaClassify", 
+                     toClassify, 
+                     m, 
+                     q, 
+                     as.integer(ddalpha$classifiers[[i]]$degree), 
+                     as.double(ddalpha$classifiers[[i]]$hyperplane), 
+                     output=integer(m))$output
+        for (j in 1:m){
+          if (result[j] > 0){
+            votes[j,ddalpha$classifiers[[i]]$index0] <- votes[j,ddalpha$classifiers[[i]]$index0] + 1
+          }else{
+            votes[j,ddalpha$classifiers[[i]]$index1] <- votes[j,ddalpha$classifiers[[i]]$index1] + 1
+          }
         }
       }
+      for (i in 1:m){
+        resultsDepths[[i]] <- ddalpha$patterns[[which.max(votes[i,])]]$name
+      }
     }
-    for (i in 1:m){
-      resultsDepths[[i]] <- ddalpha$patterns[[which.max(votes[i,])]]$name
+    if (ddalpha$methodSeparator == "knnlm"){
+      z <- as.vector(t(depths))
+      output <- .C("KnnClassify", 
+                   as.double(z), 
+                   as.integer(nrow(depths)), 
+                   as.double(ddalpha$knnX), 
+                   as.integer(ddalpha$knnY), 
+                   as.integer(ddalpha$numPoints), 
+                   as.integer(ddalpha$numPatterns), 
+                   as.integer(ddalpha$knnK), 
+                   as.integer(2), 
+                   output=integer(nrow(depths)))$output
+      for (i in 1:nrow(depths)){
+        resultsDepths[[i]] <- ddalpha$patterns[[output[i] + 1]]$name
+      }
+      
+#       dists <- ddalpha$knnD
+# #      print(ddalpha$knnY)
+#       for (i in 1:nrow(depths)){
+#         newDists <- c()
+# #        print(ddalpha$knnX)
+# #        print(depths)
+#         for (j in 1:nrow(ddalpha$knnX)){
+#           newDists[j] <- knn.dist(rbind(ddalpha$knnX[j,], depths[i,]), dist.meth="maximum")[1,2]
+#         }
+# #        print(newDists)
+#         dists <- cbind(ddalpha$knnD, newDists)
+#         dists <- rbind(dists, c(newDists, 0))
+# #        print(dists)
+#         resultsDepths[[i]] <- as.numeric(knn.predict(1:length(ddalpha$knnY), 
+#                                                      length(ddalpha$knnY) + 1, 
+#                                                      ddalpha$knnY, 
+#                                                      dists, k=ddalpha$knnK, 
+#                                                      agg.meth="majority", 
+#                                                      ties.meth="first"))
+# #        print(resultsDepths[[i]])
+#       }
     }
   }
   

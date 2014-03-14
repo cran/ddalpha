@@ -290,6 +290,30 @@ int Standardize(TPoint &x, TPoint means, TPoint sds){
 	return 0;
 }
 
+int Unstandardize(vector<TPoint> &x, TPoint means, TPoint sds){
+/*
+	Unstandardize data cloud, coordinatewise
+*/
+	int _n = x.size();int _d = x[0].size();
+	for (int i = 0; i < _n; i++){
+		for (int j = 0; j < _d; j++){
+			x[i][j] = x[i][j]*sds[j] + means[j];
+		}
+	}
+	return 0;
+}
+
+int Unstandardize(TPoint &x, TPoint means, TPoint sds){
+/*
+	Unstandardize point, coordinatewise
+*/
+	int _d = x.size();
+	for (int i = 0; i < _d; i++){
+			x[i] = x[i]*sds[i] + means[i];
+	}
+	return 0;
+}
+
 /* Definition of public functions */
 
 double ZonoidDepth(vector<TPoint> x, TPoint z, int& Error)
@@ -364,7 +388,7 @@ double ZonoidDepth(vector<TPoint> x, TPoint z, int& Error)
   }
 }
 
-int InConvexes(TMatrix points, TVariables cardinalities, TMatrix objects, int& Error, TVariables *areInConvexes)
+int InConvexes(TMatrix points, TVariables cardinalities, TMatrix objects, int& Error, TMatrix *areInConvexes)
 /*
    Check if the points are inside of hte convex hull.
    1: Point lies inside of the convex hull of the data
@@ -376,8 +400,10 @@ int InConvexes(TMatrix points, TVariables cardinalities, TMatrix objects, int& E
 	// Prepare a structure indicating if each point lies inside the convex hull of each class
 	int m = objects.size();
 	int q = cardinalities.size();
-	vector<TVariables> separateAnswers(m);
-	for (int i = 0; i < m; i++){separateAnswers[i] = TVariables(q);}
+  
+  areInConvexes->resize(m);
+  for (int i = 0; i < m; i++){(*areInConvexes)[i].resize(q);}
+  TMatrix &separateAnswers = (*areInConvexes);  // a link to output. just not to rewrite all occurances of separateAnswers  
 
 	// Split into seprate data sets and
 	// check if each point lies inside each of the convex hulls
@@ -388,15 +414,16 @@ int InConvexes(TMatrix points, TVariables cardinalities, TMatrix objects, int& E
 		for (int j = 0; j < cardinalities[i]; j++){
 			x[j] = points[startIndex + j];
 		}
+		/* Standardize */
+		TPoint means;TPoint sds;
+		GetMeansSds(x, &means, &sds);
+		Standardize(x, means, sds);
 		for (int j = 0; j < m; j++){ // Cycling through points
 			int PivotColumn;
 			TPoint z = objects[j];
 
 			/* Standardize */
-			TPoint means;TPoint sds;
-			GetMeansSds(x, &means, &sds);
-			Standardize(x, means, sds);
-			Standardize(z, means, sds);
+			Standardize(z, means, sds);			
 
 			/* Rainer's codes (slightly modified) */
 			Error = 0;
@@ -414,24 +441,15 @@ int InConvexes(TMatrix points, TVariables cardinalities, TMatrix objects, int& E
 			solution exists. Thus, 'z' lies outside the convex hull of 'x'. */
 			if (fabs(rs[0][d + 2]) > eps) {
 				MakeOriginal(x,z); /* Reconstruct the original data. */
+				Unstandardize(z, means, sds);
 				separateAnswers[j][i] = 0; /* Point lies outside the convex hull. */
 			}else{
 				MakeOriginal(x,z); /* Reconstruct the original data. */
+				Unstandardize(z, means, sds);
 				separateAnswers[j][i] = 1; /* Point lies inside of the convex hull of the data. */
 			}
 		}
 		startIndex+=cardinalities[i];
-	}
-	
-	// Collect the results
-	// The answer for a point is =0 iff it lies in neiter of the convexes
-	areInConvexes->resize(m);
-	for (int i = 0; i < m; i++){
-		int flag = 0;
-		for (int j = 0; j < q; j++){
-			if (separateAnswers[i][j] == 1){flag = 1;break;}
-		}
-		(*areInConvexes)[i] = flag;
 	}
 
 	return 0;

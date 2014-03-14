@@ -34,7 +34,7 @@ is.in.convex <- function(x, data, cardinalities){
     stop("Dimensions of the arguments \"x\" and \"data\" should coincide")
   }
   
-  is.in.convex <- .are_classifiable(x, data, cardinalities)
+  is.in.convex <- .count_convexes(x, data, cardinalities)
   
   return (is.in.convex)
 }
