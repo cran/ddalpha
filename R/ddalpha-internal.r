@@ -239,7 +239,7 @@
   return (ddalpha)
 }
 
-.ddalpha.learn.knnlm <- function(ddalpha, knnrange = NULL){
+.ddalpha.learn.knnlm <- function(ddalpha){
   
   x <- NULL
   y <- NULL
@@ -255,7 +255,7 @@
           as.integer(y), 
           as.integer(ddalpha$numPoints), 
           as.integer(ddalpha$numPatterns), 
-          as.integer(knnrange), 
+          as.integer(ddalpha$knnrange), 
           as.integer(2), 
           k=integer(1))$k
   # Collect results

@@ -2,19 +2,20 @@ Package: ddalpha
 Type: Package
 Title: DDalpha-classifier, depth-calculating methods and associated
         functions
-Version: 1.0.5
+Version: 1.0.6
 Date: 2014-03-14
 Authors@R: c(person("Oleksii", "Pokotylo", role=c("aut", "cre"),
                                           email = "alexey.pokotylo@gmail.com"),
              person("Pavlo", "Mozharovskyi", role=c("aut"),
                                           email = "mozharovskyi@statistik.uni-koeln.de"))
 Depends: MASS, class, robustbase
+LinkingTo: BH
 Description: Contains methods for depth classification based on the \eqn{\alpha}-procedure and for calculation of statistical depths
 License: GPL-2
-Packaged: 2014-03-15 19:16:25 UTC; Alexey
+Packaged: 2014-03-28 05:56:41 UTC; Alexey
 Author: Oleksii Pokotylo [aut, cre],
   Pavlo Mozharovskyi [aut]
 Maintainer: Oleksii Pokotylo <alexey.pokotylo@gmail.com>
 NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2014-03-16 06:25:23
+Date/Publication: 2014-03-28 07:18:41

@@ -1,7 +1,7 @@
-1a130cda30bff85b4dad3d832fcbe3ae *DESCRIPTION
+77a81c64fdcc8462297e7081a52f816d *DESCRIPTION
 30ae811b28cd8731e719362348c44aea *NAMESPACE
 1f937cbe1f738018fb97bcec66b7a7f2 *R/compclassf.r
-d826d9bbd36a33e7fc1541e299eda555 *R/ddalpha-internal.r
+1f0dd26eee82a0acac9887ef5d56dbcd *R/ddalpha-internal.r
 bc49107357eea9328d1d19fab97bf2a1 *R/ddalpha.classify.r
 2d1a274737c8f6a3ae62cd69e5b45a1f *R/ddalpha.train.r
 797fc90d35383662263bb1dae3fed3ba *R/ddalphaf.r
@@ -32,7 +32,7 @@ f3c888fef3844b3d4ee9ecc2c2c1220c *src/Common.h
 28ae6e3fc03fca2d17c3a95eeaa2f4aa *src/DataStructures.h
 7a3950a1bec0b1ac7dd3bf7e1761e32f *src/Knn.cpp
 87127b7937dcaa6f5d042b2615136ca3 *src/Knn.h
-4c67781c927c04c1e9df1b05f241a1d0 *src/Makevars.win
+d41d8cd98f00b204e9800998ecf8427e *src/Makevars.win
 aa9b6012247c810678f2a6115bc028a5 *src/ProjectionDepth.cpp
 ccd3ad6fba4d0bb5bbedd85fae133606 *src/ProjectionDepth.h
 ac42d263a4f1ca611dc604e94d1dbea7 *src/TukeyDepth.cpp
