@@ -32,6 +32,8 @@ See Lange, Mosler and Mozharovskyi (2014) for details and additional information
 List containing class labels, or character string "Ignored" for the outsiders if "Ignore" was specified as the outsider treating method.
 }
 \references{
+Mozharovskyi P. (2015), Contributions to Depth-based Classification and Computation of the Tukey Depth. Verlag Dr. Kovac, Hamburg
+
 Dyckerhoff, R., Koshevoy, G. and Mosler, K. (1996), Zonoid data depth: theory and computation. In: Prat A. (ed), \emph{COMPSTAT 1996. Proceedings in computational statistics}, Physica-Verlag (Heidelberg), 235--240.
 
 Lange, T., Mosler, K. and Mozharovskyi, P. (2014), Fast nonparametric classification based on data depth, \emph{Statistical Papers}, \bold{55}, 49--69.

@@ -34,7 +34,14 @@ Mosler, K. (2002), \emph{Multivariate dispersion, central regions and depth: the
 The algorithm for computation of zonoid depth (Dyckerhoff, Koshevoy and Mosler, 1996) has been implemented in C++ by Rainer Dyckerhoff.
 }
 \seealso{
+\code{\link{depth.Mahalanobis}} for calculation of Mahalanobis depth. 
+
+\code{\link{depth.projection}} for calculation of projection depth. 
+
 \code{\link{depth.randomTukey}} for calculation of the random Tukey depth.
+
+\code{\link{depth.spatial}} for calculation of spatial depth. 
+
 }
 \examples{
 # 5-dimensional normal distribution

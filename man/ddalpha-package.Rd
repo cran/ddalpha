@@ -6,17 +6,30 @@
 DDalpha-classifier, depth-calculating methods and associated functions
 }
 \description{
+The package provides many procedures for calculating the depth of points in an empirical distribution for many notions of data depth. 
+Further it provides implementations for depth-based classification, for multivariate and functional data.
+
 The package implements the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharovskyi, 2014), a nonparametric procedure for supervised binary classification with \eqn{q\ge 2} classes. In the training step, the sample is first transformed into a \eqn{q}-dimensional cube of depth vectors, then a linear separation rule in its polynomial extension is constructed with the \eqn{\alpha}-procedure. The classification step involves alternative treatments of 'outsiders'.
 }
 \details{
 \tabular{ll}{
 Package: \tab ddalpha\cr
 Type: \tab Package\cr
-Version: \tab 1.0.5\cr
-Date: \tab 2014-03-14\cr
+Version: \tab 1.1.0\cr
+Date: \tab 2014-12-20\cr
 License: \tab GPL-2\cr
 }
-Use \code{\link{ddalpha.train}} to train the DD\eqn{\alpha}-classifier and \code{\link{ddalpha.classify}} to classify with it. Either the zonoid or Tukey depth can be used for the depth transformation. The zonoid depth is exactly computed by the function \code{\link{depth.zonoid}}, the Tukey depth is approximated by the function \code{\link{depth.randomTukey}}. Corresponding to them depth representations (\code{\link{depth.space.zonoid}} and \code{\link{depth.space.randomTukey}} for zonoid and the random Tukey depth respectively) are obtained, check by \code{\link{is.in.convex}} whether an object is no 'outsider', i.e. can be classified by its depth values. Outsiders are alternatively classified by LDA, kNN and maximum Mahalanobis depth as well as by random assignment.
+Use \code{\link{ddalpha.train}} to train the DD-classifier and \code{\link{ddalpha.classify}} to classify with it. 
+Load sample classification problems using \code{\link{getdata}}. The package contains 50 classification problems built of 33 sets of real data.
+
+The list of the implemented depths is found in topic \code{\link{depth.*}}. Corresponding to them depth representations of the data are obtained with \code{\link{depth.space.*}}. The depth graphs are built by \code{\link{depth.graph}} for two-dimensional data. 
+
+\code{\link{is.in.convex}} shows whether an object is no 'outsider', i.e. can be classified by its depth values. 
+Outsiders are alternatively classified by LDA, kNN and maximum Mahalanobis depth as well as by random assignment.
+
+Use \code{\link{compclassf.train}} and \code{\link{ddalphaf.train}} to train the functional DD-classifiers and \code{\link{compclassf.classify}} \code{\link{ddalpha.classify}} to classify with them. Load sample functional classification problems with \code{\link{dataf.*}}. The package contains 4 functional data sets and 2 data set generators. The functional data are visualized with \code{\link{plotf}}.
+
+
 }
 \author{
 Oleksii Pokotylo, <alexey.pokotylo at gmail.com>
@@ -24,6 +37,8 @@ Oleksii Pokotylo, <alexey.pokotylo at gmail.com>
 Pavlo Mozharovskyi, <mozharovskyi at statistik.uni-koeln.de>
 }
 \references{
+Mozharovskyi, P. (2015), \emph{Contributions to Depth-based Classification and Computation of the Tukey Depth}, Verlag Dr. Kovac (Hamburg).
+
 Lange, T., Mosler, K. and Mozharovskyi, P. (2014), DD\eqn{\alpha}-classification of asymmetric and fat-tailed data, In: Spiliopoulou, M., Schmidt-Thieme, L., Janning, R. (eds), \emph{Data Analysis, Machine Learning and Knowledge Discovery}, Springer (Berlin), 71--78.
 
 Lange, T., Mosler, K. and Mozharovskyi, P. (2014), Fast nonparametric classification based on data depth, \emph{Statistical Papers}, \bold{55}, 49--69.
@@ -36,7 +51,17 @@ Mozharovskyi, P., Mosler, K. and Lange, T. (2013), Classifying real-world data w
 \keyword{ nonparametric }
 \keyword{ classif }
 \seealso{
-\code{\link{ddalpha.train}}, \code{\link{ddalpha.classify}}, \code{\link{depth.zonoid}}, \code{\link{depth.randomTukey}}, \code{\link{depth.space.zonoid}}, \code{\link{depth.space.randomTukey}}, \code{\link{is.in.convex}}.
+\code{\link{ddalpha.train}}, \code{\link{ddalpha.classify}}, 
+
+\code{\link{ddalphaf.train}}, \code{\link{ddalphaf.classify}}, \code{\link{compclassf.train}}, \code{\link{compclassf.classify}}
+
+\code{\link{depth.*}}, \code{\link{depth.space.*}}, 
+
+\code{\link{is.in.convex}},
+
+\code{\link{getdata}}, \code{\link{dataf.*}},
+
+\code{\link{plotf}}, \code{\link{depth.graph}}.
 }
 \examples{
 # Generate a bivariate normal location-shift classification task

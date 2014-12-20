@@ -14,6 +14,7 @@
 #include <math.h>
 #include <float.h>
 #include <vector>
+#include <set>
 #include <stdlib.h>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/lu.hpp>
@@ -27,5 +28,21 @@ using namespace std;
 #include "TukeyDepth.h"
 #include "ZonoidDepth.h"
 #include "Knn.h"
+#include "Polynomial.h"
 #include "ProjectionDepth.h"
 #include "Common.h"
+
+#ifndef VStudio
+#include <Rcpp.h> 
+using namespace Rcpp;
+
+#include <Rcpp/stats/random/runif.h>
+static Rcpp::stats::UnifGenerator rndm;
+#define ran(x) x*rndm()
+
+#else
+#define ran(x) rand()%x
+
+#endif
+
+int random(int x);

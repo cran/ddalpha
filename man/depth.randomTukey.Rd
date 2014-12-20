@@ -34,7 +34,14 @@ Lange, T., Mosler, K. and Mozharovskyi, P. (2014), DD\eqn{\alpha}-classification
 Tukey, J.W. (1974), Mathematics and the picturing of data, In: \emph{Proceeding of the International Congress of Mathematicians}, Vancouver, 523--531.
 }
 \seealso{
+\code{\link{depth.Mahalanobis}} for calculation of Mahalanobis depth. 
+
+\code{\link{depth.projection}} for calculation of projection depth. 
+
+\code{\link{depth.spatial}} for calculation of spatial depth. 
+
 \code{\link{depth.zonoid}} for calculation of zonoid depth.
+
 }
 \examples{
 # 5-dimensional normal distribution

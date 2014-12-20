@@ -8,8 +8,8 @@
 ################################################################################
 
 depth.space.zonoid <- function(data, cardinalities){
-  if (!is.numeric(data)
-      || !is.matrix(data) 
+  if (!(is.matrix(data) && is.numeric(data)
+        || is.data.frame(data) && prod(sapply(data, is.numeric))) 
       || ncol(data) < 2){
     stop("Argument \"data\" should be a numeric matrix of at least 2-dimensional data")
   }

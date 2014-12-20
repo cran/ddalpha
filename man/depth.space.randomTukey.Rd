@@ -4,14 +4,14 @@
 Calculate Depth Space using the Random Tukey Depth
 }
 \description{
-Calculates the depth space of the training sample using the random Tukey depth.
+Calculates the representation of the training classes in depth space using the random Tukey depth.
 }
 \usage{
 depth.space.randomTukey(data, cardinalities, num.directions = 1000)
 }
 \arguments{
   \item{data}{
-Matrix containing training sample where each row is a \eqn{d}-dimensional object, and objects of each class are kept together so that the matrix can be thought of as containing blocks of objects, representing classes.
+Matrix containing training sample where each row is a \eqn{d}-dimensional object, and objects of each class are kept together so that the matrix can be thought of as containing blocks of objects representing classes.
 }
   \item{cardinalities}{
 Numerical vector of cardinalities of each class in \code{data}, each entry corresponds to one class.

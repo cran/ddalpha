@@ -1,18 +1,23 @@
-depth.projection <- function(points, objects, method = "random", num.directions = 1000){
-  if (!is.matrix(objects) 
-      && is.vector(objects)){
-    objects <- matrix(objects, nrow=1)
+depth.projection <- function(x, data, method = "random", num.directions = 1000){
+  if (!(is.matrix(data) && is.numeric(data)
+        || is.data.frame(data) && prod(sapply(data, is.numeric))) 
+      || ncol(data) < 2){
+    stop("Argument \"data\" should be a numeric matrix of at least 2-dimensional data")
+  }
+  if (!is.matrix(x) 
+      && is.vector(x)){
+    x <- matrix(x, nrow=1)
   }
   if (method == "random"){
-    x <- as.vector(t(points))
-    z <- as.vector(t(objects))
-    m <- nrow(objects)
-    d <- ncol(points)
-    c <- nrow(points)
+    dt <- as.vector(t(data))
+    z <- as.vector(t(x))
+    m <- nrow(x)
+    d <- ncol(data)
+    c <- nrow(data)
     q <- 1
     k <- num.directions
     newDirs <- 1
-    rez <- .C("ProjectionDepth", as.double(x), 
+    rez <- .C("ProjectionDepth", as.double(dt), 
               as.double(z), 
               as.integer(m), 
               as.integer(d), 
@@ -26,10 +31,38 @@ depth.projection <- function(points, objects, method = "random", num.directions 
     return (rez$dps)
   }
   if (method == "linearize"){
-    depths <- .zdepth(points, objects)
+    depths <- .zdepth(data, x)
     return (1/(1 + depths))
   }
 }
+
+depth.space.projection <- function(data, cardinalities, method = "random", num.directions = 1000){
+  if (!(is.matrix(data) && is.numeric(data)
+        || is.data.frame(data) && prod(sapply(data, is.numeric))) 
+      || ncol(data) < 2){
+    stop("Argument \"data\" should be a numeric matrix of at least 2-dimensional data")
+  }
+  if (!is.vector(cardinalities, mode = "numeric") 
+      || is.na(min(cardinalities)) 
+      || sum(.is.wholenumber(cardinalities)) != length(cardinalities) 
+      || min(cardinalities) <= 0 
+      || sum(cardinalities) != nrow(data)){
+    stop("Argument \"cardinalities\" should be a vector of cardinalities of the classes in \"data\" ")
+  }
+  if (sum(cardinalities < ncol(data) + 1) != 0){
+    stop("Not in all classes sufficiently enough objetcs")
+  }
+  
+  depth.space <- NULL
+  for (i in 1:length(cardinalities)){
+    pattern <- data[(1 + sum(cardinalities[0:(i - 1)])):sum(cardinalities[1:i]),]
+    pattern.depths <- depth.projection (data, pattern, method, num.directions)
+    depth.space <- cbind(depth.space, pattern.depths, deparse.level = 0)
+  }
+  
+  return (depth.space)
+}
+
 
 ################################################################################
 # R-codes of this function written by Subhajit Dutta,

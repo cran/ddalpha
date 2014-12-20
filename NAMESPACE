@@ -1,7 +1,21 @@
-export(ddalpha.train, ddalpha.classify, depth.zonoid, depth.randomTukey, depth.space.zonoid, depth.space.randomTukey, is.in.convex)
+export(nlm_optimize_r,
+       ddalpha.train, ddalpha.classify,  
+       ddalphaf.train, ddalphaf.classify, 
+       compclassf.train, compclassf.classify,
+       depth.zonoid, depth.randomTukey, depth.Mahalanobis, depth.projection, depth.spatial,
+       depth.space.zonoid, depth.space.randomTukey, depth.space.Mahalanobis, depth.space.projection, depth.space.spatial,
+       is.in.convex, 
+       depth.graph,
+       getdata,
+       dataf.geneexp, dataf.growth, dataf.medflies, dataf.tecator,
+       dataf.sim.1.CFF07, dataf.sim.2.CFF07, 
+       plotf
+       )
 useDynLib(ddalpha, IsInConvexes, ZDepth, HDepth, HDSpace, AlphaLearn, AlphaLearnCV, AlphaClassify, KnnAffInvLearnJK, KnnAffInvClassify)
 S3method(print, ddalpha)
 S3method(print, ddalpha.pattern)
+S3method(print, ddalphaf)
 import(MASS)
 import(class)
 import(robustbase)
+import(Rcpp)

@@ -12,8 +12,8 @@ depth.zonoid <- function(x, data){
       && is.vector(x)){
     x <- matrix(x, nrow=1)
   }
-  if (!is.numeric(data)
-      || !is.matrix(data) 
+  if (!(is.matrix(data) && is.numeric(data)
+        || is.data.frame(data) && prod(sapply(data, is.numeric))) 
       || ncol(data) < 2){
     stop("Argument \"data\" should be a numeric matrix of at least 2-dimensional data")
   }

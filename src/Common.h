@@ -8,4 +8,4 @@
 */
 
 void GetDirections(TMatrix *directions, unsigned int k, unsigned int d);
-void GetProjections(TMatrix points, TMatrix directions, TMatrix *projections);
+void GetProjections(TMatrix& points, TMatrix& directions, TMatrix *projections);

@@ -12,8 +12,8 @@ depth.randomTukey <- function(x, data, num.directions = 1000){
       && is.vector(x)){
     x <- matrix(x, nrow=1)
   }
-  if (!is.numeric(data) 
-      || !is.matrix(data) 
+  if (!(is.matrix(data) && is.numeric(data)
+        || is.data.frame(data) && prod(sapply(data, is.numeric))) 
       || ncol(data) < 2){
     stop("Argument \"data\" should be a numeric matrix of at least 2-dimensional data")
   }
@@ -51,7 +51,7 @@ depth.randomTukey <- function(x, data, num.directions = 1000){
            as.double(0), 
            as.double(0), 
            as.integer(k), 
-           as.integer(0), 
+           as.integer(1), # use the same directions and projections
            depths=double(nrow(x)))$depths
   
   return (ds)

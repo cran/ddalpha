@@ -23,7 +23,7 @@ static int CompareDec(OrderRec x, OrderRec y)
 	return (x.value > y.value);
 }
 
-void GetPrjDepths(TPoint projection, TVariables cardinalities, unsigned curClass, TVariables *prjDepths){
+void GetPrjDepths(TPoint& projection, TVariables& cardinalities, unsigned curClass, TVariables *prjDepths){
 	//Collecting basic statistics
 	int n = projection.size();
 	int beginIndex = 0;
@@ -68,7 +68,7 @@ void GetPrjDepths(TPoint projection, TVariables cardinalities, unsigned curClass
 	}
 }
 
-void GetPtPrjDepths(TPoint projection, double point, TVariables cardinalities, TPoint *ptPrjDepths){
+void GetPtPrjDepths(TPoint& projection, double point, TVariables& cardinalities, TPoint *ptPrjDepths){
 	int q = cardinalities.size();
 	int n = projection.size();
 	ptPrjDepths->resize(q);
@@ -90,7 +90,7 @@ void GetPtPrjDepths(TPoint projection, double point, TVariables cardinalities, T
 }
 
 //Indexing from zero
-void GetDSpace(TMatrix points, TVariables cardinalities, int k, bool atOnce, TMatrix *dSpace, TMatrix *directions, TMatrix *projections){
+void GetDSpace(vector<TPoint>& points, TVariables& cardinalities, int k, bool atOnce, vector<TPoint> *dSpace, vector<TPoint> *directions, vector<TPoint> *projections){
 	//1. Collecting basic statistics
 	int d = points[0].size();
 	int n = points.size();
@@ -98,7 +98,8 @@ void GetDSpace(TMatrix points, TVariables cardinalities, int k, bool atOnce, TMa
 	if (!atOnce){
 		dSpace->resize(n);
 		for (int i = 0; i < n; i++){
-			GetDepths(points[i], points, cardinalities, k, false, TMatrix(0), TMatrix(0), &(*dSpace)[i]);
+      TMatrix dir(0), proj(0);
+			GetDepths(points[i], points, cardinalities, k, false, dir, proj, &(*dSpace)[i]);
 		}
 		return;
 	}
@@ -137,22 +138,22 @@ void GetDSpace(TMatrix points, TVariables cardinalities, int k, bool atOnce, TMa
 	}
 }
 
-void GetDepths(TPoint point, TMatrix points, TVariables cardinalities, int k, bool atOnce, TMatrix directions, TMatrix projections, TPoint *depths){
+void GetDepths(TPoint& point, vector<TPoint>& points, TVariables& cardinalities, int k, bool atOnce, vector<TPoint>& directions, vector<TPoint>& projections, TPoint *depths){
 	//1. Collecting basic statistics
 	int d = points[0].size();
 	int n = points.size();
 	int q = cardinalities.size();
 	int _k = 0;
-	TMatrix _directions;
-	TMatrix _projections;
+	TMatrix& _directions = directions;
+	TMatrix& _projections = projections;
 	if (!atOnce){
 		_k = k;
 		GetDirections(&_directions, _k, d);
 		GetProjections(points, _directions, &_projections);
 	}else{
 		_k = directions.size();
-		_directions = directions;
-		_projections = projections;
+//		_directions = directions;
+//		_projections = projections;
 	}	
 	//2. Calculate projection depths
 	TPoint pointProjections(_k);

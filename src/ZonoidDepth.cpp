@@ -32,7 +32,7 @@ static vector<unsigned short> RowInverted;
 
 /* Definition of static functions */
 
-static void RSInit(TPoint z)
+static void RSInit(TPoint& z)
 /* Initialize the revised simplex tableau. */
 {
   int i, j;
@@ -199,7 +199,7 @@ static int FindPivotRow()
 	if (I.size() <= 1) 
 	  return I[0];
 	else
-	  return I[rand() % I.size()];
+	  return I[random(I.size())];
 }
 
 static void RSStep(int PivotRow, int PivotColumn)
@@ -247,7 +247,7 @@ found, it is returned in '*PivcotColumn'. */
 
 /* Standardizing functions */
 
-int GetMeansSds(vector<TPoint> x, TPoint *means, TPoint *sds){
+int GetMeansSds(vector<TPoint>& x, TPoint *means, TPoint *sds){
 /*
 	Get means and standard deviations, coordinatewise
 */
@@ -266,7 +266,7 @@ int GetMeansSds(vector<TPoint> x, TPoint *means, TPoint *sds){
 	return 0;
 }
 
-int Standardize(vector<TPoint> &x, TPoint means, TPoint sds){
+int Standardize(vector<TPoint> &x, TPoint& means, TPoint& sds){
 /*
 	Standardize data cloud, coordinatewise
 */
@@ -279,7 +279,7 @@ int Standardize(vector<TPoint> &x, TPoint means, TPoint sds){
 	return 0;
 }
 
-int Standardize(TPoint &x, TPoint means, TPoint sds){
+int Standardize(TPoint &x, TPoint& means, TPoint& sds){
 /*
 	Standardize point, coordinatewise
 */
@@ -290,7 +290,7 @@ int Standardize(TPoint &x, TPoint means, TPoint sds){
 	return 0;
 }
 
-int Unstandardize(vector<TPoint> &x, TPoint means, TPoint sds){
+int Unstandardize(vector<TPoint> &x, TPoint& means, TPoint& sds){
 /*
 	Unstandardize data cloud, coordinatewise
 */
@@ -303,7 +303,7 @@ int Unstandardize(vector<TPoint> &x, TPoint means, TPoint sds){
 	return 0;
 }
 
-int Unstandardize(TPoint &x, TPoint means, TPoint sds){
+int Unstandardize(TPoint &x, TPoint& means, TPoint& sds){
 /*
 	Unstandardize point, coordinatewise
 */
@@ -316,7 +316,7 @@ int Unstandardize(TPoint &x, TPoint means, TPoint sds){
 
 /* Definition of public functions */
 
-double ZonoidDepth(vector<TPoint> x, TPoint z, int& Error)
+double ZonoidDepth(vector<TPoint>& x, TPoint& z, int& Error)
 /*
    Calculate the zonoid data depth of the point 'z' with respect to the
    data points 'x'. The number of data points is passed in 'NoPoints',
@@ -388,7 +388,7 @@ double ZonoidDepth(vector<TPoint> x, TPoint z, int& Error)
   }
 }
 
-int InConvexes(TMatrix points, TVariables cardinalities, TMatrix objects, int& Error, TMatrix *areInConvexes)
+int InConvexes(TMatrix& points, TVariables& cardinalities, TMatrix& objects, int& Error, TMatrix *areInConvexes)
 /*
    Check if the points are inside of hte convex hull.
    1: Point lies inside of the convex hull of the data

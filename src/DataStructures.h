@@ -11,6 +11,10 @@ typedef vector<double> TPoint;
 typedef vector<vector<double> > TMatrix;
 typedef vector<int> TVariables;
 
+typedef boost::numeric::ublas::matrix<double> bMatrix;
+typedef boost::numeric::ublas::vector<double> bVector;
+typedef boost::numeric::ublas::permutation_matrix<size_t> bPM;
+
 struct UPoint{
 	 int pattern;
 	 double value;

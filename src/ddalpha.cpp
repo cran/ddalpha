@@ -95,25 +95,11 @@ void HDepth(double *points, double *objects, int *numObjects, int *dimension, in
 	for (int i = 0; i < numClasses[0]; i++){
 		cars[i] = cardinalities[i];
 	}
-	TMatrix dirs(0);
-	TMatrix prjs(0);
-	if (sameDirs[0]){
-		dirs.resize(k[0]);
-		prjs.resize(k[0]);
-		for (int i = 0; i < k[0]; i++){
-			dirs[i].resize(dimension[0]);
-			for (int j = 0; j < dimension[0]; j++){
-				dirs[i][j] = directions[i * dimension[0] + j];
-			}
-			prjs[i].resize(numPoints);
-			for (int j = 0; j < numPoints; j++){
-				prjs[i][j] = projections[i * numPoints + j];
-			}
-		}
-	}
+	TMatrix dirs;
+	TMatrix prjs;
 	for (int i = 0; i < numObjects[0]; i++){
 		TPoint dps;
-		GetDepths(z[i], x, cars, k[0], sameDirs[0], dirs, prjs, &dps);
+		GetDepths(z[i], x, cars, k[0], i == 0 ? 0 : sameDirs[0] /*at the first step fill the matrices*/, dirs, prjs, &dps);
 		for (int j = 0; j < numClasses[0]; j++){
 			depths[i * numClasses[0] + j] = dps[j];
 		}
@@ -282,6 +268,47 @@ void KnnClassify(double *objects, int *numObjects, double *points, int *labels, 
 		output[i] = result[i];
 	}
 }
+
+void PolynomialLearnCV(double *points, int *numPoints, int *dimension, int *cardinalities, int *maxDegree, int *chunkNumber, /*OUT*/ int *degree, /*OUT*/ int *axis, /*OUT*/ double *polynomial){
+	TMatrix x(numPoints[0]);
+	for (int i = 0; i < numPoints[0]; i++){ x[i] = TPoint(dimension[0]); }
+	for (int i = 0; i < numPoints[0]; i++){
+		for (int j = 0; j < dimension[0]; j++){
+			x[i][j] = points[i * dimension[0] + j];
+		}
+	}
+	TVariables y(numPoints[0]);
+	for (int i = 0; i < cardinalities[0]; i++){ y[i] = 1; }
+	for (int i = cardinalities[0]; i < numPoints[0]; i++){ y[i] = -1; }
+	
+	TPoint pol = PolynomialLearnCV(x, cardinalities[0], *maxDegree, *chunkNumber, degree, axis);
+
+	for (unsigned i = 0; i < pol.size(); i++){
+		polynomial[i] = pol[i];
+	}
+}
+/* everything implemented in R
+void PolynomialClassify(double *points, int *numPoints, int *dimension, int *degree, double *ray, int *output){
+	TMatrix x(numPoints[0]);
+	for (int i = 0; i < numPoints[0]; i++){ x[i] = TPoint(dimension[0]); }
+	for (int i = 0; i < numPoints[0]; i++){
+		for (int j = 0; j < dimension[0]; j++){
+			x[i][j] = points[i * dimension[0] + j];
+		}
+	}
+	TMatrix _x;
+	ExtendWithProducts(x, degree[0], &_x);
+	TPoint direction(_x[0].size());
+	for (unsigned i = 0; i < _x[0].size(); i++){
+		direction[i] = ray[i + 1];
+	}
+	TVariables y;
+	Classify(_x, direction, &y);
+	for (int i = 0; i < numPoints[0]; i++){
+		output[i] = y[i];
+	}
+}
+*/
 
 void ProjectionDepth(double *points, double *objects, int *numObjects,
 					 int *dimension, int *cardinalities, int *numClasses,

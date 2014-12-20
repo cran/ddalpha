@@ -1,7 +1,7 @@
 compclassf.train <- function(dataf, labels, 
                             to.equalize = TRUE, 
                             to.reduce = FALSE, 
-                            classifier.type = "ddalpha", 
+                            classifier.type = c("ddalpha", "maxdepth", "knnaff", "lda", "qda"), 
                             ...){
   # Trains the functional componentwise classifier
   # Args:
@@ -14,26 +14,37 @@ compclassf.train <- function(dataf, labels,
   #   Functional componentwise clasifier
   
   # Check "dataf"
-  # TODO
+  if (!is.list(dataf))
+    stop("Argument 'dataf' must be a list")
+  for (df in dataf)
+    if (!(is.list(df) && length(df) == 2 &&
+          !is.null(df$args) && !is.null(df$vals) &&
+          is.vector(df$args) && is.vector(df$vals) &&
+          is.numeric(df$args) && is.numeric(df$vals) &&
+          length(df$args) == length(df$vals) &&
+          sort(df$args) == df$args))
+      stop("Argument 'dataf' must be a list containing lists (functions) of two vectors of equal length, named 'args' and 'vals': arguments sorted in ascending order and corresponding them values respectively")
   
   # Check "labels"
-  # TODO
+  if (!(length(dataf)==length(labels) && length(unique(labels)>=2)))
+      stop("Argument 'labels' has wrong format")
   
   # Check classifier.type
+  classifier.type = match.arg(classifier.type)
   
   # Bring to finite dimension
   
   # Pointize
   points <- GetPointsDHB12(dataf, labels, to.equalize, to.reduce)
   # CV
-  arg.indices <- getBestSpaceDHB12(points$data, classifier.type, num.chunks=10, ...) #, ...
+  arg.indices <- getBestSpaceDHB12(points$data, classifier.type, num.chunks=10, ...)
   data <- points$data[,c(arg.indices,ncol(points$data))]
   # Apply chosen classifier to train the data
   if (classifier.type == "ddalpha"){
-    classifier <- ddalpha.train(data, ...)
+    classifier <- ddalpha.train(data, separator = "alpha", ...)
   }
   if (classifier.type == "maxdepth"){
-    classifier <- maxdepth.train(data, ...)
+    classifier <- ddalpha.train(data, separator = "maxD", ...)
   }
   if (classifier.type == "knnaff"){
     classifier <- knnaff.train(data, i = 0, ...)
@@ -74,7 +85,19 @@ compclassf.classify <- function(objectsf, compclassf, ...){
   #   List of labels assigned to the functions from "objectsf"
 
   # Check "objectsf"
-  # TODO
+  if (!is.list(objectsf))
+    stop("Argument 'objectsf' must be a list")
+  if (!is.null(objectsf$args)){
+    objectsf = list(objectsf) # there was a single element 
+  }
+  for (df in objectsf)
+    if (!(is.list(df) && length(df) == 2 &&
+            !is.null(df$args) && !is.null(df$vals) &&
+            is.vector(df$args) && is.vector(df$vals) &&
+            is.numeric(df$args) && is.numeric(df$vals) &&
+            length(df$args) == length(df$vals) &&
+            sort(df$args) == df$args))
+      stop("Argument 'objectsf' must be a list containing lists (functions) of two vectors of equal length, named 'args' and 'vals': arguments sorted in ascending order and corresponding them values respectively")
 
   # Prepare to multivariate classification
   objectsf.equalized <- equalize(objectsf)
@@ -93,11 +116,8 @@ compclassf.classify <- function(objectsf, compclassf, ...){
   }
   input <- input[,compclassf$the.args]
   # Classify and assign class labels
-  if (compclassf$classifier.type == "ddalpha"){
+  if (compclassf$classifier.type == "ddalpha" || compclassf$classifier.type == "maxdepth"){
     output <- ddalpha.classify(objects = input, compclassf$classifier, ...)
-  }
-  if (compclassf$classifier.type == "maxdepth"){
-    output <- maxdepth.classify(objects = input, compclassf$classifier, ...)
   }
   if (compclassf$classifier.type == "knnaff"){
     output <- knnaff.classify(objects = input, compclassf$classifier, ...)
@@ -120,79 +140,21 @@ compclassf.classify <- function(objectsf, compclassf, ...){
   return (classes)
 }
 
-is.in.convexf <- function(objectsf, dataf, cardinalities, 
-                          adc.method = "equalCover", 
-                          adc.args = list(instance = "val", 
-                                          numFcn = 5, 
-                                          numDer = 5)){
-  # Checks if the function(s) lie(s) inside convex hulls of the 
-  # functions from the sample in the projection space
-  # Args:
-  #   objectsf:      list containing lists (functions) of two vectors of equal 
-  #                  length, named "args" and "vals": arguments sorted in 
-  #                  ascending order and corresponding them values 
-  #                  respectively. These functions are supposed to be checked 
-  #                  for 'outsiderness'
-  #   dataf:         list containing lists (functions) of two vectors of equal 
-  #                  length, named "args" and "vals": arguments sorted in 
-  #                  ascending order and corresponding them values respectively
-  #   cardinalities: cardinalities of the classes in "dataf"
-  #   other arguments: TODO
-  # Returns:
-  #   Vector with 1s for those lying inside of at least one of the convex hulls 
-  #   of the classes and 0s for those lying beyond them
-  
-  # Data-consistency checks
-  # TODO
-  
-  # Project "objectsf" into a multivariate space
-  objectsf.equalized <- equalize(objectsf)
-  if (adc.method == "equalCover"){
-    if (adc.args$instance == "val"){
-      objects <- getValGrid(objectsf.equalized, adc.args$numFcn, adc.args$numDer)
-    }
-    if (adc.args$instance == "avr"){
-      objects <- getAvrGrid(objectsf.equalized, adc.args$numFcn, adc.args$numDer)
-    }
-  }
-  # Project "dataf" into a multivariate space
-  dataf.equalized <- equalize(dataf)
-  if (adc.method == "equalCover"){
-    if (adc.args$instance == "val"){
-      data <- getValGrid(dataf.equalized, adc.args$numFcn, adc.args$numDer)
-    }
-    if (adc.args$instance == "avr"){
-      data <- getAvrGrid(dataf.equalized, adc.args$numFcn, adc.args$numDer)
-    }    
-  }
-  in.convex <- is.in.convex(objects, data, cardinalities)
-  
-  return (in.convex)
+print.compclassf <- function(x, ...){
+  cat("compclassf:\n")
+  cat("\t num.functions = ", length(x$dataf), 
+      ", num.patterns = ", length(unique(x$labels)), "\n", sep="")
+  #  cat("\t adc.method", x$adc.method, "\"\n", sep="")
+  cat("\t adc:", x$adc.args$instance, "; numFcn:", x$adc.args$numFcn, "; numDer:", x$adc.args$numDer, "\"\n", sep="")
+  cat("\t adc.transmat", x$adc.transmat, "\"\n", sep="")
+  cat("\t classifier.type", x$classifier.type, "\"\n", sep="")
+  cat("\t classifier:\n") 
+  print(x$classifier)
 }
 
 ################################################################################
 # Functions below are used for intermediate computations                       #
 ################################################################################
-
-getVapnikBound <- function(points, dim = NULL){
-  n <- nrow(points)
-  d <- ncol(points) - 1
-  lda <- lda.train(points)
-  result <- lda.classify(points[,1:d], lda)
-  empRisk <- sum(result != points[,d + 1])/n
-  
-  if (is.null(dim)){
-    dim <- d
-  }
-  nu <- 1/n
-  if (empRisk == 0){
-    epsilon <- 1 - n^(-(dim + 1)/n)
-  }else{
-    epsilon <- sqrt( ( (dim + 1)*log(n) )/(2*n) )
-  }
-  
-  return (empRisk + epsilon)
-}
 
 GetPointsDHB12 <- function(dataf, labels, to.equalize=T, to.reduce=F){
   # Numerize labels
@@ -274,12 +236,12 @@ getBestSpaceDHB12 <- function(data,
           take.off <- (indices.off + j)[(indices.off + j) <= num.points]
           # Apply chosen classifier
           if (classifier.type == "ddalpha"){
-            classifier <- ddalpha.train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
+            classifier <- ddalpha.train(data[-take.off,c(combinations[,i], indices.num + 1)], separator = "alpha", ...)
             results <- ddalpha.classify(data[take.off,combinations[,i]], classifier)
           }
           if (classifier.type == "maxdepth"){
-            classifier <- maxdepth.train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
-            results <- maxdepth.classify(data[take.off,combinations[,i]], classifier)
+            classifier <- ddalpha.train(data[-take.off,c(combinations[,i], indices.num + 1)], separator = "maxD", ...)
+            results <- ddalpha.classify(data[take.off,combinations[,i]], classifier)
           }
           if (classifier.type == "knnaff"){
             classifier <- knnaff.train(data[-take.off,c(combinations[,i], indices.num + 1)], i = i, ...)
@@ -323,12 +285,12 @@ getBestSpaceDHB12 <- function(data,
           take.off <- (indices.off + j)[(indices.off + j) <= num.points]
           # Apply chosen classifier
           if (classifier.type == "ddalpha"){
-            classifier <- ddalpha.train(data[-take.off,c(indices.cur, indices.num + 1)], ...)
+            classifier <- ddalpha.train(data[-take.off,c(indices.cur, indices.num + 1)], separator = "alpha", ...)
             results <- ddalpha.classify(data[take.off,indices.cur], classifier)
           }
           if (classifier.type == "maxdepth"){
-            classifier <- maxdepth.train(data[-take.off,c(indices.cur, indices.num + 1)], ...)
-            results <- maxdepth.classify(data[take.off,indices.cur], classifier)
+            classifier <- ddalpha.train(data[-take.off,c(indices.cur, indices.num + 1)], separator = "maxD", ...)
+            results <- ddalpha.classify(data[take.off,indices.cur], classifier)
           }
           if (classifier.type == "knnaff"){
             classifier <- knnaff.train(data[-take.off,c(indices.cur, indices.num + 1)], i = i, ...)
@@ -383,12 +345,12 @@ getBestSpaceDHB12 <- function(data,
           take.off <- (indices.off + j)[(indices.off + j) <= num.points]
           # Apply chosen classifier
           if (classifier.type == "ddalpha"){
-            classifier <- ddalpha.train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
+            classifier <- ddalpha.train(data[-take.off,c(combinations[,i], indices.num + 1)], separator = "alpha", ...)
             results <- ddalpha.classify(data[take.off,combinations[,i]], classifier)
           }
           if (classifier.type == "maxdepth"){
-            classifier <- maxdepth.train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
-            results <- maxdepth.classify(data[take.off,combinations[,i]], classifier)
+            classifier <- ddalpha.train(data[-take.off,c(combinations[,i], indices.num + 1)], separator = "maxD", ...)
+            results <- ddalpha.classify(data[take.off,combinations[,i]], classifier)
           }
           if (classifier.type == "knnaff"){
             classifier <- knnaff.train(data[-take.off,c(combinations[,i], indices.num + 1)], i = i, ...)
@@ -425,289 +387,3 @@ getBestSpaceDHB12 <- function(data,
   }
   return (indices.best)
 }
-
-# equalize <- function(dataf){
-#   # 1. Adjusts the data to have equal (the largest) argument interval
-#   # 2. Calclates - numerically - derivative
-#   # Args:
-#   #   dataf: list containing lists (functions) of two vectors 
-#   #          of equal length, named "args" and "vals": arguments 
-#   #          sorted in ascending order and corresponding them 
-#   #          values respectively
-#   # Returns:
-#   #   The list of lists of the same structure, 'equalized', 
-#   #   contating derivatives as 3rd vector named "der1"
-#   
-#   # Check whether every function contains fields "args" and "vals", 
-#   # whether they are numerical and of equal length, have no NAs or 
-#   # ties and are sorted in ascending order
-#   # TODO
-#   
-#   # 1.
-#   # Get argument bounds
-#   min <- Inf
-#   max <- -Inf
-#   for (i in 1:length(dataf)){
-#     if (dataf[[i]]$args[1] < min){min <- dataf[[i]]$args[1]}
-#     if (dataf[[i]]$args[length(dataf[[i]]$args)] > max){
-#       max <- dataf[[i]]$args[length(dataf[[i]]$args)]
-#     }
-#   }
-#   # and apply them to equalize functions timely
-#   for (i in 1:length(dataf)){
-#     if (dataf[[i]]$args[1] > min){
-#       dataf[[i]]$args <- c(min, dataf[[i]]$args)
-#       dataf[[i]]$vals <- c(dataf[[i]]$vals[1], dataf[[i]]$vals)
-#     }
-#     if (dataf[[i]]$args[length(dataf[[i]]$args)] < max){
-#       dataf[[i]]$args <- c(dataf[[i]]$args, max)
-#       dataf[[i]]$vals <- c(dataf[[i]]$vals, 
-#                            dataf[[i]]$vals[length(dataf[[i]]$vals)])
-#     }
-#     # Computational trick - add "-1" to the "left"
-#     dataf[[i]]$args <- c(min - 1, dataf[[i]]$args)
-#     dataf[[i]]$vals <- c(dataf[[i]]$vals[1], dataf[[i]]$vals)
-#   }
-#   
-#   # 2.
-#   for (i in 1:length(dataf)){
-#     dataf[[i]] <- derive(dataf[[i]])
-#   }
-#   
-#   return (dataf)
-# }
-# 
-# derive <- function(fcn){
-#   # Adds 1st derivative to the function: a vector named "der1"
-#   # Args:
-#   #   fcn: function, a list of two vectors of equal length, named "args" 
-#   #   and "vals": arguments sorted in ascending order and corresponding 
-#   #   them values respectively
-#   # Returns:
-#   #   The list of of the same structure contating derivative as 3rd 
-#   #   vector named "der1"
-#   
-#   fcn$der1 <- rep(0, length(fcn$args))
-#   fcn$der1[1] = -Inf
-#   fcn$der1[2] = 0
-#   for (i in 3:length(fcn$der1)){
-#     fcn$der1[i] <- (fcn$vals[i] - fcn$vals[i - 1])/
-#       (fcn$args[i] - fcn$args[i - 1])
-#   }
-#   
-#   return (fcn)
-# }
-# 
-# getValue <- function(fcn, arg, fcnInstance){
-#   # Gets the value of the function or its derivative for the given argument 
-#   # value
-#   # Args:
-#   #   fcn:         function, a list of vectors of equal length, named "args" 
-#   #                (arguments), "vals" (function values) [and it's 
-#   #                derivatives of order "I", named derI]; arguments (and 
-#   #                corresponding values) sorted in ascending order
-#   #   arg:         argument value at which the function (derivative) value 
-#   #                is to be taken
-#   #   fcnInstance: inctance to be evaluated; "vals" for the function values, 
-#   #                "der1" for the first derivative
-#   # Returns:
-#   #   Value of the function (derivative)
-#   
-#   # Check "arg", evt. "fcnInstance"
-#   # TODO
-#   
-#   # Find corresponding interval
-#   index <- 2
-#   while (arg > fcn$args[index]){
-#     index <- index + 1
-#   }
-#   # Get the function value(s) by linear approximation
-#   if (fcnInstance == "vals"){
-#     value <- fcn$vals[index - 1] + 
-#       (fcn$vals[index] - fcn$vals[index - 1])*
-#       ((arg - fcn$args[index - 1])/(fcn$args[index] - fcn$args[index - 1]))
-#   }
-#   if (fcnInstance == "der1"){
-#     value <- fcn$der1[index]
-#   }
-#   
-#   return (value)
-# }
-# 
-# getAvrValue <- function(fcn, argFrom, argTo, fcnInstance){
-#   # Gets the average value of the function or its derivative on the given 
-#   # interval
-#   # Args:
-#   #   fcn:         function, a list of vectors of equal length, named "args" 
-#   #                (arguments), "vals" (function values) [and it's 
-#   #                derivatives of order "I", named derI]; arguments (and 
-#   #                corresponding values) sorted in ascending order
-#   #   argFrom:     argument value from which the function (derivative) value 
-#   #                is to be averaged
-#   #   argTo:       argument value to which the function (derivative) value 
-#   #                is to be averaged
-#   #   fcnInstance: inctance to be evaluated; "vals" for the function values, 
-#   #                "der1" for the first derivative
-#   # Returns:
-#   #   Average value of the function (derivative) on the interval 
-#   #   (argFrom, argTo)
-#   
-#   # Check "argFrom" and "argTo", evt. "fcnInstance"
-#   # TODO
-#   
-#   # Define 'from' and 'to' interval
-#   indexFrom <- 2
-#   while (argFrom > fcn$args[indexFrom]){
-#     indexFrom <- indexFrom + 1
-#   }
-#   indexTo <- 2
-#   while (argTo > fcn$args[indexTo]){
-#     indexTo <- indexTo + 1
-#   }
-#   average <- 0
-#   valTo <- getValue(fcn, argTo, fcnInstance)
-#   # Integrate
-#   curArgFrom <- argFrom
-#   if (fcnInstance == "vals"){
-#     valFrom <- getValue(fcn, curArgFrom, "vals")
-#     while(indexFrom < indexTo){
-#       average <- average + (valFrom + fcn$vals[indexFrom])*
-#         (fcn$args[indexFrom] - curArgFrom)/2
-#       valFrom <- fcn$vals[indexFrom]
-#       curArgFrom <- fcn$args[indexFrom]
-#       indexFrom <- indexFrom + 1
-#     }
-#     average <- average + (valFrom + valTo)*(argTo - curArgFrom)/2
-#   }
-#   if (fcnInstance == "der1"){
-#     while(indexFrom < indexTo){
-#       average <- average + (fcn$der1[indexFrom])*
-#         (fcn$args[indexFrom] - curArgFrom)
-#       curArgFrom <- fcn$args[indexFrom]
-#       indexFrom <- indexFrom + 1
-#     }
-#     average <- average + valTo*(argTo - curArgFrom)
-#   }
-#   average <- average/(argTo - argFrom)
-#   
-#   return (average)
-# }
-# 
-# getValGrid <- function(dataf, numFcn, numDer){
-#   # Represents a function sample as a multidimensional (d="numFcn"+"numDer") 
-#   # one averaging for that each function and it derivative on "numFcn" 
-#   # (resp. "numDer") equal nonoverlapping covering intervals
-#   # Args:
-#   #   dataf:  list containing lists (functions) of vectors of equal length, 
-#   #           first two named "args" and "vals" are arguments sorted in 
-#   #           ascending order and having same bounds for all functions and 
-#   #           corresponding them values respectively
-#   #   numFcn: number of function intervals
-#   #   numDer: number of first-derivative intervals
-#   # Returns:
-#   #   Matrix - a multidimensional presentation of the functional sample
-#   
-#   # Get argument bounds ("dataf" is equalized)
-#   min <- dataf[[1]]$args[1]
-#   max <- dataf[[1]]$args[length(dataf[[1]]$args)]
-#   # Get argument grid
-#   args <- dataf[[1]]$args
-#   argsFcn <- min + 0:numFcn*(max - min)/(numFcn - 1)
-#   argsDer <- min + 0:numDer*(max - min)/(numDer - 1)
-#   # Get function/derivative grid
-#   fcnGrid <- matrix(nrow = length(dataf), ncol = numFcn)
-#   derGrid <- matrix(nrow = length(dataf), ncol = numDer)
-#   if (numFcn > 0){
-#     for (i in 1:length(dataf)){
-#       # Set merging algorithm (Novikoff, Piter)
-#       cArgs <- 1
-#       cArgsFcn <- 1
-#       fcnGrid[i,1] <- dataf[[i]]$vals[1]
-#       while (cArgsFcn != numFcn){
-#         #                print(argsFcn)
-#         #                print(fcnGrid[i,])
-#         #                cat(cArgs, " and ", cArgsFcn, "\n")
-#         #                cat(args[cArgs + 1], " and ", argsFcn[cArgsFcn + 1], "\n")
-#         if (args[cArgs + 1] < argsFcn[cArgsFcn + 1]){
-#           cArgs <- cArgs + 1
-#         }else{
-#           nextArg <- argsFcn[cArgsFcn + 1]
-#           fcnGrid[i,cArgsFcn + 1] <- dataf[[i]]$vals[cArgs] + (nextArg - args[cArgs])*dataf[[i]]$der1[cArgs + 1]
-#           if (args[cArgs + 1] == argsFcn[cArgsFcn + 1]){
-#             cArgs <- cArgs + 1
-#           }
-#           cArgsFcn <- cArgsFcn + 1
-#         }
-#       }
-#     }
-#   }
-#   if (numDer > 0){
-#     for (i in 1:length(dataf)){
-#       # Again, set merging algorithm (Novikoff, Piter)
-#       cArgs <- 1
-#       cArgsDer <- 1
-#       derGrid[1] <- dataf[[i]]$ders[2]
-#       while (cArgsDer != numDer){
-#         #        print(argsDer)
-#         #        print(derGrid[i,])
-#         #        cat(cArgs, " and ", cArgsDer, "\n")
-#         #        cat(args[cArgs + 1], " and ", argsDer[cArgsDer + 1], "\n")
-#         if (args[cArgs + 1] < argsDer[cArgsDer + 1]){
-#           cArgs <- cArgs + 1
-#         }else{
-#           derGrid[i,cArgsDer + 1] <- dataf[[i]]$der1[cArgs + 1]
-#           if (args[cArgs + 1] == argsDer[cArgsDer + 1]){
-#             cArgs <- cArgs + 1
-#           }
-#           cArgsDer <- cArgsDer + 1
-#         }
-#       }
-#     }
-#   }
-#   mvX <- cbind(fcnGrid, derGrid)
-#   return (mvX)
-# }
-# 
-# getAvrGrid <- function(dataf, numFcn, numDer){
-#   # Represents a function sample as a multidimensional (d="numFcn"+"numDer") 
-#   # one averaging for that each function and it derivative on "numFcn" 
-#   # (resp. "numDer") equal nonoverlapping covering intervals
-#   # Args:
-#   #   dataf:  list containing lists (functions) of vectors of equal length, 
-#   #           first two named "args" and "vals" are arguments sorted in 
-#   #           ascending order and having same bounds for all functions and 
-#   #           corresponding them values respectively
-#   #   numFcn: number of function intervals
-#   #   numDer: number of first-derivative intervals
-#   # Returns:
-#   #   Matrix - a multidimensional presentation of the functional sample
-#   
-#   # Get argument bounds ("dataf" is equalized)
-#   min <- dataf[[1]]$args[1] + 1
-#   max <- dataf[[1]]$args[length(dataf[[1]]$args)]
-#   # Get argument grid
-#   argsFcn <- min + 0:numFcn*(max - min)/numFcn
-#   argsDer <- min + 0:numDer*(max - min)/numDer
-#   # Get function/derivative grid
-#   fcnGrid <- matrix(nrow = length(dataf), ncol = numFcn)
-#   derGrid <- matrix(nrow = length(dataf), ncol = numDer)
-#   if (numFcn > 0){
-#     for (i in 1:length(dataf)){
-#       for (j in 1:numFcn){
-#         fcnGrid[i,j] <- getAvrValue(dataf[[i]], argsFcn[j], argsFcn[j + 1], 
-#                                     "vals")
-#       }
-#     }
-#   }
-#   if (numDer > 0){
-#     for (i in 1:length(dataf)){
-#       for (j in 1:numDer){
-#         derGrid[i,j] <- getAvrValue(dataf[[i]], argsDer[j], argsDer[j + 1], 
-#                                     "der1")
-#       }
-#     }
-#   }
-#   mvX <- cbind(fcnGrid, derGrid)
-#   
-#   return (mvX)
-# }

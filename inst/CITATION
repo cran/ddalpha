@@ -17,16 +17,16 @@ citEntry(entry = "Article",
         "Statistical Papers, 55, 49-69")
 )
 
-citEntry(entry = "Article",
-  title        = "Classifying real-world data with the DDalpha-procedure",
-  author       = personList(as.person("Pavlo Mozharovskyi"),
-                            as.person("Karl Mosler"),
-                            as.person("Tatjana Lange")),
-  journal      = "Mimeo",
-  year         = "2013",
-  
+citEntry(entry = "phdthesis",
+  title        = "Contributions to Depth-based Classification and Computation of the Tukey Depth",
+  author       = as.person("Pavlo Mozharovskyi"),
+  publisher    = "Verlag Dr. Kovac, Hamburg",
+  year         = "2015",
+  school       = "Universitaet zu Koeln",
+
   textVersion  = 
-  paste("Mozharovskyi, P., Mosler, K. and Lange, T. (2013).",
-        "Classifying real-world data with the DDalpha-procedure.", 
-        "Mimeo")
+  paste("Mozharovskyi, P. (2013),",
+        "Contributions to Depth-based Classification and Computation of the Tukey Depth.", 
+        "Verlag Dr. Kovac, Hamburg")
 )
+

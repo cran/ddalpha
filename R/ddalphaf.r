@@ -1,8 +1,8 @@
-ddalphaf.train <- function(dataf, labels, adc.method = "equalCover", 
+ddalphaf.train <- function(dataf, labels, 
                            adc.args = list(instance = "avr", 
                                            numFcn = -1, 
                                            numDer = -1), 
-                           classifier.type = "ddalpha", 
+                           classifier.type = c("ddalpha", "maxdepth", "knnaff", "lda", "qda"), 
                            cv.complete = FALSE, 
                            ...){
   # Trains the functional DDalpha-classifier
@@ -16,21 +16,32 @@ ddalphaf.train <- function(dataf, labels, adc.method = "equalCover",
   #   Functional DDalpha-classifier
   
   # Check "dataf"
-  # TODO
+  if (!is.list(dataf))
+    stop("Argument 'dataf' must be a list")
+  for (df in dataf)
+    if (!(is.list(df) && length(df) == 2 &&
+            !is.null(df$args) && !is.null(df$vals) &&
+            is.vector(df$args) && is.vector(df$vals) &&
+            is.numeric(df$args) && is.numeric(df$vals) &&
+            length(df$args) == length(df$vals) &&
+            sort(df$args) == df$args))
+      stop("Argument 'dataf' must be a list containing lists (functions) of two vectors of equal length, named 'args' and 'vals': arguments sorted in ascending order and corresponding them values respectively")
   
   # Check "labels"
-  # TODO
+  if (!(length(dataf)==length(labels) && length(unique(labels)>=2)))
+    stop("Argument 'labels' has wrong format")
+  
+  # Check classifier.type
+  classifier.type = match.arg(classifier.type)
   
   # Check "adc.method"
-  # adc.method %in% c("equalCover")
-  # TODO
+  adc.method = 'equalCover'
   
   # Check "adc.args"
-  # adc.args$instance %in% c("val", "avr")
-  # adc.args$numFcn >= 0
-  # adc.args$numDer >= 0
-  # but at least one point :-)
-  # TODO
+  if (!(adc.args$instance %in% c("val", "avr") && 
+      ((adc.args$numFcn >= 0 &&  adc.args$numDer >= 0 && (adc.args$numFcn + adc.args$numDer >= 2)) ||
+       (adc.args$numFcn == -1 &&  adc.args$numDer == -1))))
+    stop("Argument 'adc.args' has wrong format")
   
   # CV
   if (adc.args$numFcn == -1 && adc.args$numDer == -1){
@@ -54,7 +65,7 @@ ddalphaf.train <- function(dataf, labels, adc.method = "equalCover",
     classifier <- ddalpha.train(points$data, ...)
   }
   if (classifier.type == "maxdepth"){
-    classifier <- maxdepth.train(points$data, ...)
+    classifier <- ddalpha.train(points$data, separator = "maxD", ...)
   }
   if (classifier.type == "knnaff"){
     classifier <- knnaff.train(points$data, i = 0, ...)
@@ -95,7 +106,19 @@ ddalphaf.classify <- function(objectsf, ddalphaf, ...){
   #   List of labels assigned to the functions from "objectsf"
 
   # Check "objectsf"
-  # TODO
+  if (!is.list(objectsf))
+    stop("Argument 'objectsf' must be a list")
+  if (!is.null(objectsf$args)){
+    objectsf = list(objectsf) # there was a single element 
+  }
+  for (df in objectsf)
+    if (!(is.list(df) && length(df) == 2 &&
+            !is.null(df$args) && !is.null(df$vals) &&
+            is.vector(df$args) && is.vector(df$vals) &&
+            is.numeric(df$args) && is.numeric(df$vals) &&
+            length(df$args) == length(df$vals) &&
+            sort(df$args) == df$args))
+      stop("Argument 'objectsf' must be a list containing lists (functions) of two vectors of equal length, named 'args' and 'vals': arguments sorted in ascending order and corresponding them values respectively")
 
   # Prepare to multivariate classification
   objectsf.equalized <- equalize(objectsf)
@@ -113,11 +136,8 @@ ddalphaf.classify <- function(objectsf, ddalphaf, ...){
     }
   }
   # Classify and assign class labels
-  if (ddalphaf$classifier.type == "ddalpha"){
+  if (ddalphaf$classifier.type == "ddalpha" || ddalphaf$classifier.type == "maxdepth"){
     output <- ddalpha.classify(objects = input, ddalphaf$classifier, ...)
-  }
-  if (ddalphaf$classifier.type == "maxdepth"){
-    output <- maxdepth.classify(objects = input, ddalphaf$classifier, ...)
   }
   if (ddalphaf$classifier.type == "knnaff"){
     output <- knnaff.classify(objects = input, ddalphaf$classifier, ...)
@@ -188,6 +208,19 @@ is.in.convexf <- function(objectsf, dataf, cardinalities,
   in.convex <- is.in.convex(objects, data, cardinalities)
   
   return (in.convex)
+}
+
+print.ddalphaf <- function(x, ...){
+  cat("ddalphaf:\n")
+  cat("\t num.functions = ", length(x$dataf), 
+  ", num.patterns = ", length(unique(x$labels)), "\n", sep="")
+#  cat("\t adc.method", x$adc.method, "\"\n", sep="")
+  cat("\t adc:", x$adc.args$instance, "; numFcn:", x$adc.args$numFcn, "; numDer:", x$adc.args$numDer, "\"\n", sep="")
+  cat("\t adc.num.cv", x$adc.num.cv, "\"\n", sep="")
+  cat("\t adc.transmat", x$adc.transmat, "\"\n", sep="")
+  cat("\t classifier.type", x$classifier.type, "\"\n", sep="")
+  cat("\t classifier:\n") 
+  print(x$classifier)
 }
 
 ################################################################################
@@ -775,8 +808,8 @@ getBestSpace <- function(dataf, labels, adc.method = "equalCover",
         results <- ddalpha.classify(points.all[take.off,1:d], classifier)
       }
       if (classifier.type == "maxdepth"){
-        classifier <- maxdepth.train(points.all[-take.off,], ...)
-        results <- maxdepth.classify(points.all[take.off,1:d], classifier)
+        classifier <- ddalpha.train(points.all[-take.off,], separator = "maxD", ...)
+        results <- ddalpha.classify(points.all[take.off,1:d], classifier)
       }
       if (classifier.type == "knnaff"){
         classifier <- knnaff.train(points.all[-take.off,], i = i, ...)
@@ -830,8 +863,8 @@ getBestSpaceCV <- function(dataf, labels, adc.method = "equalCover",
         results <- ddalpha.classify(points.all[take.off,1:d], classifier)
       }
       if (classifier.type == "maxdepth"){
-        classifier <- maxdepth.train(points.all[-take.off,], ...)
-        results <- maxdepth.classify(points.all[take.off,1:d], classifier)
+        classifier <- ddalpha.train(points.all[-take.off,], separator = "maxD", ...)
+        results <- ddalpha.classify(points.all[take.off,1:d], classifier)
       }
       if (classifier.type == "knnaff"){
         classifier <- knnaff.train(points.all[-take.off,], i = i, ...)

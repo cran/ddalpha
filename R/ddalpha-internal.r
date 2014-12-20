@@ -19,6 +19,39 @@
   numOfPoints <- nrow(data)
   classNames <- unique(data[,dimension + 1])
   numOfClasses <- length(classNames)
+
+  if (is.data.frame(data)) names(data)[ncol(data)] <- paste0("X", ncol(data))
+  
+  # Creating overall structure
+  ddalpha <- list(
+         raw = data, 
+         dimension = dimension, 
+         numPatterns = numOfClasses, 
+         numPoints = numOfPoints, 
+         patterns = list(), 
+         classifiers = list(), 
+#         numClassifiers = 0, 
+#         methodDepth = "randomTukey", 
+#         methodSeparator = "alpha", 
+#         methodAggregation = "majority", 
+#         methodsOutsider = NULL, 
+#         numDirections = 1000, 
+#         directions = NULL, 
+#         projections = NULL, 
+         sameDirections = TRUE, 
+         useConvex = FALSE, 
+         maxDegree = 3, 
+         numChunks = numOfPoints, 
+#         knnrange = NULL,
+#         mahEstimate = "moment", 
+#         mahParMcd = 0.75, 
+#         mahPriors = NULL, 
+#         knnK = 1, 
+#         knnX = NULL, 
+#         knnY = NULL, 
+#         knnD = NULL, 
+         treatments = c("LDA", "KNNAFF", "KNN", "DEPTH.MAHALANOBIS", "RANDEQUAL", "RANDPROP", "IGNORE"))
+
   # Ordering patterns according to their cardinalities
   classCardinalities <- rep(0, numOfClasses)
   for (i in 1:numOfClasses){
@@ -29,69 +62,26 @@
   for (i in 1:numOfClasses){
     maxCarIndex <- which.max(classCardinalities)
     # Creating a single template
-    pattern.index       <- i
-    pattern.points      <- data[data[,dimension + 1] == classNames[maxCarIndex],1:dimension]
-    pattern.name        <- classNames[maxCarIndex]
-    pattern.cardinality <- classCardinalities[maxCarIndex]
-    pattern.depths      <- matrix(rep(0, numOfClasses*classCardinalities[maxCarIndex]), nrow = classCardinalities[maxCarIndex], ncol = numOfClasses)
-    pattern.votes       <- 0
-    pattern <- structure(
-      list(index = pattern.index, 
-        points = pattern.points, 
-        name = pattern.name, 
-        cardinality = pattern.cardinality, 
-        depths = pattern.depths, 
-        votes = pattern.votes, 
-        center = 0, 
-        cov = 0, 
-        sigma = 0, 
-        centerMcd = 0, 
-        covMcd = 0, 
-        sigmaMcd = 0), 
-      .Names = c("index", "points", "name", "cardinality", "depths", 
-                 "votes", "center", "cov", "sigma", "centerMcd", 
-                 "covMcd", "sigmaMcd"))
+    ddalpha$patterns[[i]] <- list(
+      index = i, 
+      points = data[data[,dimension + 1] == classNames[maxCarIndex],1:dimension], 
+      name = classNames[maxCarIndex], 
+      cardinality = classCardinalities[maxCarIndex], 
+      depths = matrix(rep(0, numOfClasses*classCardinalities[maxCarIndex]), nrow = classCardinalities[maxCarIndex], ncol = numOfClasses), 
+      votes = 0#, 
+      #         center = 0, 
+      #         cov = 0, 
+      #         sigma = 0, 
+      #         centerMcd = 0, 
+      #         covMcd = 0, 
+      #         sigmaMcd = 0
+    )
+    
     # Adding pattern template to the list of patterns
-    class(pattern)<-"ddalpha.pattern"
-    patterns[[i]] <- pattern
+    class(ddalpha$patterns[[i]])<-"ddalpha.pattern"
     # Deleting processed pattern
     classCardinalities[maxCarIndex] <- -1    
   }
-  # Creating overall structure
-  ddalpha <- structure(
-    list(raw <- data, 
-         dimension = dimension, 
-         numPatterns = numOfClasses, 
-         numPoints = numOfPoints, 
-         patterns = patterns, 
-         classifiers = list(), 
-         numClassifiers = 0, 
-         methodDepth = "randomTukey", 
-         methodSeparator = "alpha", 
-         methodAggregation = "majority", 
-         methodsOutsider = NULL, 
-         numDirections = 1000, 
-         directions = NULL, 
-         projections = NULL, 
-         sameDirections = TRUE, 
-         useConvex = FALSE, 
-         maxDegree = 3, 
-         numChunks = numOfPoints, 
-         knnrange = NULL,
-         mahEstimate = "moment", 
-         mahParMcd = 0.75, 
-         mahPriors = NULL, 
-         knnK = 1, 
-         knnX = NULL, 
-         knnY = NULL, 
-         knnD = NULL, 
-         treatments <- c("LDA", "KNNAFF", "KNN", "DEPTH.MAHALANOBIS", "RANDEQUAL", "RANDPROP", "IGNORE")), 
-    .Names = c("raw", "dimension", "numPatterns", "numPoints", "patterns", 
-               "classifiers", "numClassifiers", "methodDepth", "methodSeparator", "methodAggregation", 
-               "methodsOutsider", "numDirections", "directions", "projections", "sameDirections", 
-               "useConvex", "maxDegree", "numChunks", "knnrange", "mahEstimate", "mahParMcd", 
-               "mahPriors", "knnK", "knnX", "knnY", "knnD", 
-               "treatments"))
 
   return (ddalpha)
 }
@@ -122,7 +112,7 @@
       }
       if (ddalpha$mahEstimate == "MCD"){
         try(
-          estimate <- covMcd(ddalpha$patterns[[i]]$points, ddalpha$mcdAlpha)
+          estimate <- covMcd(ddalpha$patterns[[i]]$points, ddalpha$mahParMcd)
         )
         try(
           ddalpha$patterns[[i]]$centerMcd <- estimate$center
@@ -144,14 +134,17 @@
       ddalpha$projections <- dSpaceStructure$projections
     }
   }
+  
+  classBegin = 1
   # Calculating depths in each pattern
   for (i in 1:ddalpha$numPatterns){
     if (   ddalpha$methodDepth == "randomTukey" 
         || ddalpha$methodDepth == "projectionRandom" 
-        || ddalpha$methodDepth == "projectionLinearize"){
+        || ddalpha$methodDepth == "projectionLinearize"
+        || ddalpha$methodDepth == "potential"){
       # Random depth is already calculated, just distribute
-      ddalpha$patterns[[i]]$depths <- tmpDSpace[1:ddalpha$patterns[[i]]$cardinality,]
-      tmpDSpace <- tmpDSpace[-(1:ddalpha$patterns[[i]]$cardinality),]
+      ddalpha$patterns[[i]]$depths <- tmpDSpace[classBegin:(classBegin+ddalpha$patterns[[i]]$cardinality-1),]
+      classBegin = classBegin+ddalpha$patterns[[i]]$cardinality
     }
     if (ddalpha$methodDepth == "zonoid"){
       # Calculate depths for the class w.r.t all classes, saying to which of the classes the chunk belongs
@@ -296,6 +289,48 @@
   return(ddalpha)
 }
 
+.ddalpha.count.depths <- function(ddalpha, objects, ...){
+  fname = paste0(".", ddalpha$methodDepth, "_depths")
+  f <- (match.fun(fname))
+  if (!is.function(f))
+    stop(paste0("Wrong function for ", ddalpha$methodDepth))
+  
+  # Count for all data
+  if (is.null(objects))  
+    for (i in 1:ddalpha$numPatterns){
+      objects <- rbind(objects, ddalpha$patterns[[i]]$points)
+    }
+  
+  # Transform the data once
+  if (ddalpha$needtransform == 1){
+    objects <- ddalpha$patterns[[1]]$transformer(objects)
+  } 
+  
+  # Calculate depths for all classes together
+  if (ddalpha$needtransform != 2){
+    res <- f(ddalpha, objects, ...)
+    return(res) 
+  }
+  # Calculate depths w.r.t. each class
+  else {
+    d <- NULL
+    
+    # w.r.t. each class
+    for (cls in 1:ddalpha$numPatterns){
+      
+      data <- ddalpha$patterns[[cls]]$transformer( ddalpha$patterns[[cls]]$points )
+      cardinalities <- c(ddalpha$patterns[[cls]]$cardinality)      
+      t_objects <- ddalpha$patterns[[cls]]$transformer(objects)
+      
+      depth <- f(ddalpha, data, cardinalities, t_objects, ...)
+      
+      d = cbind(d, depth)
+    }
+    
+    return(d)    
+  }
+}
+
 .ddalpha.classify.outsiders<- function (objects, ddalpha, settings){
   if (settings$method == "LDA"){
     return (.lda_classify(objects, ddalpha, settings))
@@ -410,6 +445,7 @@
   }
   return (matrix(result$depths, nrow=nrow(objects), ncol=ddalpha$numPatterns, byrow=TRUE))
 }
+.randomTukey_depths <- .halfspace_depths
 
 .zonoid_depths <- function(ddalpha, objects, ownPattern = 0){
   depths <- NULL
@@ -451,11 +487,17 @@
   return (depths)
 }
 
-.Mahalanobis_depth <- function(points, center, sigma){
+.Mahalanobis_depth <- function(points, center = colMeans(data), sigma = solve(cov(data))){
   if (is.matrix(points)){
-    tmp1 <- t(t(points) - center)
-    d <- diag(tmp1 %*% sigma %*% t(tmp1))
-    d <- 1/(1 + d)
+    i = 1; step = 200
+    d <- NULL
+    while (i<nrow(points)){
+      tmp1 <- t(t(points[i:min(i+step, nrow(points)),, drop = F]) - center)
+
+      dd <- diag(tmp1 %*% sigma %*% t(tmp1))
+      d <- c(d,1/(1 + dd))
+      i = i+1+step
+    }
 #     d <- rep(0, nrow(points))
 #     for (i in 1:nrow(points)){
 #       d[i] <- 1/(1 + (points[i,] - center) %*% sigma %*% (points[i,] - center))
@@ -539,6 +581,8 @@
     return (depths)
   }
 }
+.projectionRandom_depths <- .projection_depths
+.projectionLinearize_depths <- .projection_depths
 
 .spatial_depths <- function(ddalpha, objects){
   depths <- NULL
@@ -1139,12 +1183,10 @@ print.ddalpha <- function(x, ...){
       ", num.patterns = ", x$numPatterns, "\n", sep="")
   cat("\t depth = \"", x$methodDepth, "\"\n", sep="")
   cat("\t aggregation.method = \"", x$methodAggregation, "\"\n", sep="")
-  cat("\t num.chunks =", x$numChunks, "\n")
-  if (x$methodDepth == "randomTukey"){
-    cat("\t num.directions =", x$numDirections, "\n")
-  }
+  if (is.numeric(x$numChunks)) cat("\t num.chunks =", x$numChunks, "\n")
+  if (is.numeric(x$numDirections)) cat("\t num.directions =", x$numDirections, "\n")
   cat("\t use.convex =", x$useConvex, "\n")
-  cat("\t max.degree =", x$maxDegree, "\n")
+  if (is.numeric(x$maxDegree)) cat("\t max.degree =", x$maxDegree, "\n")
   cat("patterns:\n")
   for (i in 1:length(x$patterns)){
     cat("\t ");print(x$patterns[[i]])

@@ -14,7 +14,7 @@
    Physica-Verlag, Heidelberg, p. 235--240.
 */   
 
-double ZonoidDepth(vector<TPoint> x, TPoint z, int& Error);
+double ZonoidDepth(vector<TPoint>& x, TPoint& z, int& Error);
 /* 
    Calculate the zonoid data depth of the point 'z' with respect to the
    data points 'x'. The number of data points is passed in 'NoPoints',
@@ -28,12 +28,12 @@ double ZonoidDepth(vector<TPoint> x, TPoint z, int& Error);
    zonoid data depth of 'z'. If the error code is 2, the return value is -1. 
 */
 
-int IsInConvex(vector<TPoint> x, TPoint z, int& Error);
-int InConvexes(TMatrix points, TVariables cardinalities, TMatrix objects, int& Error, TMatrix *areInConvexes);
+int IsInConvex(vector<TPoint>& x, TPoint& z, int& Error);
+int InConvexes(TMatrix& points, TVariables& cardinalities, TMatrix& objects, int& Error, TMatrix *areInConvexes);
 
-int GetMeansSds(vector<TPoint> x, TPoint *means, TPoint *sds);
-int Standardize(vector<TPoint> &x, TPoint means, TPoint sds);
-int Standardize(TPoint &x, TPoint means, TPoint sds);
+int GetMeansSds(vector<TPoint>& x, TPoint *means, TPoint *sds);
+int Standardize(vector<TPoint> &x, TPoint& means, TPoint& sds);
+int Standardize(TPoint &x, TPoint& means, TPoint& sds);
 
 #endif
 

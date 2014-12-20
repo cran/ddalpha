@@ -1,12 +1,22 @@
 \name{ddalpha.train}
 \alias{ddalpha.train}
+
+\alias{alpha}
+\alias{polynomial}
+\alias{knnlm}
+\alias{maxD}
+
+\alias{outsiders}
+
 \title{
-Train DD\eqn{\alpha}-Classifier
+Train DD-Classifier
 }
 \description{
-Trains the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharovskyi, 2014; Mozharovskyi, Mosler and Lange, 2013) using a training sample according to given parameters. The DD\eqn{\alpha}-classifier is a nonparametric procedure that first transforms the training sample into the depth space calculating for that depth of each point w.r.t each class (dimension of this space equals the number of classes in the training sample then), and then constructs a linear separating rule in the polynomial extension of the depth space with the \eqn{\alpha}-procedure (Vasil'ev, 2003); maximum degree of the polynomial products is determined via cross-validation (in the depth space). If in the classification phase an object does not belong to the convex hull of at least one class (we mention such an object as an 'outsider'), it is mapped into the origin of the depth space and hence cannot be classified in the depth space. For these objects, after 'outsiderness' has been assured, an outsider treatment, i.e. a classification procedure functioning outside convex hulls of the classes is applied; it has to be trained first too.
+Trains the DD-classifier using a training sample according to given parameters. 
+The DD-classifier is a nonparametric procedure that first transforms the training sample into the depth space calculating the depth of each point w.r.t each class (dimension of this space equals the number of classes in the training sample), and then constructs a separating rule in this depth space. 
+If in the classification phase an object does not belong to the convex hull of at least one class (we mention such an object as an 'outsider'), it is mapped into the origin of the depth space and hence cannot be classified in the depth space. For these objects, after 'outsiderness' has been assured, an outsider treatment, i.e. a classification procedure functioning outside convex hulls of the classes is applied; it has to be trained too.
 
-The current realization of the DD\eqn{\alpha}-classifier allows for several alternative outsider treatments; they involve different traditional classification methods, see 'Details' and 'Arguments' for parameters needed. 
+The current realization of the DD-classifier allows for several alternative outsider treatments; they involve different traditional classification methods, see 'Details' and 'Arguments' for parameters needed. 
 
 The function allows for classification with \eqn{q\ge 2} classes, see \code{aggregation.method} in 'Arguments'.
 }
@@ -16,25 +26,22 @@ ddalpha.train(data,
               separator = "alpha", 
               outsider.methods = "LDA", 
               outsider.settings = NULL, 
-              aggregation.method = "majority", 
-              knnrange = NULL, 
-              num.chunks = 10, 
-              num.directions = 1000, 
-              use.convex = FALSE, 
-              max.degree = 3, 
-              mah.estimate = "moment", 
-              mah.parMcd = 0.75, 
-              mah.priors = NULL)
+              aggregation.method = "majority",
+              pretransform = NULL,
+              mah.parMcd = 0.75,
+              use.convex = FALSE,              
+              ...)
+
 }
 \arguments{
   \item{data}{
-Matrix containing training sample where each row is one object of the training sample where first \eqn{d} entries are inputs and the last entry is output (class label).
+Matrix containing training sample where each of \eqn{n} rows is one object of the training sample where first \eqn{d} entries are inputs and the last entry is output (class label).
 }
   \item{depth}{
-Character string determining which depth notion to use; can be \code{"randomTukey"} (the default) or \code{"zonoid"}.
+Character string determining which depth notion to use; the default value is \code{"randomTukey"}. The list of the supported depths is given in section \emph{\bold{\code{Depths}}}.
 }
   \item{separator}{
-The method used for separation on the DD-plot; can be \code{"alpha"} (the default) or \code{"knnlm"}.
+The method used for separation on the DD-plot; can be \code{"alpha"} (the default), \code{"knnlm"} or \code{"maxD"}. See section \emph{\bold{\code{Separators}}} for the description of the sparators and additional parameters.
 }
   \item{outsider.methods}{
 Vector of character strings each being a name of a basic outsider method for eventual classification; possible names are: \code{"LDA"} (the default), \code{"kNN"}, \code{"kNNAff"}, \code{"depth.Mahalanobis"}, \code{"RandProp"}, \code{"RandEqual"} and \code{"Ignore"}. Each method can be specified only once, replications are ignored. By specifying treatments in such a way only a basic treatment method can be chosen (by the name), and the default settings for each of the methods are applied, see 'Details'.
@@ -45,32 +52,111 @@ List containing outsider treatments each described by a list of parameters inclu
   \item{aggregation.method}{
 Character string determining which method to apply to aggregate binary classification results during multiclass classification; can be \code{"majority"} (the default) or \code{"sequent"}. If \code{"majority"}, \eqn{q(q-1)/2} (with \eqn{q} being the number of classes in the training sample) binary classifiers are trained, the classification results are aggregated using the majority voting, where classes with larger proportions in the training sample (eventually with the earlier entries in the \code{data}) are preferred when tied. If \code{"sequent"}, \eqn{q} binary 'one against all'-classifiers are trained and ties during the classification are resolved as before.
 }
-  \item{knnrange}{
-The maximal number of neighbours for kNN separation.
+  \item{pretransform}{
+indicates if the data has to be scaled before the learning procedure.
+If the used depth method is affine-invariant and pretransform doesn't influence the result, the data won't be transformed (the parameter is ignored).
+
+\describe{
+  \item{NULL}{
+applies no transformation to the data
+  }
+  \item{"1MahMom", "1MahMCD"}{
+the data is transformed with the common covariance martix of the whole data
+  }
+  \item{"NMahMom", "NMahMCD"}{
+the data is transformed w.r.t. each class using its covariance martix. The depths w.r.t. each class are calculated using the transformed data.
+  }
+  for the values \code{"1MahMCD", "NMahMCD"} \code{\link{covMcd}} is used to calculate the covariance martix, and the parameter \code{mah.parMcd} is used.
+  }
+  
 }
-  \item{num.chunks}{
-Number of chunks to split data into when cross-validating the \eqn{\alpha}-procedure; should be \eqn{>0}, and smaller than the total number of points in the two smallest classes when \code{aggregation.method =} \code{"majority"} and smaller than the total number of points in the training sample when \code{aggregation.method =} \code{"sequent"}.
-}
-  \item{num.directions}{
-Number of directions to use when calculating the random Tukey depth (i.e. when \code{depth =} \code{"randomTukey"}); should be \eqn{>1}.
+  \item{mah.parMcd}{
+  is the value of the argument \code{alpha} for the function \code{\link{covMcd}}; is used if \code{depth = "Mahalanobis"} when \code{mah.estimate = "MCD"} and in pretransforming the data if \code{pretransform in ("1MahMCD", "NMahMCD")}.
 }
   \item{use.convex}{
 Logical variable indicating whether outsiders should be determined exactly, i.e. as the points not contained in any of the convex hulls of the classes from the training sample (\code{TRUE}), or those having zero depth w.r.t. each class from the training sample (\code{FALSE}). For \code{depth =} \code{"zonoid"} both values give the same result.
 }
-  \item{max.degree}{
-Maximum of the range of degrees of the polynomial depth space extension over which the \eqn{\alpha}-procedure is to be cross-validated; can be 1, 2 or 3.
-}
-  \item{mah.estimate}{
-%%     ~~Describe \code{num.directions} here~~
-}
-  \item{mah.parMcd}{
-%%     ~~Describe \code{use.convex} here~~
-}
-  \item{mah.priors}{
-%%     ~~Describe \code{max.degree} here~~
+
+  \item{...}{
+The parameters for the depth calculating and separation methods.
 }
 }
+
 \details{
+
+\subsection{Depths}{
+
+The following depths are supported:
+
+\code{\link[ddalpha:depth.Mahalanobis]{Mahalanobis}} for calculation of Mahalanobis depth,\cr
+\code{\link[ddalpha:depth.projection]{projectionRandom}} for calculation of projection depth using random projections,\cr
+\code{\link[ddalpha:depth.projection]{projectionLinearize}} for calculation of projection depth using the Nelder-Mead method,\cr
+\code{\link[ddalpha:depth.randomTukey]{randomTukey}} for calculation of the random Tukey depth,\cr
+\code{\link[ddalpha:depth.spatial]{spatial}} for calculation of spatial depth,\cr
+\code{\link[ddalpha:depth.zonoid]{zonoid}} for calculation of zonoid depth. 
+
+The additional parameters are described in the corresponding topics.
+
+}
+
+\subsection{Separators}{
+
+The separators classify data on the 2-dimensional space of a DD-plot built using the depths.
+
+\subsection{alpha}{
+
+Trains the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharovskyi, 2014; Mozharovskyi, Mosler and Lange, 2013). The DD\eqn{\alpha}-classifier constructs a linear separating rule in the polynomial extension of the depth space with the \eqn{\alpha}-procedure (Vasil'ev, 2003); maximum degree of the polynomial products is determined via cross-validation (in the depth space).
+
+The additional parameters:
+\describe{
+  \item{max.degree}{
+Maximum of the range of degrees of the polynomial depth space extension over which the \eqn{\alpha}-procedure is to be cross-validated; can be 1, 2 or 3 (default).
+}
+  \item{num.chunks}{
+Number of chunks to split data into when cross-validating the \eqn{\alpha}-procedure; should be \eqn{>0}, and smaller than the total number of points in the two smallest classes when \code{aggregation.method =} \code{"majority"} and smaller than the total number of points in the training sample when \code{aggregation.method =} \code{"sequent"}. The default value is 10.
+}
+}
+}
+
+\subsection{polynomial}{
+
+Trains the polynomial DD-classifier (Li, Cuesta-Albertos and Liu, 2012). The DD-classifier constructs a polynomial separating rule in the depth space; the degree of the polynomial is determined via cross-validation (in the depth space).
+
+The additional parameters:
+\describe{
+  \item{max.degree}{
+Maximum of the range of degrees of the polynomial over which the separator is to be cross-validated; can be in [1:10], the default value is 3.
+}
+  \item{num.chunks}{
+Number of chunks to split data into when cross-validating the separator; should be \eqn{>0}, and smaller than the total number of points in the two smallest classes when \code{aggregation.method =} \code{"majority"} and smaller than the total number of points in the training sample when \code{aggregation.method =} \code{"sequent"}. The default value is 10.
+}
+}
+}
+
+\subsection{knnlm}{
+
+Trains the \code{k}-nearest neighbours classifier in the depth space.
+
+The additional parameters:
+\describe{
+  \item{knnrange}{
+The maximal number of neighbours for kNN separation. The value is bounded by \eqn{2} and \eqn{n/2}.
+
+\code{NULL} for the default value \eqn{10*(n^{1/q})+1}, where \eqn{n} is the number of objects, \eqn{q} is the number of classes. 
+
+\code{"MAX"} for the maximum value \eqn{n/2}
+}
+}
+}
+
+\subsection{maxD}{
+The \code{maximum depth} separator classifies an object to the class that provides it the largest depth value.
+}
+
+}
+
+\subsection{Outsider treatment}{
+
 An outsider treatment is a supplementary classifier for data that lie outside the convex hulls of all \eqn{q} training classes.
 Available methods are: Linear Discriminant Analysis (referred to as "LDA"), see \code{\link{lda}}; \eqn{k}-Nearest-Neighbor Classifier ("kNN"), see \code{\link{knn}}, \code{\link{knn.cv}}; Affine-Invariant kNN ("kNNAff"), an affine-invariant version of the kNN, suited only for binary classification (some aggregation is used with multiple classes) and not accounting for ties (at all), but very fast by that; Maximum Mahalanobis Depth Classifier ("depth.Mahalanobis"), the outsider is referred to a class w.r.t. which it has the highest depth value scaled by (approximated) priors; Proportional Randomization ("RandProp"), the outsider is referred to a class randomly with probability equal to it (approximated) prior; Equal Randomization ("RandEqual"), the outsider is referred to a class randomly, chances for each class are equal; Ignoring ("Ignore"), the outsider is not classified, the string "Ignored" is returned instead.
 
@@ -96,6 +182,7 @@ An outsider treatment is specified by a list containing a name and parameters:
 
 \code{mcd.alpha} is the value of the argument \code{alpha} for the function \code{\link{covMcd}}; is used in method "depth.Mahalanobis" when \code{mah.estimate =} \code{"MCD"}.
 }
+}
 \value{
 Trained DD\eqn{\alpha}-classifier containing following - rather informative - fields:
 \item{num.points}{Total number of points in the training sample.}
@@ -111,6 +198,8 @@ Trained DD\eqn{\alpha}-classifier containing following - rather informative - fi
 \item{outsider.methods}{Treatments to be used to classify outsiders.}
 }
 \references{
+Mozharovskyi, P. (2015), \emph{Contributions to Depth-based Classification and Computation of the Tukey Depth}, Verlag Dr. Kovac (Hamburg).
+
 Dyckerhoff, R., Koshevoy, G. and Mosler, K. (1996), Zonoid data depth: theory and computation. In: Prat A. (ed), \emph{COMPSTAT 1996. Proceedings in computational statistics}, Physica-Verlag (Heidelberg), 235--240.
 
 Lange, T., Mosler, K. and Mozharovskyi, P. (2014), Fast nonparametric classification based on data depth, \emph{Statistical Papers}, \bold{55}, 49--69.
@@ -118,12 +207,18 @@ Lange, T., Mosler, K. and Mozharovskyi, P. (2014), Fast nonparametric classifica
 Mozharovskyi, P., Mosler, K. and Lange, T. (2013), Classifying real-world data with the DD\eqn{\alpha}-procedure, \emph{Mimeo}.
 
 Vasil'ev, V.I. (2003), The reduction principle in problems of revealing regularities I, \emph{Cybernetics and Systems Analysis}, \bold{39}, 686--694.
+
+Li, J., Cuesta-Albertos, J. A. and Liu, R. Y. (2012). dd-classifier: Nonparametric classification procedure based on dd-plot, Journal of the American Statistical Association
+107(498): 737\{753\}.
 }
 \author{
 The algorithm for computation of zonoid depth (Dyckerhoff, Koshevoy and Mosler, 1996) has been implemented in C++ by Rainer Dyckerhoff.
 }
 \seealso{
-\code{\link{ddalpha.classify}} for classification using DD\eqn{\alpha}-classifier, \code{\link{depth.space.zonoid}} and \code{\link{depth.space.randomTukey}} for calculation of depth spaces, \code{\link{is.in.convex}} to check whether a point is not an outsider.
+\code{\link{ddalpha.classify}} for classification using DD\eqn{\alpha}-classifier, 
+\code{\link{depth.*}} for calculation of depths, 
+\code{\link{depth.space.*}} for calculation of depth spaces, 
+\code{\link{is.in.convex}} to check whether a point is not an outsider.
 }
 \examples{
 # Generate a bivariate normal location-shift classification task

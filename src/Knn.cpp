@@ -60,21 +60,28 @@ static int GetCov(TMatrix x, TMatrix *cov){
 static int GetInverted(TMatrix x, TMatrix *inv){
 	unsigned int d = x.size();if (d <= 0){return -1;}
 	unsigned int _d = x[0].size();if (_d != d){return -1;}
-	boost::numeric::ublas::matrix<double> A(d, d);A.clear();
+  
+  NumericMatrix A(d,d);
+  
+//	boost::numeric::ublas::matrix<double> A(d, d);A.clear();
 	for (unsigned int i = 0; i < d; i++){
 		for (unsigned int j = 0; j < d; j++){
 			A(i,j) = x[i][j];
 		}
 	}
-	typedef boost::numeric::ublas::permutation_matrix<std::size_t> pmatrix;
+/*	typedef boost::numeric::ublas::permutation_matrix<std::size_t> pmatrix;
 	boost::numeric::ublas::matrix<double> Inv(d, d);Inv.clear();
 	pmatrix pm(A.size1());
 	int res = lu_factorize(A, pm);
 	if (res != 0){return -1;}
 	Inv.assign(boost::numeric::ublas::identity_matrix<double> (A.size1()));
-	boost::numeric::ublas::lu_substitute(A, pm, Inv);
-	inv->resize(d);for(unsigned int i = 0; i < d; i++){(*inv)[i].resize(d);}
-	for (unsigned int i = 0; i < d; i++){
+	boost::numeric::ublas::lu_substitute(A, pm, Inv);*/
+	
+  Function solve("solve");
+  NumericMatrix Inv = solve(A);
+  
+  inv->resize(d);for(unsigned int i = 0; i < d; i++){(*inv)[i].resize(d);}
+  for (unsigned int i = 0; i < d; i++){
 		for (unsigned int j = 0; j < d; j++){
 			 (*inv)[i][j] = Inv(i,j);
 		}

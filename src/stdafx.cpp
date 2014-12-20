@@ -6,3 +6,9 @@
 
 // TODO: reference any additional headers you need in STDAFX.H
 // and not in this file
+
+
+int random(int x){
+  int c = ran(x); 
+  return c == x ? random(x) : c;
+}
