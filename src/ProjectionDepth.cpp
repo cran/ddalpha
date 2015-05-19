@@ -26,13 +26,17 @@ static int CompareDec(OrderRec x, OrderRec y)
 static void GetMedMad(TPoint &points, double &median, double &mad){
 	/* First, determine median */
 	int n = points.size();
-	sort(points.begin(), points.end());
-	median = (points[(n + 1)/2 - 1] + points[(n + 2)/2 - 1])/2.;
+	//sort(points.begin(), points.end());
+  //median = (points[(n + 1)/2 - 1] + points[(n + 2)/2 - 1])/2.;
+  nth_element(points.begin(), points.begin() + n/2, points.end());
+	median = points[n/2];
 	/* Obtain median absolute deviation (from median) (MAD) */
 	TPoint deviations(n);
 	for (int i = 0; i < n; i++){deviations[i] = abs(points[i] - median);}
-	sort(deviations.begin(), deviations.end());
-	mad = (deviations[(n + 1)/2 - 1] + deviations[(n + 2)/2 - 1])/2.;
+  //sort(deviations.begin(), deviations.end());
+  //median = (deviations[(n + 1)/2 - 1] + deviations[(n + 2)/2 - 1])/2.;
+  nth_element(deviations.begin(), deviations.begin() + n/2, deviations.end());
+	mad = deviations[n/2];
 }
 
 void GetPtsPrjDepths(TPoint projection, TPoint objectsProjection,

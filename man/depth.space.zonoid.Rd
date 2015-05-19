@@ -7,7 +7,7 @@ Calculate Depth Space using Zonoid Depth
 Calculates the representation of the training classes in depth space using zonoid depth.
 }
 \usage{
-depth.space.zonoid(data, cardinalities)
+depth.space.zonoid(data, cardinalities, seed = 0)
 }
 \arguments{
   \item{data}{
@@ -15,6 +15,9 @@ Matrix containing training sample where each row is a \eqn{d}-dimensional object
 }
   \item{cardinalities}{
 Numerical vector of cardinalities of each class in \code{data}, each entry corresponds to one class.
+}
+  \item{seed}{
+the random seed. The dafault value \code{seed=0} makes no changes.
 }
 }
 \details{

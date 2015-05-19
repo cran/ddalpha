@@ -13,6 +13,7 @@ ddalphaf.train(dataf, labels,
                                numDer = -1), 
                 classifier.type = c("ddalpha", "maxdepth", "knnaff", "lda", "qda"), 
                 cv.complete = FALSE, 
+                seed = 0,
                 ...)
 }
 
@@ -53,6 +54,9 @@ the classifier which is used on the transformed space. The default value is 'dda
   \item{cv.complete}{
 T: apply complete cross-validation\cr
 F: restrict cross-validation by Vapnik-Chervonenkis bound
+}
+  \item{seed}{
+the random seed. The dafault value \code{seed=0} makes no changes.
 }
   \item{\dots}{
 additional parameters, passed to the classifier, selected with parameter \code{classifier.type}.

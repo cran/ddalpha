@@ -7,7 +7,7 @@ Calculate the Random Tukey Depth
 Calculates the random Tukey depth of points w.r.t. a multivariate data set.
 }
 \usage{
-depth.randomTukey(x, data, num.directions = 1000)
+depth.randomTukey(x, data, num.directions = 1000, seed = 0)
 }
 \arguments{
   \item{x}{
@@ -18,6 +18,9 @@ Matrix of data where each row contains a \eqn{d}-variate point, w.r.t. which the
 }
   \item{num.directions}{
 Number of random directions to be generated.
+}
+  \item{seed}{
+the random seed. The dafault value \code{seed=0} makes no changes.
 }
 }
 \details{

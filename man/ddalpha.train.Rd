@@ -29,7 +29,8 @@ ddalpha.train(data,
               aggregation.method = "majority",
               pretransform = NULL,
               mah.parMcd = 0.75,
-              use.convex = FALSE,              
+              use.convex = FALSE,     
+              seed = 0,
               ...)
 
 }
@@ -76,7 +77,9 @@ the data is transformed w.r.t. each class using its covariance martix. The depth
   \item{use.convex}{
 Logical variable indicating whether outsiders should be determined exactly, i.e. as the points not contained in any of the convex hulls of the classes from the training sample (\code{TRUE}), or those having zero depth w.r.t. each class from the training sample (\code{FALSE}). For \code{depth =} \code{"zonoid"} both values give the same result.
 }
-
+  \item{seed}{
+the random seed. The dafault value \code{seed=0} makes no changes.
+}
   \item{...}{
 The parameters for the depth calculating and separation methods.
 }

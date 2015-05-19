@@ -7,7 +7,8 @@
 # Computation of depth space based on the random Tukey data depth.
 ################################################################################
 
-depth.space.randomTukey <- function(data, cardinalities, num.directions = 1000){
+depth.space.randomTukey <- function(data, cardinalities, num.directions = 1000, seed = 0){
+  if (seed != 0) set.seed(seed)
   if (!(is.matrix(data) && is.numeric(data)
         || is.data.frame(data) && prod(sapply(data, is.numeric))) 
       || ncol(data) < 2){
@@ -43,6 +44,7 @@ depth.space.randomTukey <- function(data, cardinalities, num.directions = 1000){
             as.integer(c), 
             as.integer(length(cardinalities)), 
             as.integer(k), as.integer(1), 
+            as.integer(seed),
             dspc=double(nrow(data)*length(cardinalities)), 
             dirs=double(k*ncol(data)), 
             prjs=double(k*nrow(data)))

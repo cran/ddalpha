@@ -7,7 +7,7 @@
   Calculates the projection depth of points w.r.t. a multivariate data set.
 }
 \usage{
-  depth.projection(x, data, method = "random", num.directions = 1000)
+  depth.projection(x, data, method = "random", num.directions = 1000, seed = 0)
 }
 \arguments{
   \item{x}{
@@ -25,6 +25,9 @@
   }
   \item{num.directions}{
 Number of random directions to be generated for \code{method = "random"}.
+}
+  \item{seed}{
+the random seed. The dafault value \code{seed=0} makes no changes.
 }
 }
 \details{

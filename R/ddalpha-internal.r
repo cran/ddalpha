@@ -367,7 +367,8 @@
   return (ifelse(rowSums(convexes)>0,1,0))
 }
 
-.count_convexes <- function(objects, points, cardinalities){
+.count_convexes <- function(objects, points, cardinalities, seed = 0){
+  if (is.na(seed)) seed = 0
   x <- as.vector(t(points))
   dimension <- ncol(points)
   numClasses <- length(cardinalities)
@@ -380,6 +381,7 @@
                as.integer(numClasses), 
                as.double(o), 
                as.integer(numObjects), 
+               as.integer(seed), 
                isInConvexes=integer(numObjects*numClasses))$isInConvexes
   result <- matrix(result, byrow = T, ncol = numClasses)
   return (result)
@@ -397,10 +399,10 @@
   k <- ddalpha$numDirections
 #  sameDirs <- 1 #?
   if (ddalpha$sameDirections){
-    rez <- .C("HDSpace", as.double(x), as.integer(ncol(points)), as.integer(c), as.integer(ddalpha$numPatterns), as.integer(k), as.integer(1), dspc=double(nrow(points)*ddalpha$numPatterns), dirs=double(k*ncol(points)), prjs=double(k*nrow(points)))
+    rez <- .C("HDSpace", as.double(x), as.integer(ncol(points)), as.integer(c), as.integer(ddalpha$numPatterns), as.integer(k), as.integer(1), as.integer(ddalpha$seed), dspc=double(nrow(points)*ddalpha$numPatterns), dirs=double(k*ncol(points)), prjs=double(k*nrow(points)))
     return (list(dspace=matrix(rez$dspc, nrow=nrow(points), ncol=ddalpha$numPatterns, byrow=TRUE), directions=rez$dirs, projections=rez$prjs))
   }else{
-    rez <- .C("HDSpace", as.double(x), as.integer(ncol(points)), as.integer(c), as.integer(ddalpha$numPatterns), as.integer(k), as.integer(0), dspc=double(nrow(points)*ddalpha$numPatterns), dirs=double(1), prjs=double(1))
+    rez <- .C("HDSpace", as.double(x), as.integer(ncol(points)), as.integer(c), as.integer(ddalpha$numPatterns), as.integer(k), as.integer(0), as.integer(ddalpha$seed), dspc=double(nrow(points)*ddalpha$numPatterns), dirs=double(1), prjs=double(1))
     return (list(dspace=matrix(rez$dspc, nrow=nrow(points), ncol=ddalpha$numPatterns, byrow=TRUE), directions=0, projections=0))
   }
 }
@@ -428,6 +430,7 @@
                  as.double(ddalpha$projections), 
                  as.integer(k), 
                  as.integer(1), 
+                 as.integer(ddalpha$seed),
                  depths=double(ddalpha$numPatterns*nrow(objects)))
   }else{
     result <- .C("HDepth", 
@@ -441,6 +444,7 @@
                  as.double(0), 
                  as.integer(k), 
                  as.integer(0), 
+                 as.integer(ddalpha$seed),
                  depths=double(ddalpha$numPatterns*nrow(objects)))
   }
   return (matrix(result$depths, nrow=nrow(objects), ncol=ddalpha$numPatterns, byrow=TRUE))
@@ -453,7 +457,8 @@
     pattern <- ddalpha$patterns[[i]]$points
     x <- as.vector(t(pattern))
     y <- as.vector(t(objects))
-    ds <- .C("ZDepth", as.double(x), as.double(y), as.integer(nrow(pattern)), as.integer(nrow(objects)), as.integer(ncol(pattern)), depths=double(nrow(objects)))$depths
+    ds <- .C("ZDepth", as.double(x), as.double(y), as.integer(nrow(pattern)), as.integer(nrow(objects)), 
+             as.integer(ncol(pattern)), as.integer(ddalpha$seed), depths=double(nrow(objects)))$depths
     if (i == ownPattern){
       ds <- replace(ds, which(ds < 1/nrow(pattern) - sqrt(.Machine$double.eps)), 1/nrow(pattern))
     }else{
@@ -465,29 +470,23 @@
 }
 
 .Mahalanobis_depths <- function(ddalpha, objects){
-  depths <- matrix(nrow = nrow(objects), ncol = ddalpha$numPatterns)
+  depths <- NULL
   if (ddalpha$mahEstimate == "moment"){
-    for (i in 1:nrow(objects)){
-      for (j in 1:ddalpha$numPatterns){
-        depths[i,j] <- 1/(1 + (objects[i,] - ddalpha$patterns[[j]]$center) 
-                          %*% ddalpha$patterns[[j]]$sigma 
-                          %*% (objects[i,] - ddalpha$patterns[[j]]$center))
-      }
+    for (j in 1:ddalpha$numPatterns){
+      depths <- cbind(depths, .Mahalanobis_depth (objects, center = ddalpha$patterns[[j]]$center, sigma = ddalpha$patterns[[j]]$sigma))
     }
   }
   if (ddalpha$mahEstimate == "MCD"){
-    for (i in 1:nrow(objects)){
-      for (j in 1:ddalpha$numPatterns){
-        depths[i,j] <- 1/(1 + (objects[i,] - ddalpha$patterns[[j]]$centerMcd) 
-                          %*% ddalpha$patterns[[j]]$sigmaMcd 
-                          %*% (objects[i,] - ddalpha$patterns[[j]]$centerMcd))
-      }
+    for (j in 1:ddalpha$numPatterns){
+      depths <- cbind(depths, .Mahalanobis_depth (objects, center = ddalpha$patterns[[j]]$centerMcd, sigma = ddalpha$patterns[[j]]$sigmaMcd))
     }
-  }
+  }  
   return (depths)
 }
 
-.Mahalanobis_depth <- function(points, center = colMeans(data), sigma = solve(cov(data))){
+.Mahalanobis_depth <- function(points, center = colMeans(points), sigma = solve(cov(points))){
+  if (is.data.frame(points))
+    points <- as.matrix(points)
   if (is.matrix(points)){
     i = 1; step = 200
     d <- NULL
@@ -531,6 +530,7 @@
                  prjs=double(k*nrow(points)), 
                  as.integer(k), 
                  as.integer(1), 
+                 as.integer(ddalpha$seed),
                  dspc=double(ddalpha$numPatterns*nrow(points)))
     return (list(dspace=matrix(result$dspc, nrow=nrow(points), 
                                ncol=ddalpha$numPatterns, byrow=TRUE), 
@@ -569,6 +569,7 @@
                  as.double(ddalpha$projections), 
                  as.integer(k), 
                  as.integer(0), 
+                 as.integer(ddalpha$seed),
                  depths=double(ddalpha$numPatterns*nrow(objects)))
     return (matrix(result$depths, nrow=nrow(objects), ncol=ddalpha$numPatterns, byrow=TRUE))
   }
@@ -585,6 +586,8 @@
 .projectionLinearize_depths <- .projection_depths
 
 .spatial_depths <- function(ddalpha, objects){
+  if (is.data.frame(objects))
+    objects = as.matrix(objects)
   depths <- NULL
   for (i in 1:ddalpha$numPatterns){
     pattern <- ddalpha$patterns[[i]]$points

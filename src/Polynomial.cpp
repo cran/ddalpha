@@ -14,6 +14,7 @@ DD-plot, Journal of the American Statistical Association 107(498): 737 - 753.
 #include "stdafx.h"
 
 #include <limits>
+#include <boost/math/special_functions/binomial.hpp>
 
 /**
 Calculates the empirical risk for two classes on the basis of given depths
@@ -39,7 +40,7 @@ double GetEmpiricalRiskSmoothed(TPoint& polynomial, TMatrix& points, unsigned nu
 		double val = points[i][0];
 		double res = 0;
 		for (unsigned j = 0; j < degree; j++){
-			res += polynomial[j] * pow(val, j);
+			res += polynomial[j] * std::pow(val, j);
 		}
 		risk += 1 / (1 + exp(-smoothingConstant*(points[i][1] - res)*sign));
 	}
@@ -69,7 +70,7 @@ double GetEmpiricalRisk(TPoint& polynomial, TMatrix& points, unsigned numClass1)
 		double val = points[i][0];
 		double res = 0;
 		for (unsigned j = 0; j<degree; j++){
-			res += polynomial[j] * pow(val, j);
+			res += polynomial[j] * std::pow(val, j);
 		}
 		if ((points[i][1] - res)*sign > 0){    // for class1 depths[i,2] > res, for class 2 <
 			risk++;
@@ -81,7 +82,7 @@ double GetEmpiricalRisk(TPoint& polynomial, TMatrix& points, unsigned numClass1)
 
 /**
 Calculates the coefficients of the polynomial of a given degree
-pathing through given pionts an the origin
+pathing through given points an the origin
 
 @param degree : degree of the polynomial, should be equal the number of points
 @param points : degreex2 points for the polynomial to path through
@@ -95,7 +96,7 @@ TPoint GetPolynomial(unsigned degree, TMatrix& points) {
 	bMatrix A(degree, degree);
 	for (unsigned i = 0; i < degree; i++){
 		for (unsigned j = 0; j < degree; j++){
-			A(i, j) = (pow(points[i][0], j + 1));
+			A(i, j) = (std::pow(points[i][0], j + 1));
 		}
 	}
 
@@ -118,8 +119,8 @@ TPoint GetPolynomial(unsigned degree, TMatrix& points) {
 }
 
 /**
-Chooses the best in classification sence polynomial among
-"cardinality" randomly chosen polynomials, passing throug
+Chooses the best in classification sense polynomial among
+"cardinality" randomly chosen polynomials, passing through
 "degree" arbitrary points
 
 @param points:       nx2 matrix of points where first column is an absciss,	n = numClass1 + numClass2
@@ -173,12 +174,16 @@ TPoint GetRandomMinPolynomial(TMatrix& points, unsigned numClass1, unsigned degr
 			}
 		}
 		catch (runtime_error &e){ /* singular matrix*/ }
-    catch (...){ /* NA or inf */ }
+		catch (...){ /* NA or inf */ }
 	}
 	return minPolynomial;
 }
 
-#ifndef VStudio
+#ifndef _MSC_VER
+
+#include <Rcpp.h> 
+using namespace Rcpp;
+
 // [[Rcpp::export]]
 double CGetEmpiricalRiskSmoothed(NumericVector& polynomial, NumericMatrix& points, int numClass1, int numClass2){
 	const float smoothingConstant = 100;
@@ -193,7 +198,7 @@ double CGetEmpiricalRiskSmoothed(NumericVector& polynomial, NumericMatrix& point
 		double val = points(i, 0);
 		double res = 0;
 		for (unsigned j = 0; j < degree; j++){
-			res += polynomial[j] * pow(val, j + 1);
+			res += polynomial[j] * std::pow(val, j + 1);
 		}
 		risk += 1 / (1 + exp(-smoothingConstant*(points(i, 1) - res)*sign));
 	}
@@ -221,7 +226,7 @@ TPoint nlm_optimize(TMatrix& points, TPoint& minCandidate, int numClass1, int nu
 #endif
 
 /**
-Chooses the best in classification sence polynomial
+Chooses the best in classification sense polynomial
 
 @param points:       nx2 matrix of points where first column is an absciss,	n = numClass1 + numClass2
 @param numClass1:    Number of points belonging to the first class

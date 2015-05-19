@@ -7,7 +7,7 @@ Calculate Zonoid Depth
 Calculates the zonoid depth of points w.r.t. a multivariate data set.
 }
 \usage{
-depth.zonoid(x, data)
+depth.zonoid(x, data, seed = 0)
 }
 \arguments{
   \item{x}{
@@ -15,6 +15,9 @@ Matrix of objects (numerical vector as one object) whose depth is to be calculat
 }
   \item{data}{
 Matrix of data where each row contains a \eqn{d}-variate point, w.r.t. which the depth is to be calculated.
+}
+  \item{seed}{
+the random seed. The dafault value \code{seed=0} makes no changes.
 }
 }
 \details{

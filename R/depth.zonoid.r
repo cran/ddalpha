@@ -7,7 +7,8 @@
 # Computation of the zonoid data depth.
 ################################################################################
 
-depth.zonoid <- function(x, data){
+depth.zonoid <- function(x, data, seed = 0){
+  if (seed!=0) set.seed(seed)
   if (!is.matrix(x) 
       && is.vector(x)){
     x <- matrix(x, nrow=1)
@@ -36,6 +37,7 @@ depth.zonoid <- function(x, data){
            as.integer(nrow(data)), 
            as.integer(nrow(x)), 
            as.integer(ncol(data)), 
+           as.integer(seed),
            depths=double(nrow(x)))$depths
   
   return (ds)

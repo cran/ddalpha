@@ -7,7 +7,8 @@ Calculate Depth Space using Projection Depth
 Calculates the representation of the training classes in depth space using projection depth.
 }
 \usage{
-depth.space.projection(data, cardinalities, method = "random", num.directions = 1000)
+depth.space.projection(data, cardinalities, 
+                       method = "random", num.directions = 1000, seed = 0)
 }
 \arguments{
   \item{data}{
@@ -25,6 +26,9 @@ Numerical vector of cardinalities of each class in \code{data}, each entry corre
   }
   \item{num.directions}{
 Number of random directions to be generated for \code{method = "random"}.
+}
+  \item{seed}{
+the random seed. The dafault value \code{seed=0} makes no changes.
 }
 }
 \details{

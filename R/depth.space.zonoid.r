@@ -7,7 +7,8 @@
 # Computation of the depth space based on the zonoid data depth.
 ################################################################################
 
-depth.space.zonoid <- function(data, cardinalities){
+depth.space.zonoid <- function(data, cardinalities, seed = 0){
+  if (seed!=0) set.seed(seed)
   if (!(is.matrix(data) && is.numeric(data)
         || is.data.frame(data) && prod(sapply(data, is.numeric))) 
       || ncol(data) < 2){
@@ -37,6 +38,7 @@ depth.space.zonoid <- function(data, cardinalities){
                as.integer(cardinalities[j]), 
                as.integer(cardinalities[i]), 
                as.integer(dim), 
+               as.integer(seed),
                depths=double(cardinalities[i]))$depths
       if (j == i){
         ds <- replace(ds, which(ds < 1/cardinalities[j] - sqrt(.Machine$double.eps)), 1/cardinalities[j])

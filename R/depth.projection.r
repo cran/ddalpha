@@ -1,4 +1,5 @@
-depth.projection <- function(x, data, method = "random", num.directions = 1000){
+depth.projection <- function(x, data, method = "random", num.directions = 1000, seed = 0){
+  if (seed!=0) set.seed(seed)
   if (!(is.matrix(data) && is.numeric(data)
         || is.data.frame(data) && prod(sapply(data, is.numeric))) 
       || ncol(data) < 2){
@@ -27,6 +28,7 @@ depth.projection <- function(x, data, method = "random", num.directions = 1000){
               prjs=double(k*c), 
               as.integer(k), 
               as.integer(1), 
+              as.integer(seed),
               dps=double(m*q))
     return (rez$dps)
   }
@@ -36,7 +38,7 @@ depth.projection <- function(x, data, method = "random", num.directions = 1000){
   }
 }
 
-depth.space.projection <- function(data, cardinalities, method = "random", num.directions = 1000){
+depth.space.projection <- function(data, cardinalities, method = "random", num.directions = 1000, seed = 0){
   if (!(is.matrix(data) && is.numeric(data)
         || is.data.frame(data) && prod(sapply(data, is.numeric))) 
       || ncol(data) < 2){
@@ -56,7 +58,7 @@ depth.space.projection <- function(data, cardinalities, method = "random", num.d
   depth.space <- NULL
   for (i in 1:length(cardinalities)){
     pattern <- data[(1 + sum(cardinalities[0:(i - 1)])):sum(cardinalities[1:i]),]
-    pattern.depths <- depth.projection (data, pattern, method, num.directions)
+    pattern.depths <- depth.projection (data, pattern, method, num.directions, seed)
     depth.space <- cbind(depth.space, pattern.depths, deparse.level = 0)
   }
   

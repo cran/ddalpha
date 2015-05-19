@@ -10,9 +10,6 @@
 #include "stdafx.h"
 
 void GetDirections(TMatrix *directions, unsigned int k, unsigned int d){
-	boost::random::mt19937_64 rEngine;
-	rEngine.seed(time(NULL));
-	boost::random::normal_distribution<double> normDist;
 	directions->resize(k);
 	for (unsigned int i = 0; i < k; i++){
 		TPoint direction(d);

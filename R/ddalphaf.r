@@ -4,6 +4,7 @@ ddalphaf.train <- function(dataf, labels,
                                            numDer = -1), 
                            classifier.type = c("ddalpha", "maxdepth", "knnaff", "lda", "qda"), 
                            cv.complete = FALSE, 
+                           seed = 0,
                            ...){
   # Trains the functional DDalpha-classifier
   # Args:
@@ -37,6 +38,8 @@ ddalphaf.train <- function(dataf, labels,
   # Check "adc.method"
   adc.method = 'equalCover'
   
+  if (seed != 0) set.seed(seed)
+  
   # Check "adc.args"
   if (!(adc.args$instance %in% c("val", "avr") && 
       ((adc.args$numFcn >= 0 &&  adc.args$numDer >= 0 && (adc.args$numFcn + adc.args$numDer >= 2)) ||
@@ -62,10 +65,10 @@ ddalphaf.train <- function(dataf, labels,
   points <- GetPoints(dataf, labels, adc.method, the.args)
   # Apply chosen classifier to train the data
   if (classifier.type == "ddalpha"){
-    classifier <- ddalpha.train(points$data, ...)
+    classifier <- ddalpha.train(points$data, seed = seed, ...)
   }
   if (classifier.type == "maxdepth"){
-    classifier <- ddalpha.train(points$data, separator = "maxD", ...)
+    classifier <- ddalpha.train(points$data, separator = "maxD", seed = seed, ...)
   }
   if (classifier.type == "knnaff"){
     classifier <- knnaff.train(points$data, i = 0, ...)
@@ -164,7 +167,7 @@ is.in.convexf <- function(objectsf, dataf, cardinalities,
                           adc.method = "equalCover", 
                           adc.args = list(instance = "val", 
                                           numFcn = 5, 
-                                          numDer = 5)){
+                                          numDer = 5), seed = 0){
   # Checks if the function(s) lie(s) inside convex hulls of the 
   # functions from the sample in the projection space
   # Args:
@@ -205,7 +208,7 @@ is.in.convexf <- function(objectsf, dataf, cardinalities,
       data <- getAvrGrid(dataf.equalized, adc.args$numFcn, adc.args$numDer)
     }    
   }
-  in.convex <- is.in.convex(objects, data, cardinalities)
+  in.convex <- is.in.convex(objects, data, cardinalities, seed)
   
   return (in.convex)
 }

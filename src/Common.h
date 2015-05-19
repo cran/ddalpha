@@ -7,5 +7,7 @@
   Commonly used functions.
 */
 
+#pragma once
+
 void GetDirections(TMatrix *directions, unsigned int k, unsigned int d);
 void GetProjections(TMatrix& points, TMatrix& directions, TMatrix *projections);

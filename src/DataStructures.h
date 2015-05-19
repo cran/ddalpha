@@ -9,6 +9,7 @@
 
 typedef vector<double> TPoint;
 typedef vector<vector<double> > TMatrix;
+typedef vector<vector<int> > TIntMatrix;
 typedef vector<int> TVariables;
 
 typedef boost::numeric::ublas::matrix<double> bMatrix;

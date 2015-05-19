@@ -7,7 +7,7 @@ Check Outsiderness
 Checks the belonging to at least one of class convex hulls of the training sample.
 }
 \usage{
-is.in.convex(x, data, cardinalities)
+is.in.convex(x, data, cardinalities, seed = 0)
 }
 \arguments{
   \item{x}{
@@ -18,6 +18,9 @@ Matrix containing training sample where each row is a \eqn{d}-dimensional object
 }
   \item{cardinalities}{
 Numerical vector of cardinalities of each class in \code{data}, each entry corresponds to one class.
+}
+  \item{seed}{
+the random seed. The dafault value \code{seed=0} makes no changes.
 }
 }
 \details{

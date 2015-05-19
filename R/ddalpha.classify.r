@@ -41,6 +41,12 @@ ddalpha.classify <- function(objects,
   depths <- matrix(nrow=0, ncol=ddalpha$numPatterns) #?
   freePoints <- matrix(nrow=0, ncol=ncol(objects)) #?
   
+  if (is.null(ddalpha$methodDepth)){ #use only outsiders treatment
+    classifiableIndices <- c()
+    resultsDepths <- list()
+    freePoints <- objects
+  } 
+  else {
   # Define points that can be classified by the DD-Alpha and the outsiders
   if (use.convex){
     points <- ddalpha$patterns[[1]]$points
@@ -159,10 +165,11 @@ ddalpha.classify <- function(objects,
     if (ddalpha$methodSeparator == "maxD"){
       indexes <- apply(depths, 1, which.max)
       for (i in 1:nrow(depths)){
-        resultsDepths[[i]] <- ddalpha$patterns[[indexes]]$name
+        resultsDepths[[i]] <- ddalpha$patterns[[indexes[i]]]$name
       }
     }
   }
+  } # end if(!is.null(ddalpha$methodDepth))
   
   # Classify Outsiders
   resultsOutsiders <- as.list(rep("Ignored", nrow(freePoints)))
@@ -176,16 +183,22 @@ ddalpha.classify <- function(objects,
   }
   
   # Merge classifiable and outsiders
-  results <- list()
-  counterDepths <- 1
-  counterOutsiders <- 1
-  for (i in 1:nrow(objects)){
-    if (i %in% classifiableIndices){
-      results[[i]] <- resultsDepths[[counterDepths]]
-      counterDepths <- counterDepths + 1
-    }else{
-      results[[i]] <- resultsOutsiders[[counterOutsiders]]
-      counterOutsiders <- counterOutsiders + 1
+  if (length(resultsOutsiders) == 0)
+    results <- resultsDepths
+  else if(length(resultsDepths) == 0)
+    results <- resultsOutsiders
+  else{
+    results <- list()
+    counterDepths <- 1
+    counterOutsiders <- 1
+    for (i in 1:nrow(objects)){
+      if (i %in% classifiableIndices){
+        results[[i]] <- resultsDepths[[counterDepths]]
+        counterDepths <- counterDepths + 1
+      }else{
+        results[[i]] <- resultsOutsiders[[counterOutsiders]]
+        counterOutsiders <- counterOutsiders + 1
+      }
     }
   }
 

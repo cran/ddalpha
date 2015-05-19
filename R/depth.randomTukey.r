@@ -7,7 +7,7 @@
 # Computation of the random Tukey data depth.
 ################################################################################
 
-depth.randomTukey <- function(x, data, num.directions = 1000){
+depth.randomTukey <- function(x, data, num.directions = 1000, seed = 0){
   if (!is.matrix(x) 
       && is.vector(x)){
     x <- matrix(x, nrow=1)
@@ -52,6 +52,7 @@ depth.randomTukey <- function(x, data, num.directions = 1000){
            as.double(0), 
            as.integer(k), 
            as.integer(1), # use the same directions and projections
+           as.integer(seed),
            depths=double(nrow(x)))$depths
   
   return (ds)

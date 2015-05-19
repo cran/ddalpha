@@ -16,6 +16,8 @@ depth.graph(data,
   zlim = c(0, max(z)), 
   xnum = 250, 
   ynum = 250, 
+  theta=15, phi=60,
+  bold = F,
   ...)
 }
 
@@ -37,6 +39,12 @@ numeric vectors of length 2, giving the x, y and z coordinates ranges: see \code
 }
   \item{xnum, ynum}{
 number of points on each direction, x and y. Impacts the smoothness of the surface. 
+}
+  \item{theta, phi}{
+rotation angles
+}
+  \item{bold}{
+draws bold points
 }
   \item{\dots}{
 additional parameters passed to \code{\link{persp}}

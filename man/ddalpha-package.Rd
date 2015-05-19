@@ -3,7 +3,7 @@
 \alias{ddalpha}
 \docType{package}
 \title{
-DDalpha-classifier, depth-calculating methods and associated functions
+Depth-Based Classification and Calculation of Data Depth
 }
 \description{
 The package provides many procedures for calculating the depth of points in an empirical distribution for many notions of data depth. 
@@ -15,8 +15,8 @@ The package implements the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharov
 \tabular{ll}{
 Package: \tab ddalpha\cr
 Type: \tab Package\cr
-Version: \tab 1.1.0\cr
-Date: \tab 2014-12-20\cr
+Version: \tab 1.1.1\cr
+Date: \tab 2015-05-19\cr
 License: \tab GPL-2\cr
 }
 Use \code{\link{ddalpha.train}} to train the DD-classifier and \code{\link{ddalpha.classify}} to classify with it. 

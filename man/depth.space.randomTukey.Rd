@@ -7,7 +7,7 @@ Calculate Depth Space using the Random Tukey Depth
 Calculates the representation of the training classes in depth space using the random Tukey depth.
 }
 \usage{
-depth.space.randomTukey(data, cardinalities, num.directions = 1000)
+depth.space.randomTukey(data, cardinalities, num.directions = 1000, seed = 0)
 }
 \arguments{
   \item{data}{
@@ -18,6 +18,9 @@ Numerical vector of cardinalities of each class in \code{data}, each entry corre
 }
   \item{num.directions}{
 Number of random directions to be generated.
+}
+  \item{seed}{
+the random seed. The dafault value \code{seed=0} makes no changes.
 }
 }
 \details{

@@ -1,5 +1,6 @@
 export(nlm_optimize_r,
        ddalpha.train, ddalpha.classify,  
+       ddalpha.test, ddalpha.getErrorRateJK, ddalpha.getErrorRateCV,
        ddalphaf.train, ddalphaf.classify, 
        compclassf.train, compclassf.classify,
        depth.zonoid, depth.randomTukey, depth.Mahalanobis, depth.projection, depth.spatial,

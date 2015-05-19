@@ -7,7 +7,7 @@
 # Check if points lie in the convex hulls of the data clouds.
 ################################################################################
 
-is.in.convex <- function(x, data, cardinalities){
+is.in.convex <- function(x, data, cardinalities, seed = 0){
   if (!is.numeric(data)
       || !is.matrix(data) 
       || ncol(data) < 2){
@@ -34,7 +34,7 @@ is.in.convex <- function(x, data, cardinalities){
     stop("Dimensions of the arguments \"x\" and \"data\" should coincide")
   }
   
-  is.in.convex <- .count_convexes(x, data, cardinalities)
+  is.in.convex <- .count_convexes(x, data, cardinalities, seed)
   
   return (is.in.convex)
 }

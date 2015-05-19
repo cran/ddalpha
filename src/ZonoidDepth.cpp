@@ -259,7 +259,7 @@ int GetMeansSds(vector<TPoint>& x, TPoint *means, TPoint *sds){
 		}
 		(*means)[j] = tmpMean/_n;
 		for (int i = 0; i < _n; i++){
-			tmpVar += pow(x[i][j] - (*means)[j], 2);
+			tmpVar += std::pow(x[i][j] - (*means)[j], 2);
 		}
 		(*sds)[j] = sqrt(tmpVar/(_n - 1));
 	}
@@ -388,9 +388,9 @@ double ZonoidDepth(vector<TPoint>& x, TPoint& z, int& Error)
   }
 }
 
-int InConvexes(TMatrix& points, TVariables& cardinalities, TMatrix& objects, int& Error, TMatrix *areInConvexes)
+int InConvexes(TMatrix& points, TVariables& cardinalities, TMatrix& objects, int& Error, TIntMatrix *areInConvexes)
 /*
-   Check if the points are inside of hte convex hull.
+   Check if the points are inside of the convex hull.
    1: Point lies inside of the convex hull of the data
    0: Point lies beyond the convex hull of the data
 */
@@ -403,9 +403,9 @@ int InConvexes(TMatrix& points, TVariables& cardinalities, TMatrix& objects, int
   
   areInConvexes->resize(m);
   for (int i = 0; i < m; i++){(*areInConvexes)[i].resize(q);}
-  TMatrix &separateAnswers = (*areInConvexes);  // a link to output. just not to rewrite all occurances of separateAnswers  
+  TIntMatrix &separateAnswers = (*areInConvexes);  // a link to output. just not to rewrite all occurances of separateAnswers  
 
-	// Split into seprate data sets and
+	// Split into separate data sets and
 	// check if each point lies inside each of the convex hulls
 	int startIndex = 0;
 	for (int i = 0; i < q; i++){ // Cycling through data sets

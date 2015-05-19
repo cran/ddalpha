@@ -12,7 +12,7 @@
                                          ddalpha$patterns[[j]]$depths), 
                                    ddalpha$patterns[[i]]$cardinality, 
                                    ddalpha$patterns[[j]]$cardinality, 
-                                   ddalpha$numChunks)
+                                   ddalpha$numChunks, ddalpha$seed)
  # DEBUG       
  if (F){
         print(polynomial$coefficients)
@@ -44,7 +44,8 @@
           anotherClass <- rbind(anotherClass, ddalpha$patterns[[j]]$depths)
         }
       }
-      polynomial <- .polynomial_learn_C(ddalpha$maxDegree, rbind(ddalpha$patterns[[i]]$depths, anotherClass), ddalpha$patterns[[i]]$cardinality, nrow(anotherClass), ddalpha$numChunks)
+      polynomial <- .polynomial_learn_C(ddalpha$maxDegree, rbind(ddalpha$patterns[[i]]$depths, anotherClass), 
+                                        ddalpha$patterns[[i]]$cardinality, nrow(anotherClass), ddalpha$numChunks, ddalpha$seed)
 
       # Adding the classifier to the list of classifiers
       ddalpha$classifiers[[i]] <- 
@@ -69,7 +70,7 @@ nlm_optimize_r <- function(r_minCandidate, r_points, numClass1, numClass2){
   return ( nlm(CGetEmpiricalRiskSmoothed, r_minCandidate, r_points, numClass1, numClass2)$estimate )
 }
 
-.polynomial_learn_C <- function(maxDegree, data, numClass1, numClass2, numChunks){
+.polynomial_learn_C <- function(maxDegree, data, numClass1, numClass2, numChunks, seed){
   points <- as.vector(t(data))
   numPoints <- numClass1 + numClass2
   dimension <- ncol(data)
@@ -86,6 +87,7 @@ nlm_optimize_r <- function(r_minCandidate, r_points, numClass1, numClass2){
           as.integer(cardinalities),  
           as.integer(upToPower), 
           as.integer(numChunks), 
+          as.integer(seed),
           degree = integer(1),
           axis = integer(1),
           polynomial=double(upToPower))

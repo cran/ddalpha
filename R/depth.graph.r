@@ -10,7 +10,8 @@
 depth.graph <- function (data, depth_f = c("zonoid", "randomTukey", "Mahalanobis", "projectionRandom", "spatial", "none"), apoint = NULL
                            , main = depth_f
                            , xlim = c(min(data[,1]), max(data[,1])), ylim = c(min(data[,2]), max(data[,2])), zlim = c(0,max(z))
-                           , xnum = 250, ynum = 250, ...){
+                           , xnum = 250, ynum = 250
+                           , theta=15, phi=60, bold = F, ...){
   
   x1 <- seq(xlim[1], xlim[2], length = xnum)
   x2 <- seq(ylim[1], ylim[2], length = ynum)
@@ -37,6 +38,13 @@ depth.graph <- function (data, depth_f = c("zonoid", "randomTukey", "Mahalanobis
   z <- matrix(all.depths, ncol=ynum, nrow=xnum, byrow=FALSE)
   
   z.red <- as.integer((data[,1]-x1[1])/x1.step+1) + as.integer((data[,2]-x2[1])/x2.step+1)*(xnum-1)
+  if (bold)
+    z.red <- c(z.red, 
+               as.integer((data[,1]-x1[1])/x1.step+2) + as.integer((data[,2]-x2[1])/x2.step+1)*(xnum-1),
+               as.integer((data[,1]-x1[1])/x1.step+1) + as.integer((data[,2]-x2[1])/x2.step+2)*(xnum-1),
+               as.integer((data[,1]-x1[1])/x1.step+0) + as.integer((data[,2]-x2[1])/x2.step+1)*(xnum-1),
+               as.integer((data[,1]-x1[1])/x1.step+1) + as.integer((data[,2]-x2[1])/x2.step+0)*(xnum-1)
+               )
   z.black <- ifelse (is.null(apoint) || !is.numeric(apoint) || length(apoint) != 2, NA,
                      as.integer((apoint[1]-x1[1])/x1.step+1) + as.integer((apoint[1]-x2[1])/x2.step+1)*(xnum-1))
   
@@ -48,7 +56,7 @@ depth.graph <- function (data, depth_f = c("zonoid", "randomTukey", "Mahalanobis
   cols <- replace(cols, z.black, "black")
   
   par(bg = "white")
-  persp(x1, x2, z, xlim=xlim, ylim=ylim, zlim=zlim, r = 10, theta=15, phi=65, 
+  persp(x1, x2, z, xlim=xlim, ylim=ylim, zlim=zlim, r = 10, theta=theta, phi=phi, 
         col=cols, main = main,
         ltheta=55, shade=0.55, ticktype="detailed", 
         xlab="x", ylab="y", zlab="D(x|X)", border=NA, box=FALSE, ...)

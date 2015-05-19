@@ -23,7 +23,19 @@ void Sum(double *a, double *b, double *res){
 	res[0] = a[0] + b[0];
 }
 
-void IsInConvexes(double *points, int *dimension, int *cardinalities, int *numClasses, double *objects, int *numObjects, int *isInConvexes){
+void setSeed(unsigned int random_seed){
+	if (random_seed != 0) {
+		setseed(random_seed);
+		rEngine.seed(random_seed);
+	}
+	else {
+		setseed(time(NULL));
+		rEngine.seed(time(NULL));
+	}
+}
+
+void IsInConvexes(double *points, int *dimension, int *cardinalities, int *numClasses, double *objects, int *numObjects, int *seed, int *isInConvexes){
+	setSeed(*seed);
 	int numPoints = 0;for (int i = 0; i < numClasses[0]; i++){numPoints += cardinalities[i];}
 	TMatrix x(numPoints);
 	for (int i = 0; i < numPoints; i++){x[i] = TPoint(dimension[0]);}
@@ -43,7 +55,7 @@ void IsInConvexes(double *points, int *dimension, int *cardinalities, int *numCl
 	for (int i = 0; i < numClasses[0]; i++){
 		cars[i] = cardinalities[i];
 	}
-	TMatrix answers;
+	TIntMatrix answers(o.size());
 	int error = 0;
 	InConvexes(x, cars, o, error, &answers);
 	for (int i = 0; i < numObjects[0]; i++)
@@ -52,7 +64,8 @@ void IsInConvexes(double *points, int *dimension, int *cardinalities, int *numCl
   	}
 }
 
-void ZDepth(double *points, double *objects, int *numPoints, int *numObjects, int *dimension, double *depths){
+void ZDepth(double *points, double *objects, int *numPoints, int *numObjects, int *dimension, int *seed, double *depths){
+	setSeed(*seed);
 	TMatrix x(numPoints[0]);
 	for (int i = 0; i < numPoints[0]; i++){x[i] = TPoint(dimension[0]);}
 	for (int i = 0; i < numPoints[0]; i++){
@@ -75,7 +88,8 @@ void ZDepth(double *points, double *objects, int *numPoints, int *numObjects, in
 	}
 }
 
-void HDepth(double *points, double *objects, int *numObjects, int *dimension, int *cardinalities, int *numClasses, double *directions, double *projections, int *k, int *sameDirs, double *depths){
+void HDepth(double *points, double *objects, int *numObjects, int *dimension, int *cardinalities, int *numClasses, double *directions, double *projections, int *k, int *sameDirs, int *seed, double *depths){
+	setSeed(*seed);
 	int numPoints = 0;for (int i = 0; i < numClasses[0]; i++){numPoints += cardinalities[i];}
 	TMatrix x(numPoints);
 	for (int i = 0; i < numPoints; i++){x[i] = TPoint(dimension[0]);}
@@ -106,7 +120,8 @@ void HDepth(double *points, double *objects, int *numObjects, int *dimension, in
 	}
 }
 
-void HDSpace(double *points, int *dimension, int *cardinalities, int *numClasses, int *k, int *sameDirs, double *dSpace, double *directions, double *projections){
+void HDSpace(double *points, int *dimension, int *cardinalities, int *numClasses, int *k, int *sameDirs, int *seed, double *dSpace, double *directions, double *projections){
+	setSeed(*seed);
 	int numPoints = 0;for (int i = 0; i < numClasses[0]; i++){numPoints += cardinalities[i];}
 	TMatrix x(numPoints);
 	for (int i = 0; i < numPoints; i++){x[i] = TPoint(dimension[0]);}
@@ -137,6 +152,8 @@ void HDSpace(double *points, int *dimension, int *cardinalities, int *numClasses
 }
 
 void AlphaLearn(double *points, int *numPoints, int *dimension, int *cardinalities, int *degree, int *minFeatures, double *ray){
+	
+
 	TMatrix x(numPoints[0]);
 	for (int i = 0; i < numPoints[0]; i++){x[i] = TPoint(dimension[0]);}
 	for (int i = 0; i < numPoints[0]; i++){
@@ -269,7 +286,8 @@ void KnnClassify(double *objects, int *numObjects, double *points, int *labels, 
 	}
 }
 
-void PolynomialLearnCV(double *points, int *numPoints, int *dimension, int *cardinalities, int *maxDegree, int *chunkNumber, /*OUT*/ int *degree, /*OUT*/ int *axis, /*OUT*/ double *polynomial){
+void PolynomialLearnCV(double *points, int *numPoints, int *dimension, int *cardinalities, int *maxDegree, int *chunkNumber, int *seed, /*OUT*/ int *degree, /*OUT*/ int *axis, /*OUT*/ double *polynomial){
+	setSeed(*seed);
 	TMatrix x(numPoints[0]);
 	for (int i = 0; i < numPoints[0]; i++){ x[i] = TPoint(dimension[0]); }
 	for (int i = 0; i < numPoints[0]; i++){
@@ -313,7 +331,8 @@ void PolynomialClassify(double *points, int *numPoints, int *dimension, int *deg
 void ProjectionDepth(double *points, double *objects, int *numObjects,
 					 int *dimension, int *cardinalities, int *numClasses,
 					 double *directions, double *projections, int *k,
-					 int *newDirs, double *depths){
+					 int *newDirs, int *seed, double *depths){
+	setSeed(*seed);
 	int numPoints = 0;
 	for (int i = 0; i < numClasses[0]; i++){
 		numPoints += cardinalities[i];

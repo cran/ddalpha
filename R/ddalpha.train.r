@@ -22,6 +22,7 @@ ddalpha.train <- function(data,
                           pretransform = NULL,
                           mah.parMcd = 0.75,
                           use.convex = FALSE,
+                          seed = 0,
                           
                           ...
       
@@ -61,11 +62,18 @@ ddalpha.train <- function(data,
       stop("At least in one patern number of the points < (dimension + 1). Classifier can not be trained!!!")
     }
   }
+  if (seed != 0){
+    set.seed(seed)
+  }
+  ddalpha$seed = seed
     
   ## Validating the properties
   depthsThatNeedNoScaling = c("zonoid", "randomTukey", "Mahalanobis", "projectionRandom", "projectionLinearize", "spatial")
   supportedDepths = c(depthsThatNeedNoScaling, "potential (not implemented)")
-  
+  if (is.null(depth) || toupper(depth) %in% c("NULL", "NONE")){
+      ddalpha$methodDepth <- NULL
+      warning("Argument \"depth\" specified as NULL.")    
+  } else
   if (!is.character(depth)
       || length(depth) != 1
       || !(depth %in% supportedDepths)){
@@ -137,6 +145,7 @@ ddalpha.train <- function(data,
    
   ## Separator parameters validation
  
+  if (!is.null(ddalpha$methodDepth))  
   validate(ddalpha$methodSeparator)
   
   ## Depth parameters validation
@@ -149,27 +158,30 @@ ddalpha.train <- function(data,
   }else{
     ddalpha$useConvex <- use.convex
   }
-
+  
+  if (!is.null(ddalpha$methodDepth))
   validate(ddalpha$methodDepth)
   
   ## The learning procedures
 
-  # Calculate depths
-  ddalpha <- .ddalpha.learn.depth(ddalpha)
-  
-  # Learn classification machine
-  if (ddalpha$methodSeparator == "alpha"){
-    ddalpha <- .ddalpha.learn.alpha(ddalpha)
-  }
-  if (ddalpha$methodSeparator == "polynomial"){
-    ddalpha <- .ddalpha.learn.polynomial(ddalpha)
-  }
-  if (ddalpha$methodSeparator == "knnlm"){
-    ddalpha <- .ddalpha.learn.knnlm(ddalpha)
+  if (!is.null(ddalpha$methodDepth)){
+    # Calculate depths
+    ddalpha <- .ddalpha.learn.depth(ddalpha)
+    
+    # Learn classification machine
+    if (ddalpha$methodSeparator == "alpha"){
+      ddalpha <- .ddalpha.learn.alpha(ddalpha)
+    }
+    if (ddalpha$methodSeparator == "polynomial"){
+      ddalpha <- .ddalpha.learn.polynomial(ddalpha)
+    }
+    if (ddalpha$methodSeparator == "knnlm"){
+      ddalpha <- .ddalpha.learn.knnlm(ddalpha)
+    }
   }
   
   # Learn outsider treatments if needed
-  if (!(ddalpha$methodDepth %in% 
+  if (is.null(ddalpha$methodDepth) || !(ddalpha$methodDepth %in% 
           c("Mahalanobis", "projectionRandom", "projectionLinearize", "spatial"))){
     ddalpha <- .ddalpha.learn.outsiders(ddalpha = ddalpha, 
                                         methodsOutsider = outsider.methods, 
@@ -249,6 +261,8 @@ randomTukey.validate  <- function(ddalpha, num.directions = 1000,...){
   }
   return (list(numDirections = num.directions))
 }
+
+projectionRandom.validate <- randomTukey.validate
 
 Mahalanobis.validate  <- function(ddalpha, mah.estimate = "moment", mah.priors = NULL, mah.parMcd = 0.75, ...){ 
   if (!is.character(mah.estimate) 
