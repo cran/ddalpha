@@ -14,7 +14,7 @@
 ################################################################################
 
 ddalpha.train <- function(data, 
-                          depth = "randomTukey", 
+                          depth = "halfspace", 
                           separator = "alpha", 
                           outsider.methods = "LDA", 
                           outsider.settings = NULL, 
@@ -32,7 +32,7 @@ ddalpha.train <- function(data,
 #                           num.chunks = 10, 
 #                           max.degree = 3, 
 #                          
-#                           # randomTukey depth
+#                           # halfspace depth
 #                           num.directions = 1000,                          
 #                           # Mahalanobis depth
 #                           mah.estimate = "moment", 
@@ -68,7 +68,7 @@ ddalpha.train <- function(data,
   ddalpha$seed = seed
     
   ## Validating the properties
-  depthsThatNeedNoScaling = c("zonoid", "randomTukey", "Mahalanobis", "projectionRandom", "projectionLinearize", "spatial")
+  depthsThatNeedNoScaling = c("zonoid", "halfspace", "Mahalanobis", "projection", "spatial", "simplicial", "simplicialVolume")
   supportedDepths = c(depthsThatNeedNoScaling, "potential (not implemented)")
   if (is.null(depth) || toupper(depth) %in% c("NULL", "NONE")){
       ddalpha$methodDepth <- NULL
@@ -77,8 +77,8 @@ ddalpha.train <- function(data,
   if (!is.character(depth)
       || length(depth) != 1
       || !(depth %in% supportedDepths)){
-    ddalpha$methodDepth <- "randomTukey"
-    warning("Argument \"depth\" not specified correctly. \"randomTukey\" is used as a default value")
+    ddalpha$methodDepth <- "halfspace"
+    warning("Argument \"depth\" not specified correctly. \"halfspace\" is used as a default value")
   }else{
     ddalpha$methodDepth <- depth
   }
@@ -182,7 +182,7 @@ ddalpha.train <- function(data,
   
   # Learn outsider treatments if needed
   if (is.null(ddalpha$methodDepth) || !(ddalpha$methodDepth %in% 
-          c("Mahalanobis", "projectionRandom", "projectionLinearize", "spatial"))){
+          c("Mahalanobis", "projection", "spatial", "simplicialVolume"))){#, "simplicial" (may obtain too small values)
     ddalpha <- .ddalpha.learn.outsiders(ddalpha = ddalpha, 
                                         methodsOutsider = outsider.methods, 
                                         settingsOutsider = outsider.settings)
@@ -250,7 +250,24 @@ knnlm.validate  <- function(ddalpha, knnrange = 10*( (ddalpha$numPoints)^(1/ddal
   return (list(knnrange = knnrange))
 }
 
-randomTukey.validate  <- function(ddalpha, num.directions = 1000,...){
+halfspace.validate  <- function(ddalpha, exact, method, num.directions = 1000,...){
+  method = .parse_HSD_pars(exact, method)
+  if(method == 0)
+    if(!is.numeric(num.directions) 
+     || is.na(num.directions) 
+     || length(num.directions) != 1 
+     || !.is.wholenumber(num.directions) 
+     || !(num.directions > 1 && num.directions < 10000000) ){
+    num.directions <- 1000
+    warning("Argument \"num.directions\" not specified correctly. 1000 is used as a default value")
+  }
+  return (list(dmethod = method, numDirections = num.directions))
+}
+
+projection.validate <- function(ddalpha, method = "random", num.directions = 1000,...){
+  if (!(method %in% c("random","linearize")))
+    stop("Wrong method")
+  if(method == "random")
   if(!is.numeric(num.directions) 
      || is.na(num.directions) 
      || length(num.directions) != 1 
@@ -259,10 +276,19 @@ randomTukey.validate  <- function(ddalpha, num.directions = 1000,...){
     num.directions <- 1000
     warning("Argument \"num.directions\" not specified correctly. 1000 is used as a default value")
   }
-  return (list(numDirections = num.directions))
+  return (list(dmethod = method, numDirections = num.directions))
 }
 
-projectionRandom.validate <- randomTukey.validate
+simplicial.validate <- function(ddalpha, exact = F, k = 0.05, ...){
+  if (exact)
+    return(list(d_exact = exact))
+  
+  if (k <= 0) stop("k must be positive")
+  else if (k < 1) k = choose(ddalpha$numPoints, ddalpha$dimension)*k
+  
+  return(list(d_exact = exact, d_k = k))
+}
+simplicialVolume.validate <- simplicial.validate
 
 Mahalanobis.validate  <- function(ddalpha, mah.estimate = "moment", mah.priors = NULL, mah.parMcd = 0.75, ...){ 
   if (!is.character(mah.estimate) 

@@ -241,8 +241,8 @@ int LearnCV(TMatrix input,  TVariables output, unsigned int minFeatures, unsigne
 		ExtendWithProducts(input, i + 1, &spaceExtensions[i]); // get the (i + 1)-th space extention
 		Initialization(spaceExtensions[i], output, minFeatures); // initialize
 		/* Prepare slider and start to cut data */
-		unsigned int sliderSize = ceil((double)n/folds); unsigned chSizeVal = n%folds - 1;
-		TMatrix xSlider(sliderSize); TPoint ySlider(sliderSize);
+		unsigned sliderSize = (unsigned)ceil((double)n / folds); unsigned chSizeVal = n%folds - 1;
+		TMatrix xSlider(sliderSize); TVariables ySlider(sliderSize);
 		for (unsigned int j = 0; j < sliderSize; j++){
 			xSlider[j] = TPoint(d);
 			for (unsigned int k = 0; k < d; k++){xSlider[j][k] = x[k][j*shortFolds]; x[k].erase(x[k].begin() + j*shortFolds);}

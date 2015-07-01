@@ -21,10 +21,10 @@
   
   \code{"random"} Here the depth is determined as the minimum univariate depth of the data projected on lines in several directions. The directions are distributed uniformly on the \eqn{(d-1)}-sphere; the same direction set is used for all points.
   
-  \code{"linearize"} The Nelder-Mead method for function minimization, taken from Olsson, Journal of Quality Technology, 1974, 6, 56. R-codes of this function were written by Subhajit Dutta.
+  \code{"linearize"} The Nelder-Mead method for function minimization, taken from Olsson, Journal of Quality Technology, 1974, 6, 56.
   }
   \item{num.directions}{
-Number of random directions to be generated for \code{method = "random"}.
+Number of random directions to be generated for \code{method = "random"}. With the growth of n the complexity grows linearly for the same number of directions. 
 }
   \item{seed}{
 the random seed. The dafault value \code{seed=0} makes no changes.
@@ -39,6 +39,9 @@ often \emph{median}, and \emph{median absolute deviation from the mediam }(MAD),
 }
 \value{
   Numerical vector of depths, one for each row in \code{x}; or one depth value if \code{x} is a numerical vector.
+}
+\author{
+ R-codes for the "linearize" method were written by Subhajit Dutta.
 }
 \references{
   
@@ -57,18 +60,22 @@ Stahel-Donoho estimator. \emph{Computational Statistics and Data Analysis}  \bol
 
 }
 \seealso{
-\code{\link{depth.Mahalanobis}} for calculation of Mahalanobis depth. 
+\code{\link{depth.halfspace}} for calculation of the Tukey depth.
 
-\code{\link{depth.randomTukey}} for calculation of the random Tukey depth.
+\code{\link{depth.Mahalanobis}} for calculation of Mahalanobis depth.
 
-\code{\link{depth.spatial}} for calculation of spatial depth. 
+\code{\link{depth.simplicial}} for calculation of simplicial depth.
+
+\code{\link{depth.simplicialVolume}} for calculation of simplicial volume depth.
+
+\code{\link{depth.spatial}} for calculation of spatial depth.
 
 \code{\link{depth.zonoid}} for calculation of zonoid depth.
 
 }
 \examples{
   # 5-dimensional normal distribution
-  data <- mvrnorm(1000, rep(0, 5), 
+  data <- mvrnorm(100, rep(0, 5), 
                   matrix(c(1, 0, 0, 0, 0, 
                            0, 2, 0, 0, 0, 
                            0, 0, 3, 0, 0, 

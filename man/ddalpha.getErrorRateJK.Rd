@@ -31,7 +31,7 @@ additional parameters passed to \code{\link{ddalpha.train}}
   the mean training time
   }
   \item{time_sd}{
-  the standart seviation training time
+  the standart deviation of training time
   }
 
 }

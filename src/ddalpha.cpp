@@ -120,7 +120,8 @@ void HDepth(double *points, double *objects, int *numObjects, int *dimension, in
 	}
 }
 
-void HDSpace(double *points, int *dimension, int *cardinalities, int *numClasses, int *k, int *sameDirs, int *seed, double *dSpace, double *directions, double *projections){
+void HDSpace(double *points, int *dimension, int *cardinalities, int *numClasses,
+	int *k, int *sameDirs, int *seed, double *dSpace, double *directions, double *projections){
 	setSeed(*seed);
 	int numPoints = 0;for (int i = 0; i < numClasses[0]; i++){numPoints += cardinalities[i];}
 	TMatrix x(numPoints);
@@ -148,6 +149,89 @@ void HDSpace(double *points, int *dimension, int *cardinalities, int *numClasses
 		for (int i = 0; i < k[0]*numPoints; i++){
 			projections[i] = prjs[i/numPoints][i%numPoints];
 		}
+	}
+}
+
+void HDepthSpaceEx(double *points, double *objects, int *cardinalities, int *numClasses, int *numObjects,
+	int *dimension, int *algNo, double *depths){
+	
+	double(*func)(double *z, double **xx, int n, int d);
+	switch ((HDalgs)*algNo)
+	{
+	case recursive:
+		func = &HD_Rec; break;
+	case plane:
+		func = &HD_Comb2; break;
+	case line:
+		func = &HD_Comb; break;
+	default:
+		func = 0; break;
+	}
+
+	TDMatrix X;
+	TDMatrix x = asMatrix(objects, *numObjects, *dimension);
+	int classBegin = 0;
+
+	if (func)
+	for (int c = 0; c < *numClasses; c++){
+		X = asMatrix(objects+classBegin, cardinalities[c], *dimension);
+		for (int i = 0; i < *numObjects; i++){
+			depths[c * (*numObjects) + i] = func(x[i], X, cardinalities[c], *dimension);
+		}
+		classBegin += cardinalities[c]* *dimension;
+		delete[] X;
+	}
+	delete[] x;
+}
+
+void HDepthEx(double *points, double *objects, int *numPoints, int *numObjects, int *dimension, int *algNo, double *depths){
+
+	double(*func)(double *z, double **xx, int n, int d);
+	switch ((HDalgs)*algNo)
+	{
+	case recursive:
+		func = &HD_Rec; break;
+	case plane:
+		func = &HD_Comb2; break;
+	case line:
+		func = &HD_Comb; break;
+	default:
+		func = 0; break;
+	}
+
+	TDMatrix X = asMatrix(points, *numPoints, *dimension);
+	TDMatrix x = asMatrix(objects, *numObjects, *dimension);
+
+	if (func)
+	for (int i = 0; i < *numObjects; i++){
+		depths[i] = func(x[i], X, *numPoints, *dimension);
+	}
+}
+
+
+void OjaDepth(double *points, double *objects, int *numPoints, int *numObjects, int *dimension, int *seed, int* exact, int *k, double *depths){
+	setSeed(*seed);
+	TDMatrix X = asMatrix(points, *numPoints, *dimension);
+	TDMatrix x = asMatrix(objects, *numObjects, *dimension);
+
+	if (*exact)
+		OjaDepthsEx(X, x, *dimension, *numPoints, *numObjects, depths);
+	else{
+		long long K = ((long long)2000000000)*k[0] + k[1];
+		OjaDepthsApx(X, x, *dimension, *numPoints, *numObjects, K, depths);
+	}
+}
+
+void SimplicialDepth(double *points, double *objects, int *numPoints, int *numObjects, int *dimension, int *seed, int* exact, int *k, double *depths){
+	setSeed(*seed);
+	TDMatrix X = asMatrix(points, *numPoints, *dimension);
+	TDMatrix x = asMatrix(objects, *numObjects, *dimension);
+
+	if (*exact) 
+		SimplicialDepthsEx(X, x, *dimension, *numPoints, *numObjects, depths);
+	else {
+		long long K = ((long long)2000000000)*k[0] + k[1];
+		SimplicialDepthsApx(X, x, *dimension, *numPoints, *numObjects, K, depths);
 	}
 }
 

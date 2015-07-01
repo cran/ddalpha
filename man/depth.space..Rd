@@ -16,8 +16,8 @@ The detailed descriptions are found in the corresponding topics.
 ## projection depth
 # depth.space.projection(data, cardinalities, method = "random", num.directions = 1000)
 
-## Random Tukey depth
-# depth.space.randomTukey(data, cardinalities, num.directions = 1000)
+## Tukey depth
+# depth.space.halfspace(data, cardinalities, exact, alg, num.directions = 1000)
 
 ## spatial depth
 # depth.space.spatial(data, cardinalities)
@@ -46,7 +46,7 @@ Matrix of objects, each object (row) is represented via its depths (columns) w.r
 
 \code{\link{depth.space.projection}}
 
-\code{\link{depth.space.randomTukey}}
+\code{\link{depth.space.halfspace}}
 
 \code{\link{depth.space.spatial}}
 

@@ -15,7 +15,7 @@
 
 ddalpha.classify <- function(objects, 
                              ddalpha, 
-                             outsider.method = "LDA", 
+                             outsider.method = NULL, 
                              use.convex = NULL){
   # Checks
   if (!is.matrix(objects) && !is.data.frame(objects)){
@@ -30,11 +30,11 @@ ddalpha.classify <- function(objects,
     warning("Dimension of the objects to be classified does not correspond to the dimension of the trained classifier. Classification can not be performed!!!")
     return (NULL)
   }
-  if (!is.character(outsider.method) 
-      || length(outsider.method) != 1){
-    warning("Argument \"outsidet.method\" not specified correctly. Outsiders will be ignored!!!")
-    outsider.method <- NULL
-  }
+#   if (!is.character(outsider.method) 
+#       || length(outsider.method) != 1){
+#     warning("Argument \"outsidet.method\" not specified correctly. Outsiders will be ignored!!!")
+#     outsider.method <- NULL
+#   }
   if (is.null(use.convex)){
     use.convex <- ddalpha$useConvex
   }
@@ -173,6 +173,8 @@ ddalpha.classify <- function(objects,
   
   # Classify Outsiders
   resultsOutsiders <- as.list(rep("Ignored", nrow(freePoints)))
+  if (is.null(outsider.method) && length(ddalpha$methodsOutsider) == 1)
+    outsider.method = ddalpha$methodsOutsider[[1]]$name
   if (length(resultsOutsiders) > 0 && !is.null(outsider.method)){
     for (i in 1:length(ddalpha$methodsOutsider)){
       if (toupper(ddalpha$methodsOutsider[[i]]$name) == toupper(outsider.method)){

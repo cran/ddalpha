@@ -3,10 +3,10 @@ export(nlm_optimize_r,
        ddalpha.test, ddalpha.getErrorRateJK, ddalpha.getErrorRateCV,
        ddalphaf.train, ddalphaf.classify, 
        compclassf.train, compclassf.classify,
-       depth.zonoid, depth.randomTukey, depth.Mahalanobis, depth.projection, depth.spatial,
-       depth.space.zonoid, depth.space.randomTukey, depth.space.Mahalanobis, depth.space.projection, depth.space.spatial,
+       depth.zonoid, depth.halfspace, depth.Mahalanobis, depth.projection, depth.spatial, depth.simplicial, depth.simplicialVolume,
+       depth.space.zonoid, depth.space.halfspace, depth.space.Mahalanobis, depth.space.projection, depth.space.spatial, depth.space.simplicial, depth.space.simplicialVolume,
        is.in.convex, 
-       depth.graph,
+       depth.graph, depth.contours, depth.contours.ddalpha,
        getdata,
        dataf.geneexp, dataf.growth, dataf.medflies, dataf.tecator,
        dataf.sim.1.CFF07, dataf.sim.2.CFF07, 
@@ -16,6 +16,10 @@ useDynLib(ddalpha, IsInConvexes, ZDepth, HDepth, HDSpace, AlphaLearn, AlphaLearn
 S3method(print, ddalpha)
 S3method(print, ddalpha.pattern)
 S3method(print, ddalphaf)
+import(stats)
+import(utils)
+import(graphics)
+import(grDevices)
 import(MASS)
 import(class)
 import(robustbase)

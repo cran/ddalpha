@@ -20,7 +20,9 @@
   classNames <- unique(data[,dimension + 1])
   numOfClasses <- length(classNames)
 
-  if (is.data.frame(data)) names(data)[ncol(data)] <- paste0("X", ncol(data))
+  if(!is.data.frame(data))
+    data = as.data.frame(data)
+  names(data)[ncol(data)] <- "CLASS"
   
   # Creating overall structure
   ddalpha <- list(
@@ -31,7 +33,7 @@
          patterns = list(), 
          classifiers = list(), 
 #         numClassifiers = 0, 
-#         methodDepth = "randomTukey", 
+#         methodDepth = "halfspace", 
 #         methodSeparator = "alpha", 
 #         methodAggregation = "majority", 
 #         methodsOutsider = NULL, 
@@ -88,7 +90,7 @@
 
 .ddalpha.learn.depth <- function(ddalpha){
   # If it's the random Tukey depth, compute it first
-  if (ddalpha$methodDepth == "randomTukey"){
+  if (ddalpha$methodDepth == "halfspace"){
     dSpaceStructure <- .halfspace_space(ddalpha)
     ddalpha$directions <- dSpaceStructure$directions
     ddalpha$projections <- dSpaceStructure$projections
@@ -126,10 +128,10 @@
       }
     }
   }
-  if (ddalpha$methodDepth == "projectionRandom" || ddalpha$methodDepth == "projectionLinearize"){
+  if (ddalpha$methodDepth == "projection"){
     dSpaceStructure <- .projection_space(ddalpha)
     tmpDSpace <- dSpaceStructure$dspace
-    if (ddalpha$methodDepth == "projectionRandom"){
+    if (ddalpha$dmethod == "random"){
       ddalpha$directions <- dSpaceStructure$directions
       ddalpha$projections <- dSpaceStructure$projections
     }
@@ -138,9 +140,8 @@
   classBegin = 1
   # Calculating depths in each pattern
   for (i in 1:ddalpha$numPatterns){
-    if (   ddalpha$methodDepth == "randomTukey" 
-        || ddalpha$methodDepth == "projectionRandom" 
-        || ddalpha$methodDepth == "projectionLinearize"
+    if (   ddalpha$methodDepth == "halfspace" 
+        || ddalpha$methodDepth == "projection"
         || ddalpha$methodDepth == "potential"){
       # Random depth is already calculated, just distribute
       ddalpha$patterns[[i]]$depths <- tmpDSpace[classBegin:(classBegin+ddalpha$patterns[[i]]$cardinality-1),]
@@ -156,6 +157,14 @@
     if (ddalpha$methodDepth == "spatial"){
       # Calculate depths for the class w.r.t all classes, saying to which of the classes the chunk belongs
       ddalpha$patterns[[i]]$depths <- .spatial_depths(ddalpha, ddalpha$patterns[[i]]$points)
+    }
+    if (ddalpha$methodDepth == "simplicial"){
+      # Calculate depths for the class w.r.t all classes, saying to which of the classes the chunk belongs
+      ddalpha$patterns[[i]]$depths <- .simplicial_depths(ddalpha, ddalpha$patterns[[i]]$points)
+    }
+    if (ddalpha$methodDepth == "simplicialVolume"){
+      # Calculate depths for the class w.r.t all classes, saying to which of the classes the chunk belongs
+      ddalpha$patterns[[i]]$depths <- .simplicialVolume_depths(ddalpha, ddalpha$patterns[[i]]$points)
     }
   }
 
@@ -272,6 +281,10 @@
       ddalpha$methodsOutsider[[i]] <- .lda_learn(ddalpha, ddalpha$methodsOutsider[[i]])
       next
     }
+    if (ddalpha$methodsOutsider[[i]]$method == "QDA"){
+      ddalpha$methodsOutsider[[i]] <- .qda_learn(ddalpha, ddalpha$methodsOutsider[[i]])
+      next
+    }
     if (ddalpha$methodsOutsider[[i]]$method == "KNN"){
       ddalpha$methodsOutsider[[i]] <- .knn_learn(ddalpha, ddalpha$methodsOutsider[[i]])
       next
@@ -335,6 +348,9 @@
   if (settings$method == "LDA"){
     return (.lda_classify(objects, ddalpha, settings))
   }
+  if (settings$method == "QDA"){
+    return (.qda_classify(objects, ddalpha, settings))
+  }
   if (settings$method == "KNN"){
     return (.knn_classify(objects, ddalpha, settings))
   }
@@ -397,14 +413,34 @@
   x <- as.vector(t(points))
   c <- as.vector(cardinalities)
   k <- ddalpha$numDirections
-#  sameDirs <- 1 #?
-  if (ddalpha$sameDirections){
-    rez <- .C("HDSpace", as.double(x), as.integer(ncol(points)), as.integer(c), as.integer(ddalpha$numPatterns), as.integer(k), as.integer(1), as.integer(ddalpha$seed), dspc=double(nrow(points)*ddalpha$numPatterns), dirs=double(k*ncol(points)), prjs=double(k*nrow(points)))
-    return (list(dspace=matrix(rez$dspc, nrow=nrow(points), ncol=ddalpha$numPatterns, byrow=TRUE), directions=rez$dirs, projections=rez$prjs))
-  }else{
-    rez <- .C("HDSpace", as.double(x), as.integer(ncol(points)), as.integer(c), as.integer(ddalpha$numPatterns), as.integer(k), as.integer(0), as.integer(ddalpha$seed), dspc=double(nrow(points)*ddalpha$numPatterns), dirs=double(1), prjs=double(1))
-    return (list(dspace=matrix(rez$dspc, nrow=nrow(points), ncol=ddalpha$numPatterns, byrow=TRUE), directions=0, projections=0))
-  }
+
+  method = ddalpha$dmethod
+  
+  if (method == 0){
+    if (ddalpha$sameDirections){
+      rez <- .C("HDSpace", as.double(x), as.integer(ncol(points)), as.integer(c), as.integer(ddalpha$numPatterns), as.integer(k), as.integer(1), as.integer(ddalpha$seed), dspc=double(nrow(points)*ddalpha$numPatterns), dirs=double(k*ncol(points)), prjs=double(k*nrow(points)))
+      return (list(dspace=matrix(rez$dspc, nrow=nrow(points), ncol=ddalpha$numPatterns, byrow=TRUE), directions=rez$dirs, projections=rez$prjs))
+    }else{
+      rez <- .C("HDSpace", as.double(x), as.integer(ncol(points)), as.integer(c), as.integer(ddalpha$numPatterns), as.integer(k), as.integer(0), as.integer(ddalpha$seed), dspc=double(nrow(points)*ddalpha$numPatterns), dirs=double(1), prjs=double(1))
+      return (list(dspace=matrix(rez$dspc, nrow=nrow(points), ncol=ddalpha$numPatterns, byrow=TRUE), directions=0, projections=0))
+    }
+  } else 
+    if (method %in% 1:3){
+      
+      ds <- .C("HDepthSpaceEx", 
+               as.double(x), 
+               as.double(x), 
+               as.integer(c), 
+               as.integer(length(cardinalities)), 
+               as.integer(nrow(points)),  
+               as.integer(ncol(points)), 
+               as.integer(method), 
+               depths=double(nrow(points)*length(cardinalities)))$depths  
+      
+      return (list(dspace=matrix(ds, nrow=nrow(points), ncol=ddalpha$numPatterns, byrow=F)))
+    }
+  else 
+    stop("wrong choise of the algorithm, method = ", method)
 }
 
 .halfspace_depths <- function(ddalpha, objects){
@@ -418,38 +454,58 @@
   y <- as.vector(t(objects))
   c <- as.vector(cardinalities)
   k <- ddalpha$numDirections
-  if (ddalpha$sameDirections){
-    result <- .C("HDepth", 
-                 as.double(x), 
-                 as.double(y), 
-                 as.integer(nrow(objects)), 
-                 as.integer(ncol(points)), 
-                 as.integer(c), 
-                 as.integer(ddalpha$numPatterns), 
-                 as.double(ddalpha$directions), 
-                 as.double(ddalpha$projections), 
-                 as.integer(k), 
-                 as.integer(1), 
-                 as.integer(ddalpha$seed),
-                 depths=double(ddalpha$numPatterns*nrow(objects)))
-  }else{
-    result <- .C("HDepth", 
-                 as.double(x), 
-                 as.double(y), 
-                 as.integer(nrow(objects)), 
-                 as.integer(ncol(points)), 
-                 as.integer(c), 
-                 as.integer(ddalpha$numPatterns), 
-                 as.double(0), 
-                 as.double(0), 
-                 as.integer(k), 
-                 as.integer(0), 
-                 as.integer(ddalpha$seed),
-                 depths=double(ddalpha$numPatterns*nrow(objects)))
+  method <- ddalpha$dmethod
+  if (method == 0){
+    if (ddalpha$sameDirections){
+      result <- .C("HDepth", 
+                   as.double(x), 
+                   as.double(y), 
+                   as.integer(nrow(objects)), 
+                   as.integer(ncol(points)), 
+                   as.integer(c), 
+                   as.integer(ddalpha$numPatterns), 
+                   as.double(ddalpha$directions), 
+                   as.double(ddalpha$projections), 
+                   as.integer(k), 
+                   as.integer(1), 
+                   as.integer(ddalpha$seed),
+                   depths=double(ddalpha$numPatterns*nrow(objects)))
+    }else{
+      result <- .C("HDepth", 
+                   as.double(x), 
+                   as.double(y), 
+                   as.integer(nrow(objects)), 
+                   as.integer(ncol(points)), 
+                   as.integer(c), 
+                   as.integer(ddalpha$numPatterns), 
+                   as.double(0), 
+                   as.double(0), 
+                   as.integer(k), 
+                   as.integer(0), 
+                   as.integer(ddalpha$seed),
+                   depths=double(ddalpha$numPatterns*nrow(objects)))
+    }
   }
+  else
+    if (method %in% 1:3){
+      
+      ds <- .C("HDepthSpaceEx", 
+               as.double(x), 
+               as.double(y), 
+               as.integer(c), 
+               as.integer(length(cardinalities)), 
+               as.integer(nrow(objects)),  
+               as.integer(ncol(points)), 
+               as.integer(method), 
+               depths=double(nrow(objects)*length(cardinalities)))$depths  
+      
+      depths <- matrix(ds, nrow=nrow(objects), ncol=length(cardinalities), byrow=F)
+      return (depths)
+  }
+  else 
+    stop("wrong choise of the algorithm, method = ", method)
   return (matrix(result$depths, nrow=nrow(objects), ncol=ddalpha$numPatterns, byrow=TRUE))
 }
-.randomTukey_depths <- .halfspace_depths
 
 .zonoid_depths <- function(ddalpha, objects, ownPattern = 0){
   depths <- NULL
@@ -514,7 +570,7 @@
     points <- rbind(points, ddalpha$patterns[[i]]$points)
     cardinalities <- c(cardinalities, ddalpha$patterns[[i]]$cardinality)
   }
-  if (ddalpha$methodDepth == "projectionRandom"){
+  if (ddalpha$dmethod == "random"){
     x <- as.vector(t(points))
     y <- as.vector(t(points))
     c <- as.vector(cardinalities)
@@ -536,7 +592,7 @@
                                ncol=ddalpha$numPatterns, byrow=TRUE), 
                  directions=result$dirs, projections=result$prjs))
   }
-  if (ddalpha$methodDepth == "projectionLinearize"){
+  if (ddalpha$dmethod == "linearize"){
     depths <- NULL
     for (i in 1:ddalpha$numPatterns){
       ds <- .zdepth(ddalpha$patterns[[i]]$points, points)
@@ -553,7 +609,7 @@
     points <- rbind(points, ddalpha$patterns[[i]]$points)
     cardinalities <- c(cardinalities, ddalpha$patterns[[i]]$cardinality)
   }
-  if (ddalpha$methodDepth == "projectionRandom"){
+  if (ddalpha$dmethod == "random"){
     x <- as.vector(t(points))
     y <- as.vector(t(objects))
     c <- as.vector(cardinalities)
@@ -573,7 +629,7 @@
                  depths=double(ddalpha$numPatterns*nrow(objects)))
     return (matrix(result$depths, nrow=nrow(objects), ncol=ddalpha$numPatterns, byrow=TRUE))
   }
-  if (ddalpha$methodDepth == "projectionLinearize"){
+  if (ddalpha$dmethod == "linearize"){
     depths <- NULL
     for (i in 1:ddalpha$numPatterns){
       ds <- .zdepth(ddalpha$patterns[[i]]$points, objects)
@@ -582,8 +638,54 @@
     return (depths)
   }
 }
-.projectionRandom_depths <- .projection_depths
-.projectionLinearize_depths <- .projection_depths
+
+.simplicialVolume_depths <- function(ddalpha, objects){
+  if (is.data.frame(objects))
+    objects = as.matrix(objects)
+  depths <- NULL
+  for (i in 1:ddalpha$numPatterns){
+    pattern <- ddalpha$patterns[[i]]$points
+    
+    points <- as.vector(t(pattern))
+    x <- as.vector(t(objects))
+    ds <- .C("OjaDepth", 
+             as.double(points), 
+             as.double(x), 
+             as.integer(nrow(pattern)), 
+             as.integer(nrow(objects)), 
+             as.integer(ncol(pattern)), 
+             as.integer(ddalpha$seed),
+             as.integer(ddalpha$d_exact),
+             as.integer(.longtoint(ddalpha$d_k)),
+             depths=double(nrow(objects)))$depths
+    depths <- cbind(depths, ds, deparse.level = 0)
+  }  
+  return (depths) 
+}
+
+.simplicial_depths <- function(ddalpha, objects){
+  if (is.data.frame(objects))
+    objects = as.matrix(objects)
+  depths <- NULL
+  for (i in 1:ddalpha$numPatterns){
+    pattern <- ddalpha$patterns[[i]]$points
+    
+    points <- as.vector(t(pattern))
+    x <- as.vector(t(objects))
+    ds <- .C("SimplicialDepth", 
+             as.double(points), 
+             as.double(x), 
+             as.integer(nrow(pattern)), 
+             as.integer(nrow(objects)), 
+             as.integer(ncol(pattern)), 
+             as.integer(ddalpha$seed),
+             as.integer(ddalpha$d_exact),
+             as.integer(.longtoint(ddalpha$d_k)),           
+             depths=double(nrow(objects)))$depths
+    depths <- cbind(depths, ds, deparse.level = 0)
+  }  
+  return (depths) 
+}
 
 .spatial_depths <- function(ddalpha, objects){
   if (is.data.frame(objects))
@@ -646,6 +748,14 @@
              priors = NULL, 
              lda = NULL), 
         .Names = c("name", "method", "priors", "lda"))
+    }
+    if (methods.refined[i] == "QDA"){
+      supported <- TRUE
+      treatment.settings <- structure(
+        list(name = "QDA", 
+             method = "QDA", 
+             priors = NULL, 
+             qda = NULL))
     }
     if (methods.refined[i] == "KNNAFF"){
       supported <- TRUE
@@ -928,14 +1038,25 @@
 }
 
 .lda_learn <- function(ddalpha, settings){
-  new.frm <- data.frame(ddalpha$raw)
-  settings$lda <- MASS::lda(formula=as.formula(paste("X", ncol(ddalpha$raw), " ~ .", sep="")), data=data.frame(ddalpha$raw), priors=settings$priors)
+  settings$lda <- MASS::lda(formula=as.formula("CLASS ~ ."), data=ddalpha$raw, priors=settings$priors)
   settings$priors <- settings$lda$prior
   return (settings)
 }
 
 .lda_classify <- function(objects, ddalpha, settings){
-  return (as.list(predict(settings$lda, data.frame(objects))$class))
+  if (!is.data.frame(objects)) objects = as.data.frame(objects)
+  return (as.list(predict(settings$lda, objects)$class))
+}
+
+.qda_learn <- function(ddalpha, settings){
+  settings$qda <- MASS::qda(formula=as.formula("CLASS ~ ."), data=ddalpha$raw, priors=settings$priors)
+  settings$priors <- settings$qda$prior
+  return (settings)
+}
+
+.qda_classify <- function(objects, ddalpha, settings){
+  if (!is.data.frame(objects)) objects = as.data.frame(objects)
+  return (as.list(predict(settings$qda, objects)$class))
 }
 
 .knnAff_learn <- function(ddalpha, settings){

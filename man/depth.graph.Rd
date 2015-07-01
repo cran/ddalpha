@@ -8,7 +8,8 @@ Builds the data depth graphs for 2-dimensional data. The graph is built using \c
 }
 \usage{
 depth.graph(data, 
-  depth_f = c("zonoid","randomTukey","Mahalanobis","projectionRandom","spatial","none"), 
+  depth_f = c("halfspace", "Mahalanobis", "projection", "simplicial", 
+              "simplicialVolume", "spatial", "zonoid", "none"), 
   apoint = NULL, 
   main = depth_f,  
   xlim = c(min(data[, 1]), max(data[, 1])), 
@@ -64,7 +65,7 @@ par(mfrow = c(2,3), mar = c(0,0,0,0), mai = c(0,0,0.2,0))
 data(hemophilia)
 depth.graph(hemophilia, "none", xnum = 100, ynum = 100)
 depth.graph(hemophilia, "Mahalanobis", xnum = 100, ynum = 100)
-depth.graph(hemophilia, "randomTukey", xnum = 100, ynum = 100)
+depth.graph(hemophilia, "halfspace", xnum = 100, ynum = 100)
 depth.graph(hemophilia, "projection", xnum = 100, ynum = 100)
 depth.graph(hemophilia, "zonoid", xnum = 100, ynum = 100)
 depth.graph(hemophilia, "spatial", xnum = 100, ynum = 100)

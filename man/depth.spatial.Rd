@@ -38,11 +38,15 @@ Vardi, Y. and Zhang, C.H. (2000). The multivariate L1
 \emph{Proceedings of the National Academy of Sciences, U.S.A.} \bold{97} 1423--1426.
 }
 \seealso{
-\code{\link{depth.Mahalanobis}} for calculation of Mahalanobis depth. 
+\code{\link{depth.halfspace}} for calculation of the Tukey depth.
 
-\code{\link{depth.projection}} for calculation of projection depth. 
+\code{\link{depth.Mahalanobis}} for calculation of Mahalanobis depth.
 
-\code{\link{depth.randomTukey}} for calculation of the random Tukey depth.
+\code{\link{depth.projection}} for calculation of projection depth.
+
+\code{\link{depth.simplicial}} for calculation of simplicial depth.
+
+\code{\link{depth.simplicialVolume}} for calculation of simplicial volume depth.
 
 \code{\link{depth.zonoid}} for calculation of zonoid depth.
 

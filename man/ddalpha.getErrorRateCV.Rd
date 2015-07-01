@@ -30,11 +30,14 @@ additional parameters passed to \code{\link{ddalpha.train}}
   \item{errors}{
   the part of incorrectly classified data
   }
+  \item{errors_sd}{
+  the standart deviation of errors
+  }
   \item{time}{
   the mean training time
   }
   \item{time_sd}{
-  the standart seviation training time
+  the standart deviation of training time
   }
 
 }
@@ -48,14 +51,14 @@ additional parameters passed to \code{\link{ddalpha.train}}
 }
 \examples{
 # Generate a bivariate normal location-shift classification task
-# containing 200 training objects and 200 to test with
-class1 <- mvrnorm(150, c(0,0), 
+# containing 200 objects
+class1 <- mvrnorm(100, c(0,0), 
                   matrix(c(1,1,1,4), nrow = 2, ncol = 2, byrow = TRUE))
-class2 <- mvrnorm(150, c(2,2), 
+class2 <- mvrnorm(100, c(2,2), 
                   matrix(c(1,1,1,4), nrow = 2, ncol = 2, byrow = TRUE))
 propertyVars <- c(1:2)
 classVar <- 3
-data <- rbind(cbind(class1, rep(1, 150)), cbind(class2, rep(2, 150)))
+data <- rbind(cbind(class1, rep(1, 100)), cbind(class2, rep(2, 100)))
 
 # Train 1st DDalpha-classifier (default settings) 
 # and get the classification error rate

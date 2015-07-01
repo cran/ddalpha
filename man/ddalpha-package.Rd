@@ -15,14 +15,14 @@ The package implements the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharov
 \tabular{ll}{
 Package: \tab ddalpha\cr
 Type: \tab Package\cr
-Version: \tab 1.1.1\cr
-Date: \tab 2015-05-19\cr
+Version: \tab 1.1.2.2\cr
+Date: \tab 2015-07-01\cr
 License: \tab GPL-2\cr
 }
 Use \code{\link{ddalpha.train}} to train the DD-classifier and \code{\link{ddalpha.classify}} to classify with it. 
 Load sample classification problems using \code{\link{getdata}}. The package contains 50 classification problems built of 33 sets of real data.
 
-The list of the implemented depths is found in topic \code{\link{depth.*}}. Corresponding to them depth representations of the data are obtained with \code{\link{depth.space.*}}. The depth graphs are built by \code{\link{depth.graph}} for two-dimensional data. 
+The list of the implemented depths is found in topic \code{\link{depth.*}}. Corresponding to them depth representations of the data are obtained with \code{\link{depth.space.*}}. Functions \code{\link{depth.contours}} and \code{\link{depth.contours.ddalpha}} build depth regions, and \code{\link{depth.graph}} builds depth graphs for two-dimensional data. 
 
 \code{\link{is.in.convex}} shows whether an object is no 'outsider', i.e. can be classified by its depth values. 
 Outsiders are alternatively classified by LDA, kNN and maximum Mahalanobis depth as well as by random assignment.
@@ -35,6 +35,8 @@ Use \code{\link{compclassf.train}} and \code{\link{ddalphaf.train}} to train the
 Oleksii Pokotylo, <alexey.pokotylo at gmail.com>
 
 Pavlo Mozharovskyi, <mozharovskyi at statistik.uni-koeln.de>
+
+Rainer Dyckerhoff, <rainer.dyckerhoff at statistik.uni-koeln.de>
 }
 \references{
 Mozharovskyi, P. (2015), \emph{Contributions to Depth-based Classification and Computation of the Tukey Depth}, Verlag Dr. Kovac (Hamburg).
@@ -94,15 +96,15 @@ depths.zonoid <- depth.zonoid(data$test[1:10,propertyVars],
 cat("Zonoid depths:", depths.zonoid, "\n")
 
 # Calculate the random Tukey depth of top 10 testing objects w.r.t. 1st class
-depths.randomTukey <- depth.randomTukey(data$test[1:10,propertyVars], 
+depths.halfspace <- depth.halfspace(data$test[1:10,propertyVars], 
                                         data$train[trainIndices,propertyVars])
-cat("Random Tukey depths:", depths.randomTukey, "\n")
+cat("Random Tukey depths:", depths.halfspace, "\n")
 
 # Calculate depth space with zonoid depth
 dspace.zonoid <- depth.space.zonoid(data$train, c(100, 100))
 
-# Calculate depth space with the random Tukey depth
-dspace.randomTukey <- depth.space.randomTukey(data$train, c(100, 100))
+# Calculate depth space with the exact Tukey depth
+dspace.halfspace <- depth.space.halfspace(data$train, c(100, 100), exact = TRUE)
 
 # Count outsiders
 numOutsiders = sum(is.in.convex(data$test[,propertyVars], 

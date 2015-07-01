@@ -35,9 +35,6 @@ Lange, T., Mosler, K. and Mozharovskyi, P. (2014), Fast nonparametric classifica
 
 Mosler, K. (2002), \emph{Multivariate dispersion, central regions and depth: the lift zonoid approach}, Springer (New York).
 }
-\author{
-The algorithm for computation of zonoid depth (Dyckerhoff, Koshevoy and Mosler, 1996) has been implemented in C++ by Rainer Dyckerhoff.
-}
 \seealso{
 \code{\link{ddalpha.train}} and \code{\link{ddalpha.classify}} for application, \code{\link{depth.zonoid}} for calculation of zonoid depth.
 }

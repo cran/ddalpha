@@ -77,7 +77,7 @@ ddalpha.getErrorRateCV <- function(data, size = 0.3, times = 10,  ...){
   
   indexes = 1:nrow(data)
   
-  errors = 0
+  errors = c()
   total = 0
   time = c()
   
@@ -88,11 +88,10 @@ ddalpha.getErrorRateCV <- function(data, size = 0.3, times = 10,  ...){
     
     el = ddalpha.test(learn, test, ...)
     if(is.list(el)){
-      errors = errors + el$incorrect
-      total = total + el$total
+      errors = c(errors,el$incorrect/el$total)
       time = c(time,el$time)
     }
   }
   
-  return (list(errors = errors/total, time = mean(time), time_sd = sd(times)))  
+  return (list(errors = mean(errors), errors_sd = sd(errors), time = mean(time), time_sd = sd(times)))  
 }

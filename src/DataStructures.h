@@ -6,12 +6,24 @@
 
   Defines the data structures used in the package.
 */
+#pragma once
+
 
 typedef vector<double> TPoint;
 typedef vector<vector<double> > TMatrix;
 typedef vector<vector<int> > TIntMatrix;
 typedef vector<int> TVariables;
 
+typedef double** TDMatrix;
+
+// by rows
+TDMatrix asMatrix(double* arr, int n, int d);
+
+double** newM(int n, int d);
+void deleteM(TDMatrix X);
+
+
+namespace bnu = boost::numeric::ublas;
 typedef boost::numeric::ublas::matrix<double> bMatrix;
 typedef boost::numeric::ublas::vector<double> bVector;
 typedef boost::numeric::ublas::permutation_matrix<size_t> bPM;

@@ -7,7 +7,7 @@
 # Builds the data depth surfaces for 2-dimensional data  
 ################################################################################
 
-depth.graph <- function (data, depth_f = c("zonoid", "randomTukey", "Mahalanobis", "projectionRandom", "spatial", "none"), apoint = NULL
+depth.graph <- function (data, depth_f = c("halfspace", "Mahalanobis", "projection", "simplicial", "simplicialVolume", "spatial", "zonoid", "none"), apoint = NULL
                            , main = depth_f
                            , xlim = c(min(data[,1]), max(data[,1])), ylim = c(min(data[,2]), max(data[,2])), zlim = c(0,max(z))
                            , xnum = 250, ynum = 250
@@ -24,17 +24,19 @@ depth.graph <- function (data, depth_f = c("zonoid", "randomTukey", "Mahalanobis
   if (!is.function(depth_f)){
     depth_f = match.arg (depth_f)            
     df = switch(depth_f,
-                "none" = function(x, X) (0),
+                "none" = function(x, X,...) (0),
                 "zonoid" = depth.zonoid,
-                "randomTukey" = depth.randomTukey,
-                "Mahalanobis" = function(x, X) (.Mahalanobis_depth(x, colMeans(X), solve(cov(X)))),
-                "projectionRandom" = depth.projection,
+                "halfspace" = depth.halfspace,
+                "simplicialVolume" = depth.simplicialVolume,
+                "simplicial" = depth.simplicial,
+                "Mahalanobis" = function(x, X,...) (.Mahalanobis_depth(x, colMeans(X), solve(cov(X)))),
+                "projection" = depth.projection,
                 "spatial" = depth.spatial
     )
     if (depth_f == "none") zlim = c(0,1)
   }
   
-  all.depths = df(all.points, data[,1:2])
+  all.depths = df(all.points, data[,1:2], ...)
   z <- matrix(all.depths, ncol=ynum, nrow=xnum, byrow=FALSE)
   
   z.red <- as.integer((data[,1]-x1[1])/x1.step+1) + as.integer((data[,2]-x2[1])/x2.step+1)*(xnum-1)

@@ -7,7 +7,7 @@ Relationship of age patterns of fecundity to mortality for female Medflies.
 \description{
 The data set consists of number of eggs laid daily for each of 1000 medflies (Mediterranean fruit flies, Ceratitis capitata) until time of death. Data were obtained in Dr. Carey's laboratory. The main questions are to explore the relationship of age patterns of fecundity to mortality, longevity and lifetime reproduction.
  
-A basic finding was that individual mortality is associated with the time-dynamics of the egg-laying trajectory. An approximate parametric model of the egg laying process was developed and used in Muller et al. (2001). Nonparametric approaches which extend principal component analysis for curve data to the situation when covariates are present have been developed and discussed in  Chiou, Muller and Wang (2003) and Chiou et al. (2003).
+A basic finding was that individual mortality is associated with the time-dynamics of the egg-laying trajectory. An approximate parametric model of the egg laying process was developed and used in Muller et al. (2001). Non-parametric approaches which extend principal component analysis for curve data to the situation when covariates are present have been developed and discussed in  Chiou, Muller and Wang (2003) and Chiou et al. (2003).
 }
 \usage{
 dataf.medflies()

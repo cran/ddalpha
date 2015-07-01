@@ -33,17 +33,18 @@ Koshevoy, G. and Mosler, K. (1997), Zonoid trimming for multivariate distributio
 
 Mosler, K. (2002), \emph{Multivariate dispersion, central regions and depth: the lift zonoid approach}, Springer (New York).
 }
-\author{
-The algorithm for computation of zonoid depth (Dyckerhoff, Koshevoy and Mosler, 1996) has been implemented in C++ by Rainer Dyckerhoff.
-}
 \seealso{
-\code{\link{depth.Mahalanobis}} for calculation of Mahalanobis depth. 
+\code{\link{depth.halfspace}} for calculation of the Tukey depth.
 
-\code{\link{depth.projection}} for calculation of projection depth. 
+\code{\link{depth.Mahalanobis}} for calculation of Mahalanobis depth.
 
-\code{\link{depth.randomTukey}} for calculation of the random Tukey depth.
+\code{\link{depth.projection}} for calculation of projection depth.
 
-\code{\link{depth.spatial}} for calculation of spatial depth. 
+\code{\link{depth.simplicial}} for calculation of simplicial depth.
+
+\code{\link{depth.simplicialVolume}} for calculation of simplicial volume depth.
+
+\code{\link{depth.spatial}} for calculation of spatial depth.
 
 }
 \examples{

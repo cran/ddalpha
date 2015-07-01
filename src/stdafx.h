@@ -27,13 +27,16 @@
 using namespace std;
 
 #include "DataStructures.h"
+#include "Common.h"
 #include "AlphaProcedure.h"
 #include "TukeyDepth.h"
+#include "HD.h"
 #include "ZonoidDepth.h"
+#include "SimplicialDepth.h"
+#include "OjaDepth.h"
 #include "Knn.h"
 #include "Polynomial.h"
 #include "ProjectionDepth.h"
-#include "Common.h"
 
 
 static boost::random::rand48 rEngine;

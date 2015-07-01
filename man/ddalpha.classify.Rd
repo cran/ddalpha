@@ -7,7 +7,7 @@ Classify using DD\eqn{\alpha}-Classifier
 Classifies data using the DD\eqn{\alpha}-classifier and a specified outsider treatment.
 }
 \usage{
-ddalpha.classify(objects, ddalpha, outsider.method = "LDA", use.convex = NULL)
+ddalpha.classify(objects, ddalpha, outsider.method = NULL, use.convex = NULL)
 }
 \arguments{
   \item{objects}{
@@ -37,9 +37,6 @@ Mozharovskyi P. (2015), Contributions to Depth-based Classification and Computat
 Dyckerhoff, R., Koshevoy, G. and Mosler, K. (1996), Zonoid data depth: theory and computation. In: Prat A. (ed), \emph{COMPSTAT 1996. Proceedings in computational statistics}, Physica-Verlag (Heidelberg), 235--240.
 
 Lange, T., Mosler, K. and Mozharovskyi, P. (2014), Fast nonparametric classification based on data depth, \emph{Statistical Papers}, \bold{55}, 49--69.
-}
-\author{
-The algorithm for computation of zonoid depth (Dyckerhoff, Koshevoy and Mosler, 1996) has been implemented in C++ by Rainer Dyckerhoff.
 }
 \seealso{
 \code{\link{ddalpha.train}} to train the DD\eqn{\alpha}-classifier.

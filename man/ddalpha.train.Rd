@@ -13,7 +13,7 @@ Train DD-Classifier
 }
 \description{
 Trains the DD-classifier using a training sample according to given parameters. 
-The DD-classifier is a nonparametric procedure that first transforms the training sample into the depth space calculating the depth of each point w.r.t each class (dimension of this space equals the number of classes in the training sample), and then constructs a separating rule in this depth space. 
+The DD-classifier is a non-parametric procedure that first transforms the training sample into the depth space calculating the depth of each point w.r.t each class (dimension of this space equals the number of classes in the training sample), and then constructs a separating rule in this depth space. 
 If in the classification phase an object does not belong to the convex hull of at least one class (we mention such an object as an 'outsider'), it is mapped into the origin of the depth space and hence cannot be classified in the depth space. For these objects, after 'outsiderness' has been assured, an outsider treatment, i.e. a classification procedure functioning outside convex hulls of the classes is applied; it has to be trained too.
 
 The current realization of the DD-classifier allows for several alternative outsider treatments; they involve different traditional classification methods, see 'Details' and 'Arguments' for parameters needed. 
@@ -22,7 +22,7 @@ The function allows for classification with \eqn{q\ge 2} classes, see \code{aggr
 }
 \usage{
 ddalpha.train(data, 
-              depth = "randomTukey", 
+              depth = "halfspace", 
               separator = "alpha", 
               outsider.methods = "LDA", 
               outsider.settings = NULL, 
@@ -39,13 +39,13 @@ ddalpha.train(data,
 Matrix containing training sample where each of \eqn{n} rows is one object of the training sample where first \eqn{d} entries are inputs and the last entry is output (class label).
 }
   \item{depth}{
-Character string determining which depth notion to use; the default value is \code{"randomTukey"}. The list of the supported depths is given in section \emph{\bold{\code{Depths}}}.
+Character string determining which depth notion to use; the default value is \code{"halfspace"}. The list of the supported depths is given in section \emph{\bold{\code{Depths}}}.
 }
   \item{separator}{
 The method used for separation on the DD-plot; can be \code{"alpha"} (the default), \code{"knnlm"} or \code{"maxD"}. See section \emph{\bold{\code{Separators}}} for the description of the sparators and additional parameters.
 }
   \item{outsider.methods}{
-Vector of character strings each being a name of a basic outsider method for eventual classification; possible names are: \code{"LDA"} (the default), \code{"kNN"}, \code{"kNNAff"}, \code{"depth.Mahalanobis"}, \code{"RandProp"}, \code{"RandEqual"} and \code{"Ignore"}. Each method can be specified only once, replications are ignored. By specifying treatments in such a way only a basic treatment method can be chosen (by the name), and the default settings for each of the methods are applied, see 'Details'.
+Vector of character strings each being a name of a basic outsider method for eventual classification; possible names are: \code{"LDA"} (the default), \code{"LDA"}, \code{"kNN"}, \code{"kNNAff"}, \code{"depth.Mahalanobis"}, \code{"RandProp"}, \code{"RandEqual"} and \code{"Ignore"}. Each method can be specified only once, replications are ignored. By specifying treatments in such a way only a basic treatment method can be chosen (by the name), and the default settings for each of the methods are applied, see 'Details'.
 }
   \item{outsider.settings}{
 List containing outsider treatments each described by a list of parameters including a name, see 'Details' and 'Examples'. Each method can be used multiply with (not necessarily) different parameters, just the name should be unique, entries with the repeating names are ignored.
@@ -91,12 +91,19 @@ The parameters for the depth calculating and separation methods.
 
 The following depths are supported:
 
-\code{\link[ddalpha:depth.Mahalanobis]{Mahalanobis}} for calculation of Mahalanobis depth,\cr
-\code{\link[ddalpha:depth.projection]{projectionRandom}} for calculation of projection depth using random projections,\cr
-\code{\link[ddalpha:depth.projection]{projectionLinearize}} for calculation of projection depth using the Nelder-Mead method,\cr
-\code{\link[ddalpha:depth.randomTukey]{randomTukey}} for calculation of the random Tukey depth,\cr
-\code{\link[ddalpha:depth.spatial]{spatial}} for calculation of spatial depth,\cr
-\code{\link[ddalpha:depth.zonoid]{zonoid}} for calculation of zonoid depth. 
+\code{\link{depth.halfspace}} for calculation of the Tukey depth.
+
+\code{\link{depth.Mahalanobis}} for calculation of Mahalanobis depth.
+
+\code{\link{depth.projection}} for calculation of projection depth.
+
+\code{\link{depth.simplicial}} for calculation of simplicial depth.
+
+\code{\link{depth.simplicialVolume}} for calculation of simplicial volume depth.
+
+\code{\link{depth.spatial}} for calculation of spatial depth.
+
+\code{\link{depth.zonoid}} for calculation of zonoid depth.
 
 The additional parameters are described in the corresponding topics.
 
@@ -213,9 +220,6 @@ Vasil'ev, V.I. (2003), The reduction principle in problems of revealing regulari
 
 Li, J., Cuesta-Albertos, J. A. and Liu, R. Y. (2012). dd-classifier: Nonparametric classification procedure based on dd-plot, Journal of the American Statistical Association
 107(498): 737\{753\}.
-}
-\author{
-The algorithm for computation of zonoid depth (Dyckerhoff, Koshevoy and Mosler, 1996) has been implemented in C++ by Rainer Dyckerhoff.
 }
 \seealso{
 \code{\link{ddalpha.classify}} for classification using DD\eqn{\alpha}-classifier, 

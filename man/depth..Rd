@@ -9,14 +9,20 @@ Calculates the depth of points w.r.t. a multivariate data set.
 The detailed descriptions are found in the corresponding topics.
 }
 \usage{
+## Tukey depth
+# depth.halfspace(x, data, exact, method, num.directions = 1000, seed = 0)
+
 ## Mahalanobis depth
 # depth.Mahalanobis(x, data, mah.estimate = "moment", mah.parMcd = 0.75)
 
 ## projection depth
 # depth.projection(x, data, method = "random", num.directions = 1000)
 
-## Random Tukey depth
-# depth.randomTukey(x, data, num.directions = 1000)
+## simplicial depth
+# depth.simplicial(x, data, exact = F, k = 0.05, seed = 0)
+
+## simplicial volume depth
+# depth.simplicialVolume(x, data, exact = F, k = 0.05, seed = 0)
 
 ## spatial depth
 # depth.spatial(x, data)
@@ -36,11 +42,15 @@ Matrix of data where each row contains a \eqn{d}-variate point, w.r.t. which the
 
 \seealso{
 
+\code{\link{depth.halfspace}}
+
 \code{\link{depth.Mahalanobis}}
 
 \code{\link{depth.projection}}
 
-\code{\link{depth.randomTukey}}
+\code{\link{depth.simplicial}}
+
+\code{\link{depth.simplicialVolume}}
 
 \code{\link{depth.spatial}}
 
