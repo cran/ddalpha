@@ -2,7 +2,7 @@
   File:             ddalpha.cpp
   Created by:       Pavlo Mozharovskyi
   First published:  28.02.2013
-  Last revised:     15.05.2013
+  Last revised:     03.07.2015
 
   Defines the exported functions for the 'ddalpha'-package.
 
@@ -175,6 +175,7 @@ void HDepthSpaceEx(double *points, double *objects, int *cardinalities, int *num
 	if (func)
 	for (int c = 0; c < *numClasses; c++){
 		X = asMatrix(objects+classBegin, cardinalities[c], *dimension);
+	//	printMatrix(X, cardinalities[c], *dimension);
 		for (int i = 0; i < *numObjects; i++){
 			depths[c * (*numObjects) + i] = func(x[i], X, cardinalities[c], *dimension);
 		}
@@ -206,6 +207,8 @@ void HDepthEx(double *points, double *objects, int *numPoints, int *numObjects, 
 	for (int i = 0; i < *numObjects; i++){
 		depths[i] = func(x[i], X, *numPoints, *dimension);
 	}
+	delete[] X;
+	delete[] x;
 }
 
 
@@ -220,6 +223,8 @@ void OjaDepth(double *points, double *objects, int *numPoints, int *numObjects, 
 		long long K = ((long long)2000000000)*k[0] + k[1];
 		OjaDepthsApx(X, x, *dimension, *numPoints, *numObjects, K, depths);
 	}
+	delete[] X;
+	delete[] x;
 }
 
 void SimplicialDepth(double *points, double *objects, int *numPoints, int *numObjects, int *dimension, int *seed, int* exact, int *k, double *depths){
@@ -233,6 +238,8 @@ void SimplicialDepth(double *points, double *objects, int *numPoints, int *numOb
 		long long K = ((long long)2000000000)*k[0] + k[1];
 		SimplicialDepthsApx(X, x, *dimension, *numPoints, *numObjects, K, depths);
 	}
+	delete[] X;
+	delete[] x;
 }
 
 void AlphaLearn(double *points, int *numPoints, int *dimension, int *cardinalities, int *degree, int *minFeatures, double *ray){

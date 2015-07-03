@@ -55,11 +55,17 @@ Tukey, J.W. (1974), Mathematics and the picturing of data, In: \emph{Proceeding 
 # containing 20 training objects
 class1 <- mvrnorm(10, c(0,0), 
                   matrix(c(1,1,1,4), nrow = 2, ncol = 2, byrow = TRUE))
-class2 <- mvrnorm(10, c(2,2), 
+class2 <- mvrnorm(10, c(1,1), 
                   matrix(c(1,1,1,4), nrow = 2, ncol = 2, byrow = TRUE))
 data <- rbind(class1, class2)
+plot(data, col = c(rep(1,10), rep(2,10)))
 # Get depth space using the random Tukey depth
-depth.space.halfspace(data, c(10, 10))
+dhA = depth.space.halfspace(data, c(10, 10))
+(dhA)
+
+# Get depth space using default exact method - "recursive"
+dhE = depth.space.halfspace(data, c(10, 10), exact = TRUE)
+(dhE)
 }
 \keyword{ robust }
 \keyword{ multivariate }

@@ -2,7 +2,7 @@
 /* File:             HD.cpp                                                   */
 /* Created by:       Rainer Dyckerhoff, Pavlo Mozharovskyi                    */
 /* First published:  19.06.2015                                               */
-/* Last revised:     19.06.2015                                               */
+/* Last revised:     03.07.2015                                               */
 /*                                                                            */
 /* Contains functions that compute the exact halfspace depth of a point z     */
 /* w.r.t. n data points x[1],...x[n].                                         */
@@ -160,7 +160,7 @@ int nHD_Rec(double** xx, int n, int d) {
 			if (result == 0) break;
 		}
 	}
-	for (int k = 0; k < n; k++) delete x[k];
+	for (int k = 0; k < n; k++) delete[] x[k];
 	delete[] x;
 	delete[] z;
 	delete[] y;
@@ -192,13 +192,18 @@ double HD_Rec(double* z, double** xx, int n, int d) {
 	// subtract z from all data points x[i]
 	int m = 0;
 	double** x = new double*[n];
+	bool create = true;
 	for (int i = 0; i < n; i++) {
-		x[m] = new double[d];
+		if (create)
+			x[m] = new double[d];
+
 		for (int j = 0; j < d; j++) x[m][j] = xx[i][j] - z[j];
-		if (norm2(x[m], d) >= eps_HDx) m++; else delete[] x[m];
+		create = norm2(x[m], d) >= eps_HDx;
+		if (create)	m++;
 	}
 	int result = nHD_Rec(x, m, d) + (n - m);
 	// deallocate array x
+	if (!create) m++;
 	for (int i = 0; i < m; i++) delete[] x[i];
 	delete[] x;
 	return result / (double)n;
@@ -322,7 +327,7 @@ bool getNormal(double** A, int d, double* normal) {
 				imax = i;
 			}
 		}
-		// maximum eual to zero => complete pivoting
+		// maximum equal to zero => complete pivoting
 		if (amax < eps_pivot) {
 			for (int j = k + 1; j < d; j++) {
 				for (int i = k; i < d - 1; i++) {
@@ -460,7 +465,7 @@ int nHD_Comb(double** xx, int n, int d) {
 				result = min(result, HD1proj(xx, n, d, p, indices));
 			indices[pos]++;
 		} while (indices[pos] < n - d + pos + 2);
-		do pos--; while (p >= 0 && indices[pos] >= n - d + pos + 1);
+		do pos--; while (pos >= 0 && indices[pos] >= n - d + pos + 1);
 	}
 	for (int i = 0; i < d - 1; i++) delete[] a[i];
 	delete[] a;
@@ -497,7 +502,7 @@ double HD_Comb(double* z, double** xx, int n, int d) {
 	// preprocess data
 	//   subtract z from all data points x[i]
 	//   check whether the data points are concentrated on a lower 
-	//   dimensional spcae 
+	//   dimensional space 
 	int m = 0, rank;
 	int* indices = new int[d];
 	double** x = new double*[n];
@@ -545,7 +550,7 @@ bool getBasisComplement(double** A, int d, double** basis) {
 				imax = i;
 			}
 		}
-		// maximum equla to zero  => complete pivoting
+		// maximum equal to zero  => complete pivoting
 		if (amax < eps_pivot) {
 			for (int j = k + 1; j < d; j++) {
 				for (int i = k; i < d - 2; i++) {

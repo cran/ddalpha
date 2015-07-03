@@ -1,8 +1,8 @@
 Package: ddalpha
 Type: Package
 Title: Depth-Based Classification and Calculation of Data Depth
-Version: 1.1.2.2
-Date: 2015-07-01
+Version: 1.1.2.3
+Date: 2015-07-03
 Authors@R: c(person("Oleksii", "Pokotylo", role=c("aut", "cre"),
                                           email = "alexey.pokotylo@gmail.com"),
              person("Pavlo", "Mozharovskyi", role=c("aut"),
@@ -10,16 +10,16 @@ Authors@R: c(person("Oleksii", "Pokotylo", role=c("aut", "cre"),
              person("Rainer", "Dyckerhoff", role=c("aut"),
                                           email = "rainer.dyckerhoff@statistik.uni-koeln.de"))
 SystemRequirements: C++11
-Depends: MASS, class, robustbase
+Depends: stats, utils, graphics, grDevices, MASS, class, robustbase
 Imports: Rcpp (>= 0.11.0)
 LinkingTo: BH, Rcpp
 Description: Contains procedures for depth-based supervised learning, which are entirely non-parametric, in particular the DDalpha-procedure (Lange, Mosler and Mozharovskyi, 2014). The training data sample is transformed by a statistical depth function to a compact low-dimensional space, where the final classification is done. It also offers an extension to functional data and routines for calculating certain notions of statistical depth functions. 50 multivariate and 5 functional classification problems are included.
 License: GPL-2
 NeedsCompilation: yes
-Packaged: 2015-07-01 17:03:34 UTC; Alexey
+Packaged: 2015-07-03 16:10:09 UTC; Alexey
 Author: Oleksii Pokotylo [aut, cre],
   Pavlo Mozharovskyi [aut],
   Rainer Dyckerhoff [aut]
 Maintainer: Oleksii Pokotylo <alexey.pokotylo@gmail.com>
 Repository: CRAN
-Date/Publication: 2015-07-01 22:50:08
+Date/Publication: 2015-07-04 00:14:27

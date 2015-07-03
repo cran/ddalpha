@@ -46,7 +46,7 @@ Chaudhuri, P. (1996). On a geometric notion of quantiles for multivariate data. 
 # containing 20 training objects
 class1 <- mvrnorm(10, c(0,0), 
                   matrix(c(1,1,1,4), nrow = 2, ncol = 2, byrow = TRUE))
-class2 <- mvrnorm(10, c(2,2), 
+class2 <- mvrnorm(10, c(1,1), 
                   matrix(c(1,1,1,4), nrow = 2, ncol = 2, byrow = TRUE))
 data <- rbind(class1, class2)
 # Get depth space using simplicial depth

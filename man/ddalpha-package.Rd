@@ -15,8 +15,8 @@ The package implements the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharov
 \tabular{ll}{
 Package: \tab ddalpha\cr
 Type: \tab Package\cr
-Version: \tab 1.1.2.2\cr
-Date: \tab 2015-07-01\cr
+Version: \tab 1.1.2.3\cr
+Date: \tab 2015-07-03\cr
 License: \tab GPL-2\cr
 }
 Use \code{\link{ddalpha.train}} to train the DD-classifier and \code{\link{ddalpha.classify}} to classify with it. 
@@ -101,10 +101,10 @@ depths.halfspace <- depth.halfspace(data$test[1:10,propertyVars],
 cat("Random Tukey depths:", depths.halfspace, "\n")
 
 # Calculate depth space with zonoid depth
-dspace.zonoid <- depth.space.zonoid(data$train, c(100, 100))
+dspace.zonoid <- depth.space.zonoid(data$train[,propertyVars], c(100, 100))
 
 # Calculate depth space with the exact Tukey depth
-dspace.halfspace <- depth.space.halfspace(data$train, c(100, 100), exact = TRUE)
+dspace.halfspace <- depth.space.halfspace(data$train[,propertyVars], c(100, 100), exact = TRUE)
 
 # Count outsiders
 numOutsiders = sum(is.in.convex(data$test[,propertyVars], 

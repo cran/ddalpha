@@ -64,7 +64,7 @@ Tukey, J.W. (1974), Mathematics and the picturing of data, In: \emph{Proceeding 
 
 }
 \examples{
-# 5-dimensional normal distribution
+# 3-dimensional normal distribution
 data <- mvrnorm(200, rep(0, 3), 
                 matrix(c(1, 0, 0,
                          0, 2, 0, 

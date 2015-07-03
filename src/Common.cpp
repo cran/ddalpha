@@ -26,6 +26,17 @@ void deleteM(TDMatrix X){
 	delete[] X;
 }
 
+void printMatrix(TDMatrix mat, int n, int d){
+#ifdef _MSC_VER
+	for (int i = 0; i < n; i++){
+		for (int j = 0; j < d; j++)
+			cout << mat[i][j] << "\t";
+		cout << "\n";
+	}
+	cout << "\n";
+#endif
+}
+
 
 unsigned long long choose(unsigned long long n, unsigned long long k){
 	unsigned long long r = n--; unsigned long long d = 2;

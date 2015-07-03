@@ -21,6 +21,7 @@ TDMatrix asMatrix(double* arr, int n, int d);
 
 double** newM(int n, int d);
 void deleteM(TDMatrix X);
+void printMatrix(TDMatrix mat, int n, int d);
 
 
 namespace bnu = boost::numeric::ublas;
