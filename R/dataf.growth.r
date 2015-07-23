@@ -1,4 +1,8 @@
-dataf.growth <- function() return(structure(list(dataf = list(structure(list(args = c(1, 1.25, 
+dataf.growth <- function() return(structure(list(
+  name = "Berkeley Growth Study",
+  args = "age",
+  vals = "height",
+  dataf = list(structure(list(args = c(1, 1.25, 
 1.5, 1.75, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 
 12, 12.5, 13, 13.5, 14, 14.5, 15, 15.5, 16, 16.5, 17, 17.5, 18
 ), vals = structure(c(76.2, 80.4, 83.3, 85.7, 87.7, 96, 103.8, 
@@ -937,5 +941,5 @@ dataf.growth <- function() return(structure(list(dataf = list(structure(list(arg
     "boy", "boy", "boy", "boy", "boy", "boy", "boy", "boy", "boy", 
     "boy", "boy", "boy", "boy", "boy", "boy", "boy", "boy", "boy", 
     "boy", "boy", "boy", "boy", "boy", "boy", "boy", "boy", "boy", 
-    "boy", "boy", "boy")), .Names = c("dataf", "labels"))
+    "boy", "boy", "boy")))
 )

@@ -67,6 +67,10 @@ data <- rbind(class1, class2)
 # Get depth space using projection depth
 depth.space.projection(data, c(10, 10), method = "random", num.directions = 1000)
 depth.space.projection(data, c(10, 10), method = "linearize")
+
+data <- getdata("hemophilia")
+cardinalities = c(sum(data$gr == "normal"), sum(data$gr == "carrier"))
+depth.space.projection(data[,1:2], cardinalities)
 }
 \keyword{ robust }
 \keyword{ multivariate }

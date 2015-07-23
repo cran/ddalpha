@@ -1,4 +1,12 @@
 plotf <- function(dataf, main = "Functional data", xlab = "args", ylab = "vals", colors = c("red", "blue", "green", "black", "orange", "pink")) {
+  
+  if(main == "Functional data" && !is.null(dataf$name))
+    main = dataf$name
+  if(xlab == "args" && !is.null(dataf$args))
+    xlab = dataf$args
+  if(ylab == "vals" && !is.null(dataf$vals))
+    ylab = dataf$vals
+  
   ylims = matrix(unlist(lapply(dataf$dataf, function(e) (range(e$vals)))), ncol = 2, byrow = TRUE)
   plot(0, type="n", xlim=range(dataf$dataf[[1]]$args), ylim=c(min(ylims[,1]), max(ylims[,2])), 
        xlab=xlab, ylab=ylab, 

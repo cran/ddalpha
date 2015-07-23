@@ -356,11 +356,12 @@ double ZonoidDepth(vector<TPoint>& x, TPoint& z, int& Error)
   /* Check if there are still artificial variables on zero level in the basis
      and remove them from the basis. */
   for (row = 1; row <= d + 1; row++)
-    if (bv[row - 1] < 0)
+    if (bv[row - 1] < 0) {
       if (NoZeroRow(x, &row, &PivotColumn))
         RSStep(row, PivotColumn);
       else
         CancelRow(row);
+    }
 
   /*  Phase II  */
 

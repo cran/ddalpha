@@ -36,6 +36,7 @@ using namespace std;
 #include "OjaDepth.h"
 #include "Knn.h"
 #include "Polynomial.h"
+#include "PotentialDepth.h"
 #include "ProjectionDepth.h"
 
 

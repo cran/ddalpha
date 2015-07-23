@@ -18,7 +18,7 @@ static TMatrix Sigma;
 static int CompareValue(UPoint a, UPoint b)
 /* This routine is passed to the sort routine. */
 {
-	return (a.value < b.value);
+  return (a.value < b.value);
 }
 
 static int GetMean(TMatrix x, TPoint *mean){

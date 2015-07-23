@@ -57,6 +57,10 @@ data <- rbind(class1, class2)
 # Get depth space using Mahalanobis depth
 depth.space.Mahalanobis(data, c(10, 10))
 depth.space.Mahalanobis(data, c(10, 10), mah.estimate = "MCD", mah.parMcd = 0.75)
+
+data <- getdata("hemophilia")
+cardinalities = c(sum(data$gr == "normal"), sum(data$gr == "carrier"))
+depth.space.Mahalanobis(data[,1:2], cardinalities)
 }
 \keyword{ robust }
 \keyword{ multivariate }

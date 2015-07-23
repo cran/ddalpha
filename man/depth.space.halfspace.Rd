@@ -66,6 +66,10 @@ dhA = depth.space.halfspace(data, c(10, 10))
 # Get depth space using default exact method - "recursive"
 dhE = depth.space.halfspace(data, c(10, 10), exact = TRUE)
 (dhE)
+
+data <- getdata("hemophilia")
+cardinalities = c(sum(data$gr == "normal"), sum(data$gr == "carrier"))
+depth.space.halfspace(data[,1:2], cardinalities)
 }
 \keyword{ robust }
 \keyword{ multivariate }

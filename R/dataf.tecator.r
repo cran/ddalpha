@@ -1,4 +1,9 @@
-dataf.tecator <- function() return (structure(list(dataf = list(structure(list(args = c(850, 852.020202020202, 
+dataf.tecator <- function() return (structure(list(
+  name = "Tecator",
+  args = "wavelength",
+  vals = "absorbance",
+  
+  dataf = list(structure(list(args = c(850, 852.020202020202, 
 854.040404040404, 856.060606060606, 858.080808080808, 860.10101010101, 
 862.121212121212, 864.141414141414, 866.161616161616, 868.181818181818, 
 870.20202020202, 872.222222222222, 874.242424242424, 876.262626262626, 
@@ -8629,4 +8634,4 @@ dataf.tecator <- function() return (structure(list(dataf = list(structure(list(a
     "small", "small", "small", "small", "small", "small", "small", 
     "small", "small", "small", "small", "small", "small", "large", 
     "large", "large", "large", "large", "large", "large", "large", 
-    "large")), .Names = c("dataf", "labels")))
+    "large"))))

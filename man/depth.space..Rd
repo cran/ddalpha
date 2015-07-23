@@ -25,6 +25,9 @@ The detailed descriptions are found in the corresponding topics.
 ## zonoid depth
 # depth.space.zonoid(data, cardinalities)
 
+# Potential
+# depth.space.potential(data, cardinalities, pretransform = "NMom", 
+#            kernel = "GKernel", kernel.bandwidth = NULL, mah.parMcd = 0.75)
 }
 
 \arguments{

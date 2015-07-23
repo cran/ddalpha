@@ -66,6 +66,8 @@ depth.Mahalanobis <- function(x, data, mah.estimate = "moment", mah.parMcd = 0.7
 }
 
 depth.space.Mahalanobis <- function(data, cardinalities, mah.estimate = "moment", mah.parMcd = 0.75){
+  if (is.data.frame(data))
+    data <- data.matrix(data)
   if (!is.numeric(data)
       || !is.matrix(data) 
       || ncol(data) < 2){

@@ -8,7 +8,7 @@ depth.contours.ddalpha <- function(ddalpha, main = "", xlab="", ylab = "", drawp
   if (ddalpha$dimension != 2)
   {
     warning ("The contours may be drawn only for 2 dimensional datasets")
-    return
+    return(0)
   }
   
   if (ddalpha$needtransform == 1)
@@ -53,10 +53,10 @@ depth.contours.ddalpha <- function(ddalpha, main = "", xlab="", ylab = "", drawp
 #         }  else
           # no formal depth regions
         {
-          contourRegions(ddalpha, margins = margins, depths = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1), frequency=frequency)
+          return (contourRegions(ddalpha, margins = margins, depths = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1), frequency=frequency))
         }   
   
-  
+  return (0)
 }
 
 
@@ -93,10 +93,10 @@ depth.contours <- function(data, depth, main = "", xlab="", ylab = "", drawplot 
 #       }  else 
         # no formal depth regions
       {
-        contourRegionsData(data, depth = depth, margins = margins, depths = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1), frequency=frequency, col = col, ...)      
+        return (contourRegionsData(data, depth = depth, margins = margins, depths = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1), frequency=frequency, col = col, ...))
       }   
   
-  
+  return(0)
 }
 
 
@@ -175,12 +175,14 @@ contourRegions <- function(ddalpha, margins = NULL, depths = c(0.1, 0.2, 0.3, 0.
   for (i in seq(length(ddalpha$patterns))){
     contour(gx, gy, matrix(depthcontours[,i], nrow=length(gx), ncol=length(gy)), add=TRUE, levels=depths*max(depthcontours), drawlabels=FALSE, col = gcolors[i])
   }
+  
+  return(depthcontours)
 }
 
 contourRegionsData <- function(data, depth, margins = NULL, depths = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1), frequency=100, col = "red", ...){
   
   if (is.null(depth) || depth == "none")
-    return;
+    return (0);
   df = switch(depth,
               "zonoid" = depth.zonoid,
               "halfspace" = depth.halfspace,
@@ -203,6 +205,8 @@ contourRegionsData <- function(data, depth, margins = NULL, depths = c(0.1, 0.2,
   depthcontours <- df(y,data,...)  
   
   contour(gx, gy, matrix(depthcontours, nrow=length(gx), ncol=length(gy)), add=TRUE, levels=depths*max(depthcontours), drawlabels=FALSE, col = col)
+  
+  return(depthcontours)
 }
 
 

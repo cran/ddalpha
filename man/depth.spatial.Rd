@@ -50,6 +50,8 @@ Vardi, Y. and Zhang, C.H. (2000). The multivariate L1
 
 \code{\link{depth.zonoid}} for calculation of zonoid depth.
 
+\code{\link{depth.potential}} for calculation of data potential.
+
 }
 \examples{
 # 5-dimensional normal distribution

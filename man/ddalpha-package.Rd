@@ -15,14 +15,14 @@ The package implements the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharov
 \tabular{ll}{
 Package: \tab ddalpha\cr
 Type: \tab Package\cr
-Version: \tab 1.1.2.3\cr
-Date: \tab 2015-07-03\cr
+Version: \tab 1.1.3\cr
+Date: \tab 2015-07-23\cr
 License: \tab GPL-2\cr
 }
 Use \code{\link{ddalpha.train}} to train the DD-classifier and \code{\link{ddalpha.classify}} to classify with it. 
 Load sample classification problems using \code{\link{getdata}}. The package contains 50 classification problems built of 33 sets of real data.
 
-The list of the implemented depths is found in topic \code{\link{depth.*}}. Corresponding to them depth representations of the data are obtained with \code{\link{depth.space.*}}. Functions \code{\link{depth.contours}} and \code{\link{depth.contours.ddalpha}} build depth regions, and \code{\link{depth.graph}} builds depth graphs for two-dimensional data. 
+The list of the implemented depths is found in topic \code{\link{depth.*}}. Corresponding to them depth representations of the data are obtained with \code{\link{depth.space.*}}. Functions \code{\link{depth.contours}} and \code{\link{depth.contours.ddalpha}} build depth contours, and \code{\link{depth.graph}} builds depth graphs for two-dimensional data. Function \code{\link{draw.ddplot}} draws DD-plot for the existing DD-classifier, or for pre-calculated depth space.
 
 \code{\link{is.in.convex}} shows whether an object is no 'outsider', i.e. can be classified by its depth values. 
 Outsiders are alternatively classified by LDA, kNN and maximum Mahalanobis depth as well as by random assignment.

@@ -46,6 +46,8 @@ Mosler, K. (2002), \emph{Multivariate dispersion, central regions and depth: the
 
 \code{\link{depth.spatial}} for calculation of spatial depth.
 
+\code{\link{depth.potential}} for calculation of data potential.
+
 }
 \examples{
 # 5-dimensional normal distribution

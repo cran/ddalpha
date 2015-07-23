@@ -61,18 +61,18 @@ If the used depth method is affine-invariant and pretransform doesn't influence 
   \item{NULL}{
 applies no transformation to the data
   }
-  \item{"1MahMom", "1MahMCD"}{
+  \item{"1Mom", "1MCD"}{
 the data is transformed with the common covariance martix of the whole data
   }
-  \item{"NMahMom", "NMahMCD"}{
+  \item{"NMom", "NMCD"}{
 the data is transformed w.r.t. each class using its covariance martix. The depths w.r.t. each class are calculated using the transformed data.
   }
-  for the values \code{"1MahMCD", "NMahMCD"} \code{\link{covMcd}} is used to calculate the covariance martix, and the parameter \code{mah.parMcd} is used.
+  for the values \code{"1MCD", "NMCD"} \code{\link{covMcd}} is used to calculate the covariance martix, and the parameter \code{mah.parMcd} is used.
   }
   
 }
   \item{mah.parMcd}{
-  is the value of the argument \code{alpha} for the function \code{\link{covMcd}}; is used if \code{depth = "Mahalanobis"} when \code{mah.estimate = "MCD"} and in pretransforming the data if \code{pretransform in ("1MahMCD", "NMahMCD")}.
+  is the value of the argument \code{alpha} for the function \code{\link{covMcd}}; is used if \code{depth = "Mahalanobis"} when \code{mah.estimate = "MCD"} and in pretransforming the data if \code{pretransform in ("1MCD", "NMCD")}.
 }
   \item{use.convex}{
 Logical variable indicating whether outsiders should be determined exactly, i.e. as the points not contained in any of the convex hulls of the classes from the training sample (\code{TRUE}), or those having zero depth w.r.t. each class from the training sample (\code{FALSE}). For \code{depth =} \code{"zonoid"} both values give the same result.

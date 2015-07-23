@@ -30,6 +30,9 @@ The detailed descriptions are found in the corresponding topics.
 ## zonoid depth
 # depth.zonoid(x, data)
 
+# Potential
+# depth.potential (x, data, pretransform = "1Mom", 
+#            kernel = "GKernel", kernel.bandwidth = NULL, mah.parMcd = 0.75)
 }
 \arguments{
   \item{x}{
@@ -55,6 +58,8 @@ Matrix of data where each row contains a \eqn{d}-variate point, w.r.t. which the
 \code{\link{depth.spatial}}
 
 \code{\link{depth.zonoid}}
+
+\code{\link{depth.potential}}
 
 \code{\link{depth.graph}} for building the depth surfaces of the two dimensional data.
 

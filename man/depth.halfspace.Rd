@@ -62,6 +62,8 @@ Tukey, J.W. (1974), Mathematics and the picturing of data, In: \emph{Proceeding 
 
 \code{\link{depth.zonoid}} for calculation of zonoid depth.
 
+\code{\link{depth.potential}} for calculation of data potential.
+
 }
 \examples{
 # 3-dimensional normal distribution

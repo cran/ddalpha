@@ -1,4 +1,8 @@
-dataf.medflies <- function() return(structure(list(dataf = list(structure(list(args = 5:34, vals = c(0L, 
+dataf.medflies <- function() return(structure(list(
+  name = "Medflies",
+  args = "day",
+  vals = "#eggs",
+  dataf = list(structure(list(args = 5:34, vals = c(0L, 
 0L, 0L, 0L, 0L, 0L, 27L, 49L, 37L, 74L, 54L, 100L, 43L, 95L, 
 37L, 57L, 76L, 58L, 73L, 65L, 38L, 64L, 61L, 52L, 34L, 35L, 47L, 
 41L, 38L, 64L)), .Names = c("args", "vals")), structure(list(
@@ -2005,6 +2009,5 @@ dataf.medflies <- function() return(structure(list(dataf = list(structure(list(a
     "long-lived", "short-lived", "short-lived", "short-lived", 
     "long-lived", "short-lived", "short-lived", "short-lived", 
     "short-lived", "short-lived", "short-lived", "short-lived", 
-    "short-lived", "short-lived", "short-lived", "short-lived")), .Names = c("dataf", 
-"labels"))
+    "short-lived", "short-lived", "short-lived", "short-lived")))
 )

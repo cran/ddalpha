@@ -51,7 +51,7 @@ additional parameters passed to \code{\link{ddalpha.train}}
 \seealso{
 \code{\link{ddalpha.train}} to train the DD\eqn{\alpha}-classifier, 
 \code{\link{ddalpha.classify}} for classification using DD\eqn{\alpha}-classifier, 
-\code{\link{ddalpha.getErrorRateJK}} and \code{\link{ddalpha.getErrorRateJK}} to get error rate of the DD-classifier on particular data.
+\code{\link{ddalpha.getErrorRateCV}} and \code{\link{ddalpha.getErrorRatePart}} to get error rate of the DD-classifier on particular data.
 }
 \examples{
 

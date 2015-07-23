@@ -9,6 +9,9 @@
 #pragma once
 
 
+#define PI2 1.5707963267948966192313216916398
+#define PI (PI2*2)
+
 typedef vector<double> TPoint;
 typedef vector<vector<double> > TMatrix;
 typedef vector<vector<int> > TIntMatrix;

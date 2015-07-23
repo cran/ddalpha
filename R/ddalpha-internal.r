@@ -31,6 +31,7 @@
          numPatterns = numOfClasses, 
          numPoints = numOfPoints, 
          patterns = list(), 
+         needtransform = 0,    # 0 - no transform, 1 - transform new points before classification, all classes the same, 2 - transform differently w.r.t. to classes.
          classifiers = list(), 
 #         numClassifiers = 0, 
 #         methodDepth = "halfspace", 
@@ -77,8 +78,8 @@
       #         centerMcd = 0, 
       #         covMcd = 0, 
       #         sigmaMcd = 0
-    )
-    
+    )    
+
     # Adding pattern template to the list of patterns
     class(ddalpha$patterns[[i]])<-"ddalpha.pattern"
     # Deleting processed pattern
@@ -138,6 +139,10 @@
   }
   
   classBegin = 1
+  if (ddalpha$methodDepth == "potential"){
+    tmpDSpace <- .ddalpha.count.depths(ddalpha, NULL)
+  }
+  
   # Calculating depths in each pattern
   for (i in 1:ddalpha$numPatterns){
     if (   ddalpha$methodDepth == "halfspace" 
@@ -146,17 +151,21 @@
       # Random depth is already calculated, just distribute
       ddalpha$patterns[[i]]$depths <- tmpDSpace[classBegin:(classBegin+ddalpha$patterns[[i]]$cardinality-1),]
       classBegin = classBegin+ddalpha$patterns[[i]]$cardinality
-    }
+    } else
     if (ddalpha$methodDepth == "zonoid"){
       # Calculate depths for the class w.r.t all classes, saying to which of the classes the chunk belongs
       ddalpha$patterns[[i]]$depths <- .zonoid_depths(ddalpha, ddalpha$patterns[[i]]$points, i)
-    }
+    } else
     if (ddalpha$methodDepth == "Mahalanobis"){
       ddalpha$patterns[[i]]$depths <- .Mahalanobis_depths(ddalpha, ddalpha$patterns[[i]]$points)
     }
     if (ddalpha$methodDepth == "spatial"){
       # Calculate depths for the class w.r.t all classes, saying to which of the classes the chunk belongs
       ddalpha$patterns[[i]]$depths <- .spatial_depths(ddalpha, ddalpha$patterns[[i]]$points)
+    }
+    if (ddalpha$methodDepth == "spatialLocal"){
+      # Calculate depths for the class w.r.t all classes, saying to which of the classes the chunk belongs
+      ddalpha$patterns[[i]]$depths <- .spatialLocal_depths(ddalpha, ddalpha$patterns[[i]]$points)
     }
     if (ddalpha$methodDepth == "simplicial"){
       # Calculate depths for the class w.r.t all classes, saying to which of the classes the chunk belongs
@@ -276,27 +285,14 @@
     ddalpha$methodsOutsider <- .parse.settings(ddalpha, settingsOutsider)
   }
   # Train treatments
+  treatments = list(LDA = .lda_learn, QDA = .qda_learn, 
+                    KNN = .knn_learn, KNNAff = .knnAff_learn, depth.Mahalanobis = .mah_learn,
+                    Ignore = NA, Mark = NA, RandEqual = NA, RandProp = NA)
   for (i in 1:length(ddalpha$methodsOutsider)){
-    if (ddalpha$methodsOutsider[[i]]$method == "LDA"){
-      ddalpha$methodsOutsider[[i]] <- .lda_learn(ddalpha, ddalpha$methodsOutsider[[i]])
-      next
-    }
-    if (ddalpha$methodsOutsider[[i]]$method == "QDA"){
-      ddalpha$methodsOutsider[[i]] <- .qda_learn(ddalpha, ddalpha$methodsOutsider[[i]])
-      next
-    }
-    if (ddalpha$methodsOutsider[[i]]$method == "KNN"){
-      ddalpha$methodsOutsider[[i]] <- .knn_learn(ddalpha, ddalpha$methodsOutsider[[i]])
-      next
-    }
-    if (ddalpha$methodsOutsider[[i]]$method == "KNNAff"){
-      ddalpha$methodsOutsider[[i]] <- .knnAff_learn(ddalpha, ddalpha$methodsOutsider[[i]])
-      next
-    }
-    if (ddalpha$methodsOutsider[[i]]$method == "depth.Mahalanobis"){
-      ddalpha$methodsOutsider[[i]] <- .mah_learn(ddalpha, ddalpha$methodsOutsider[[i]])
-      next
-    }
+    .treatment = treatments[[ddalpha$methodsOutsider[[i]]$method]]
+    if(is.null(.treatment)) stop("Unknown outsiders treatment method ", ddalpha$methodsOutsider[[i]]$method)
+    if(is.na(.treatment)) next; # need no training
+    ddalpha$methodsOutsider[[i]] <- .treatment(ddalpha, ddalpha$methodsOutsider[[i]])
   }
   
   return(ddalpha)
@@ -313,7 +309,7 @@
     for (i in 1:ddalpha$numPatterns){
       objects <- rbind(objects, ddalpha$patterns[[i]]$points)
     }
-  
+  else ## if needtransform == 1 the data is already scaled
   # Transform the data once
   if (ddalpha$needtransform == 1){
     objects <- ddalpha$patterns[[1]]$transformer(objects)
@@ -327,15 +323,9 @@
   # Calculate depths w.r.t. each class
   else {
     d <- NULL
-    
     # w.r.t. each class
-    for (cls in 1:ddalpha$numPatterns){
-      
-      data <- ddalpha$patterns[[cls]]$transformer( ddalpha$patterns[[cls]]$points )
-      cardinalities <- c(ddalpha$patterns[[cls]]$cardinality)      
-      t_objects <- ddalpha$patterns[[cls]]$transformer(objects)
-      
-      depth <- f(ddalpha, data, cardinalities, t_objects, ...)
+    for (cls in 1:ddalpha$numPatterns){      
+      depth <- f(ddalpha, objects, class = cls, ...)
       
       d = cbind(d, depth)
     }
@@ -345,21 +335,6 @@
 }
 
 .ddalpha.classify.outsiders<- function (objects, ddalpha, settings){
-  if (settings$method == "LDA"){
-    return (.lda_classify(objects, ddalpha, settings))
-  }
-  if (settings$method == "QDA"){
-    return (.qda_classify(objects, ddalpha, settings))
-  }
-  if (settings$method == "KNN"){
-    return (.knn_classify(objects, ddalpha, settings))
-  }
-  if (settings$method == "KNNAff"){
-    return (.knnAff_classify(objects, ddalpha, settings))
-  }
-  if (settings$method == "depth.Mahalanobis"){
-    return (.mah_classify(objects, ddalpha, settings))
-  }
   if (settings$method == "Ignore"){
     return (.ignore_classify(nrow(objects)))
   }
@@ -372,6 +347,14 @@
   if (settings$method == "RandProp"){
     return (.randprop_classify(nrow(objects), ddalpha, settings))
   }
+  
+  treatments = list(LDA = .lda_classify, QDA = .qda_classify, 
+                    KNN = .knn_classify, KNNAff = .knnAff_classify, 
+                    depth.Mahalanobis = .mah_classify)
+
+  .treatment = treatments[[settings$method]]
+  if(is.null(.treatment)) stop("Unknown outsiders treatment method ", settings$method)
+  return(.treatment(objects, ddalpha, settings))
 }
 
 ################################################################################
@@ -542,24 +525,23 @@
 
 .Mahalanobis_depth <- function(points, center = colMeans(points), sigma = solve(cov(points))){
   if (is.data.frame(points))
-    points <- as.matrix(points)
-  if (is.matrix(points)){
-    i = 1; step = 200
-    d <- NULL
-    while (i<nrow(points)){
-      tmp1 <- t(t(points[i:min(i+step, nrow(points)),, drop = F]) - center)
+    points <- as.matrix(points, drop = F)
+  if(is.vector(points))
+    points <- t(as.matrix(points, drop = F))
+  if (!is.matrix(points))
+    stop("Wrong format of 'points'")
+  
+  i = 1; step = 200
+  d <- NULL
+  while (i<=nrow(points)){
+    tmp1 <- t(t(points[i:min(i+step, nrow(points)),, drop = F]) - center)
 
-      dd <- diag(tmp1 %*% sigma %*% t(tmp1))
-      d <- c(d,1/(1 + dd))
-      i = i+1+step
-    }
-#     d <- rep(0, nrow(points))
-#     for (i in 1:nrow(points)){
-#       d[i] <- 1/(1 + (points[i,] - center) %*% sigma %*% (points[i,] - center))
-#     }
-  }else{
-    d <- 1/(1 + (points - center) %*% sigma %*% (points - center))
+    dd <- diag(tmp1 %*% sigma %*% t(tmp1))
+    d <- c(d,1/(1 + dd))
+    i = i+1+step
   }
+
+   # d <- 1/(1 + (points - center) %*% sigma %*% t(points - center))
   return (d)
 }
 
@@ -709,6 +691,21 @@
   }
   return (depths)
 }
+
+.spatialLocal_depths <- function(ddalpha, objects){
+  depths <- NULL
+  for (i in 1:ddalpha$numPatterns){
+    depths <- cbind(depths, depth.spatial.local(objects, ddalpha$patterns[[i]]$points, ddalpha$kernel.bandwidth[i]))
+  }
+  return (depths)
+}
+
+.NONE_depths <- function(ddalpha, objects){
+  depths <- matrix(0, ncol = ddalpha$numPatterns, nrow = nrow(objects))
+  
+  return (depths)
+}
+#==========================================================
 
 .alpha_learn <- function(maxDegree, data, numClass1, numClass2, numChunks){
   points <- as.vector(t(data))

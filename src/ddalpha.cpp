@@ -478,6 +478,56 @@ void ProjectionDepth(double *points, double *objects, int *numObjects,
 	}
 }
 
+void PotentialDepthsCount(double *points, int *numPoints, int *dimension, int *classes, int *cardinalities, double *testpoints, int *numTestPoints, int* kernelType, double *a, int* ignoreself, double *depths){
+	TMatrix x(numPoints[0]);
+	for (int i = 0; i < numPoints[0]; i++){
+		TPoint& curPoint = x[i];
+		curPoint.resize(dimension[0]);
+		for (int j = 0; j < dimension[0]; j++){
+			curPoint[j] = points[i * dimension[0] + j];
+		}
+	}
+	
+	TMatrix xt(numTestPoints[0]);
+	for (int i = 0; i < numTestPoints[0]; i++){
+		TPoint& curPoint = xt[i];
+		curPoint.resize(dimension[0]);
+		for (int j = 0; j < dimension[0]; j++){
+			curPoint[j] = testpoints[i * dimension[0] + j];
+		}
+	}
+
+	TMatrix d(numTestPoints[0]);
+	for (int i = 0; i < numTestPoints[0]; i++){
+		d[i].resize(classes[0]);
+	}
+	TVariables car(classes[0]);
+	for (int i = 0; i < classes[0]; i++){
+		car[i] = cardinalities[i];
+	}
+
+	double (*Kernel) (TPoint& x, TPoint& y, double a) = 0;
+
+	switch (*kernelType){
+		case 1: Kernel = EDKernel; break;
+		case 2: Kernel = GKernel; break;
+		case 3: Kernel = EKernel; break;
+		case 4: Kernel = TriangleKernel; break;
+		case 5: Kernel = VarGKernel; break;
+		default: throw "Unsupported kernel type";
+	}
+	
+	PotentialDepths(x, car, xt, d, Kernel, *a, *ignoreself);
+
+	for (int i = 0; i < numTestPoints[0]; i++){
+		for (int j = 0; j < classes[0]; j++){
+		//	depths[i * classes[0] + j] = d[i][j];
+			depths[j * numTestPoints[0] + i] = d[i][j];
+		}
+	}
+}
+
+
 #ifdef __cplusplus
 }
 #endif

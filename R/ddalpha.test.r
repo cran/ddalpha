@@ -36,7 +36,7 @@ ddalpha.test <- function(learn, test, ...){
 }
 
 
-ddalpha.getErrorRateJK <- function(data, numchunks = 10,  ...){
+ddalpha.getErrorRateCV <- function(data, numchunks = 10,  ...){
   n = nrow(data)
   numchunks = min(n, numchunks)
   chunksize = ceiling(n/numchunks)
@@ -66,7 +66,7 @@ ddalpha.getErrorRateJK <- function(data, numchunks = 10,  ...){
 }
 
 
-ddalpha.getErrorRateCV <- function(data, size = 0.3, times = 10,  ...){
+ddalpha.getErrorRatePart <- function(data, size = 0.3, times = 10,  ...){
   
   if (!is.numeric(size) || size <=0 || size >= nrow(data)) stop("Wrong size of excluded sequences")
   

@@ -50,6 +50,10 @@ class2 <- mvrnorm(10, c(2,2),
 data <- rbind(class1, class2)
 # Get depth space using spatial depth
 depth.space.spatial(data, c(10, 10))
+
+data <- getdata("hemophilia")
+cardinalities = c(sum(data$gr == "normal"), sum(data$gr == "carrier"))
+depth.space.spatial(data[,1:2], cardinalities)
 }
 \keyword{ robust }
 \keyword{ multivariate }

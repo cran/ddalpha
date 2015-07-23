@@ -25,21 +25,21 @@ ddalpha.train <- function(data,
                           seed = 0,
                           
                           ...
-      
-#                           # knn
-#                           knnrange = NULL, 
-#                           # alpha
-#                           num.chunks = 10, 
-#                           max.degree = 3, 
-#                          
-#                           # halfspace depth
-#                           num.directions = 1000,                          
-#                           # Mahalanobis depth
-#                           mah.estimate = "moment", 
-#                           mah.parMcd = 0.75, 
-#                           mah.priors = NULL
                           
-                          ){
+                          #                           # knn
+                          #                           knnrange = NULL, 
+                          #                           # alpha
+                          #                           num.chunks = 10, 
+                          #                           max.degree = 3, 
+                          #                          
+#                           # halfspace depth
+                          #                           num.directions = 1000,                          
+                          #                           # Mahalanobis depth
+                          #                           mah.estimate = "moment", 
+                          #                           mah.parMcd = 0.75, 
+                          #                           mah.priors = NULL
+                          
+){
   # Check for data consistency #1
   if (!(is.matrix(data) && is.numeric(data)
       || is.data.frame(data) && prod(sapply(data[,-ncol(data)], is.numeric)))){
@@ -66,10 +66,10 @@ ddalpha.train <- function(data,
     set.seed(seed)
   }
   ddalpha$seed = seed
-    
+  
   ## Validating the properties
   depthsThatNeedNoScaling = c("zonoid", "halfspace", "Mahalanobis", "projection", "spatial", "simplicial", "simplicialVolume")
-  supportedDepths = c(depthsThatNeedNoScaling, "potential (not implemented)")
+  supportedDepths = c(depthsThatNeedNoScaling, "potential")
   if (is.null(depth) || toupper(depth) %in% c("NULL", "NONE")){
       ddalpha$methodDepth <- NULL
       warning("Argument \"depth\" specified as NULL.")    
@@ -103,25 +103,25 @@ ddalpha.train <- function(data,
   if (!is.null(pretransform))
     if (ddalpha$methodDepth %in% depthsThatNeedNoScaling){
       warning("The used depth method is affine-invariant and pretransform doesn't influence the result. The data won't be transformed.")
-    } else if (pretransform == "1MahMom" || pretransform == "1MahMCD"){
+    } else if (pretransform == "1Mom" || pretransform == "1MCD"){
       ddalpha$needtransform = 1
       
-      if (pretransform == "1MahMom")
-        mm <- mah.moment(data[,1:(ncol(data)-1)])
-      else   # "1MahMCD"
-        mm <- mah.mcd(data[,1:(ncol(data)-1)], mah.parMcd)              
+      if (pretransform == "1Mom")
+        mm <- mah.moment(data[,-ncol(data)])
+      else   # "1MCD"
+        mm <- mah.mcd(data[,-ncol(data)], mah.parMcd)              
       
       for (i in 1:ddalpha$numPatterns){
         ddalpha$patterns[[i]]$transformer <- MahMomentTransformer(mm$mu, mm$b)
         ddalpha$patterns[[i]]$points <- ddalpha$patterns[[i]]$transformer(ddalpha$patterns[[i]]$points)
       }
-    } else if (pretransform == "NMahMom" || pretransform == "NMahMCD"){
+    } else if (pretransform == "NMom" || pretransform == "NMCD"){
       ddalpha$needtransform = 2
       
       for (i in 1:ddalpha$numPatterns){
-        if (pretransform == "NMahMom")
+        if (pretransform == "NMom")
           mm <- mah.moment(ddalpha$patterns[[i]]$points)
-        else   # "NMahMCD"
+        else   # "NMCD"
           mm <- mah.mcd(ddalpha$patterns[[i]]$points, mah.parMcd)
         
         ddalpha$patterns[[i]]$transformer <- MahMomentTransformer(mm$mu, mm$b)
@@ -142,14 +142,14 @@ ddalpha.train <- function(data,
       ddalpha.append(lst) 
     }
   }
-   
+  
   ## Separator parameters validation
- 
+  
   if (!is.null(ddalpha$methodDepth))  
   validate(ddalpha$methodSeparator)
   
   ## Depth parameters validation
- 
+  
   if (!is.logical(use.convex) 
       || length(use.convex) != 1 
       || !(use.convex %in% c(TRUE, FALSE))){
@@ -163,7 +163,7 @@ ddalpha.train <- function(data,
   validate(ddalpha$methodDepth)
   
   ## The learning procedures
-
+  
   if (!is.null(ddalpha$methodDepth)){
     # Calculate depths
     ddalpha <- .ddalpha.learn.depth(ddalpha)
@@ -182,7 +182,7 @@ ddalpha.train <- function(data,
   
   # Learn outsider treatments if needed
   if (is.null(ddalpha$methodDepth) || !(ddalpha$methodDepth %in% 
-          c("Mahalanobis", "projection", "spatial", "simplicialVolume"))){#, "simplicial" (may obtain too small values)
+          c("Mahalanobis", "projection", "spatial", "simplicialVolume", "potential"))){#, "simplicial" (may obtain too small values)
     ddalpha <- .ddalpha.learn.outsiders(ddalpha = ddalpha, 
                                         methodsOutsider = outsider.methods, 
                                         settingsOutsider = outsider.settings)
@@ -197,7 +197,7 @@ ddalpha.train <- function(data,
 ################################################################################
 
 alpha.validate  <- function(ddalpha, num.chunks = 10, max.degree = 3,...){
-
+  
   if (ddalpha$methodAggregation == "majority"){
     maxChunks <- ddalpha$patterns[[ddalpha$numPatterns]]$cardinality + ddalpha$patterns[[ddalpha$numPatterns - 1]]$cardinality
   }else{
@@ -207,12 +207,13 @@ alpha.validate  <- function(ddalpha, num.chunks = 10, max.degree = 3,...){
   if (is.character(num.chunks) && toupper(num.chunks)=="MAX")
     num.chunks <- maxChunks
   else if (!is.numeric(num.chunks) 
-      || is.na(num.chunks) 
-      || length(num.chunks) != 1 
-      || !.is.wholenumber(num.chunks) 
-      || !(num.chunks > 0 && num.chunks <= maxChunks)){
+           || is.na(num.chunks) 
+           || length(num.chunks) != 1 
+           || !.is.wholenumber(num.chunks) 
+           || !(num.chunks > 0 && num.chunks <= maxChunks)){
+    if (!missing(num.chunks))
+      warning("Argument \"num.chunks\" not specified correctly. ", maxChunks, " is used instead")
     num.chunks <- maxChunks
-    warning("Argument \"num.chunks\" not specified correctly. ", maxChunks, " is used instead")
   }
   
   if(!is.numeric(max.degree) 
@@ -231,15 +232,15 @@ polynomial.validate  <- alpha.validate  # the same
 
 knnlm.validate  <- function(ddalpha, knnrange = 10*( (ddalpha$numPoints)^(1/ddalpha$numPatterns) ) + 1,...){
   isnull = missing(knnrange) || is.null(knnrange)
-
+  
   if (is.character(knnrange) && toupper(knnrange)=="MAX")
     knnrange = ceiling(ddalpha$numPoints/2)
   else if(is.null(knnrange)
-     || !is.numeric(knnrange) 
-     || is.na(knnrange) 
-     || length(knnrange) != 1 
-     || !.is.wholenumber(knnrange) 
-     || !(knnrange >=2 && knnrange <= ceiling(ddalpha$numPoints/2))){    
+          || !is.numeric(knnrange) 
+          || is.na(knnrange) 
+          || length(knnrange) != 1 
+          || !.is.wholenumber(knnrange) 
+          || !(knnrange >=2 && knnrange <= ceiling(ddalpha$numPoints/2))){    
     knnrange <- 10*( (ddalpha$numPoints)^(1/ddalpha$numPatterns) ) + 1   # Default
     
     knnrange <- min(knnrange, ceiling(ddalpha$numPoints/2))
@@ -309,6 +310,7 @@ Mahalanobis.validate  <- function(ddalpha, mah.estimate = "moment", mah.priors =
     mah.priors <- NULL
   }else{
     mah.priors <- mah.priors/sum(mah.priors)
+    
   }
   
   ret <- list(mahEstimate = mah.estimate, mahPriors = mah.priors)
@@ -326,5 +328,84 @@ Mahalanobis.validate  <- function(ddalpha, mah.estimate = "moment", mah.priors =
     ret$mahParMcd = mah.parMcd
   }
   return (ret)
+}
+
+spatialLocal.validate  <- function(ddalpha, kernel = "GKernel", kernel.bandwidth = 1, ...)
+{  
+  if (is.null(kernel)
+      || suppressWarnings (
+        !((kernel  %in% .potentialKernelTypes) || !is.na(as.numeric(kernel))&&(as.numeric(kernel) %in% c(1:length(.potentialKernelTypes))))
+      )){
+    stop("Argument \"Kernel\" has invaid format.")
+  }  
+  if (is.null(kernel.bandwidth) 
+      || !is.numeric(kernel.bandwidth)){
+    stop("Argument \"kernel.bandwidth\" has invaid format.")
+  }
+  if (length(kernel.bandwidth) == 1){
+    if (length(kernel.bandwidth) || is.na(kernel.bandwidth) || kernel.bandwidth == 0){
+      stop("Argument \"kernel.bandwidth\" is Zero or NA.")
+    } 
+    kernel.bandwidth = rep(kernel.bandwidth, ddalpha$numPatterns)
+  }
+  else {
+    if (sum(!is.na(kernel.bandwidth)) != ddalpha$numPatterns || sum(kernel.bandwidth != 0) != ddalpha$numPatterns){
+      stop("Argument \"kernel.bandwidth\" has invaid length, Zero or NA elements.")
+    }
+     
+    
+    # order bandwidths the same as the classes
+    names = sapply(ddalpha$patterns, FUN=function(X) X$name)
+    kernel.bandwidth = kernel.bandwidth[order(names)]
+  }
+  
+  return(list("kernel" = kernel, "kernel.bandwidth" = kernel.bandwidth))
+}
+
+potential.validate  <- function(ddalpha, kernel = "GKernel", kernel.bandwidth = NULL, ignoreself = FALSE, ...)
+{  
+  # if kernel.bandwidth is a vector - the values are given in the alphabetical order of the classes nemes
+  if (ddalpha$needtransform == 0)
+    stop("'pretransform' must be set for depth = 'potential'")
+  
+  if (is.null(kernel)
+      || suppressWarnings (
+        !((kernel  %in% .potentialKernelTypes) || !is.na(as.numeric(kernel))&&(as.numeric(kernel) %in% c(1:length(.potentialKernelTypes))))
+        )){
+    stop("Argument \"Kernel\" has invaid format.")
+  }  
+  if (is.null(kernel.bandwidth)) {    # use the rule of thumb
+    if (ddalpha$needtransform == 2){
+      kernel.bandwidth = sapply(ddalpha$patterns, FUN=function(X) nrow(X$points)) ^ (-2/(ddalpha$dimension+4))
+    } else {
+      kernel.bandwidth = ddalpha$numPoints ^ (-2/(ddalpha$dimension+4))
+    }
+  }
+  else{
+  if (#is.null(kernel.bandwidth) ||
+        !is.numeric(kernel.bandwidth)
+      ||!(is.vector(kernel.bandwidth) || is.list(kernel.bandwidth))){
+    stop("Argument \"kernel.bandwidth\" has invaid format.")
+  }
+  
+  if (ddalpha$needtransform == 2){
+    if (length(kernel.bandwidth) == 1)
+      kernel.bandwidth = rep(kernel.bandwidth, ddalpha$numPatterns)
+    if (sum(!is.na(kernel.bandwidth)) != ddalpha$numPatterns || sum(kernel.bandwidth != 0) != ddalpha$numPatterns){
+      stop("Argument \"kernel.bandwidth\" has invaid length, Zero or NA elements.")
+    } 
+    
+    # order bandwidths the same as the classes
+    names = sapply(ddalpha$patterns, FUN=function(X) X$name)
+    kernel.bandwidth = kernel.bandwidth[order(names)]
+  } else if (length(kernel.bandwidth) != 1 || is.na(kernel.bandwidth) || kernel.bandwidth == 0){
+    stop("Argument \"kernel.bandwidth\" has invaid length, Zero or NA elements.")
+  }  
+  }
+  
+  if (is.null(ignoreself) || !is.logical(ignoreself))
+    warning ("Argument \"ignoreself\" has invaid format. FALSE used.")
+  
+  return(list("kernel" = kernel, "kernel.bandwidth" = kernel.bandwidth, "ignoreself" = ignoreself))
 }
 

@@ -30,11 +30,11 @@ ddalpha.classify <- function(objects,
     warning("Dimension of the objects to be classified does not correspond to the dimension of the trained classifier. Classification can not be performed!!!")
     return (NULL)
   }
-#   if (!is.character(outsider.method) 
-#       || length(outsider.method) != 1){
-#     warning("Argument \"outsidet.method\" not specified correctly. Outsiders will be ignored!!!")
-#     outsider.method <- NULL
-#   }
+#  if (!is.character(outsider.method) 
+#      || length(outsider.method) != 1){
+#    warning("Argument \"outsidet.method\" not specified correctly. Outsiders will be ignored!!!")
+#    outsider.method <- NULL
+#  }
   if (is.null(use.convex)){
     use.convex <- ddalpha$useConvex
   }

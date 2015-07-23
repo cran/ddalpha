@@ -52,6 +52,10 @@ class2 <- mvrnorm(10, c(2,2),
 data <- rbind(class1, class2)
 # Get depth space using Oja depth
 depth.space.simplicialVolume(data, c(10, 10))
+
+data <- getdata("hemophilia")
+cardinalities = c(sum(data$gr == "normal"), sum(data$gr == "carrier"))
+depth.space.simplicialVolume(data[,1:2], cardinalities)
 }
 \keyword{ robust }
 \keyword{ multivariate }
