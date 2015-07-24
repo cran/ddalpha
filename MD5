@@ -1,4 +1,4 @@
-12916bb3a4babf80727e3a0bd20c3ec8 *DESCRIPTION
+f2c1c4119381ab2e44d02ad887297fa8 *DESCRIPTION
 6abbd0da458aa524f8e301548d778197 *NAMESPACE
 d30e16c1d53c6d833954509a665a0084 *R/RcppExports.R
 f3a9ab808194625a710c5eede0cb346a *R/compclassf.r
@@ -15,7 +15,7 @@ a58059f17a01775874a8c7a549b38c67 *R/ddalphaf.r
 b486d19e4b34b45d09767e20144c878a *R/depth.contours.r
 91767c731df04920c2cf1589516b55ad *R/depth.graph.r
 d6aabb9ba5f524ffc0f2e147020e2f41 *R/depth.halfspace.r
-c92a2c8b5da22811a30b5d7726382e3e *R/depth.potential.r
+56aa887d9dfaa73def26f94a8e6acfb9 *R/depth.potential.r
 998ae1dafa37392bb2211059a50245fb *R/depth.projection.r
 27a3a8babba7fb393d4ee958be77cd2b *R/depth.simplicial.r
 79479df7ba68d46e17d3fc086d3bc5d1 *R/depth.simplicialVolume.r
@@ -91,7 +91,7 @@ cf9d7657c1db942ae1311e808eb7477d *man/dataf..Rd
 40c94053e33df43b90e6e59852d55f5e *man/dataf.sim.1.CFF07.Rd
 e5b4ce126b8ab6d9199ac1dc9ac6b4b9 *man/dataf.sim.2.CFF07.Rd
 84d691fc27cb403a0109eae7b8b1ecf4 *man/dataf.tecator.Rd
-4681c2b86ba33b3d18858d02184e7409 *man/ddalpha-package.Rd
+9e7f82eaa9d9a7aa2ba62e6ceb3ae800 *man/ddalpha-package.Rd
 5008b539a10a075296f75f2c9c53a13e *man/ddalpha.classify.Rd
 2caa3072bc4f32335c4725b026959cbc *man/ddalpha.getErrorRateCV.Rd
 b7b042e32ba8c8de804ce1f7ccd07942 *man/ddalpha.getErrorRatePart.Rd

@@ -159,11 +159,11 @@ depth.potential <- function(x, data, pretransform = "1Mom", kernel = "GKernel", 
   }
   
   points <- as.vector(t(data))
-  numPoints <- length(points)
+  numPoints <- nrow(data)
   dimension <- ncol(data)
   points2 <- as.vector(t(x))
   numPoints2 <- nrow(x)
-  cardinalities = length(points)
+  cardinalities = numPoints
   classes <- 1
   
   ignoreself = F
