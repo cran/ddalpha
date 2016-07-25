@@ -2,7 +2,7 @@
 # File:             ddalpha-internal.r
 # Created by:       Pavlo Mozharovskyi
 # First published:  28.02.2013
-# Last revised:     15.05.2013
+# Last revised:     13.11.2015
 # 
 # Contains the internal functions of the DDalpha-classifier.
 # 
@@ -90,44 +90,21 @@
 }
 
 .ddalpha.learn.depth <- function(ddalpha){
+  
+  # try to find a custom depth
+  fname = paste0(".", ddalpha$methodDepth, "_learn")
+  f <- try(match.fun(fname), silent = T)
+  if (is.function(f)){
+    ddalpha = f(ddalpha)
+    return(ddalpha)
+  }
+  
   # If it's the random Tukey depth, compute it first
   if (ddalpha$methodDepth == "halfspace"){
     dSpaceStructure <- .halfspace_space(ddalpha)
     ddalpha$directions <- dSpaceStructure$directions
     ddalpha$projections <- dSpaceStructure$projections
     tmpDSpace <- dSpaceStructure$dspace
-  }
-  if (ddalpha$methodDepth == "Mahalanobis"){
-    if (is.null(ddalpha$mahPriors)){
-      ddalpha$mahPriors <- c()
-      for (i in 1:ddalpha$numPatterns){
-        ddalpha$mahPriors[i] <- ddalpha$patterns[[i]]$cardinality/ddalpha$numPoints
-      }
-    }
-    for (i in 1:ddalpha$numPatterns){
-      if (ddalpha$mahEstimate == "moment"){
-        
-        ddalpha$patterns[[i]]$center <- colMeans(ddalpha$patterns[[i]]$points)
-        ddalpha$patterns[[i]]$cov    <- cov(ddalpha$patterns[[i]]$points)
-        try(
-          ddalpha$patterns[[i]]$sigma  <- solve(ddalpha$patterns[[i]]$cov)
-        )        
-      }
-      if (ddalpha$mahEstimate == "MCD"){
-        try(
-          estimate <- covMcd(ddalpha$patterns[[i]]$points, ddalpha$mahParMcd)
-        )
-        try(
-          ddalpha$patterns[[i]]$centerMcd <- estimate$center
-        )
-        try(
-          ddalpha$patterns[[i]]$covMcd    <- estimate$cov
-        )
-        try(
-          ddalpha$patterns[[i]]$sigmaMcd  <- solve(estimate$cov)
-        )
-      }
-    }
   }
   if (ddalpha$methodDepth == "projection"){
     dSpaceStructure <- .projection_space(ddalpha)
@@ -180,7 +157,20 @@
   return (ddalpha)
 }
 
-.ddalpha.learn.alpha <- function(ddalpha){
+.getFunction <- function(fname) {
+  f <- try(match.fun(fname), silent = T)
+  if (!is.function(f))
+    stop("Wrong or absent function: ", fname)
+  f
+}
+
+.ddalpha.learn.binary <- function(ddalpha){
+  
+  fname = paste0(".", ddalpha$methodSeparator, "_learn")
+  learn <- try(match.fun(fname), silent = T)
+  if (!is.function(learn))
+    stop("Wrong or absent function: ", fname)
+  
   # Separating (calculating extensions and normals)
   counter <- 1
   # Determining multi-class behaviour
@@ -188,36 +178,22 @@
     for (i in 1:(ddalpha$numPatterns - 1)){
       for (j in (i + 1):ddalpha$numPatterns){
         # Creating a classifier
-        hyperplane <- .alpha_learn(ddalpha$maxDegree, 
-                                   rbind(ddalpha$patterns[[i]]$depths, 
-                                         ddalpha$patterns[[j]]$depths), 
-                                   ddalpha$patterns[[i]]$cardinality, 
-                                   ddalpha$patterns[[j]]$cardinality, 
-                                   ddalpha$numChunks)
-        classifier.index          <- counter
-        classifier.index0         <- i
-        classifier.index1         <- j
-        classifier.hyperplane     <- hyperplane$por
-        classifier.degree         <- hyperplane$deg
-        classifier.dimProperties  <- length(hyperplane$por) - 1
-        classifier.dimFeatures    <- hyperplane$dim
+        classifier <- learn(ddalpha, i, j,
+                            ddalpha$patterns[[i]]$depths, 
+                            ddalpha$patterns[[j]]$depths)
+        
+        classifier$index          = counter
+        classifier$index1         = i
+        classifier$index2         = j
         # Adding the classifier to the list of classifiers
-        ddalpha$classifiers[[counter]] <- structure(
-          list(index = classifier.index, 
-               index0 = classifier.index0, 
-               index1 = classifier.index1, 
-               hyperplane = classifier.hyperplane, 
-               degree = classifier.degree, 
-               dimProperties = classifier.dimProperties, 
-               dimFeatures = classifier.dimFeatures), 
-          .Names = c("index", "index0", "index1", "hyperplane", "degree", "dimProperties", "dimFeatures"))
+        ddalpha$classifiers[[counter]] <- classifier
+        
         counter <- counter + 1
       }
     }
     ddalpha$numClassifiers <- counter - 1
   }
   if (ddalpha$methodAggregation == "sequent"){
-  # !!!DEBUG!!! - Do not forget about the same structure in the knnAff
     for (i in 1:ddalpha$numPatterns){
       anotherClass <- NULL
       for (j in 1:ddalpha$numPatterns){
@@ -225,32 +201,112 @@
           anotherClass <- rbind(anotherClass, ddalpha$patterns[[j]]$depths)
         }
       }
-      hyperplane <- .alpha_learn(ddalpha$maxDegree, rbind(ddalpha$patterns[[i]]$depths, anotherClass), ddalpha$patterns[[i]]$cardinality, nrow(anotherClass), ddalpha$numChunks)
-      classifier.index          <- counter
-      classifier.index0         <- i
-      classifier.index1         <- -1
-      classifier.hyperplane     <- hyperplane$por
-      classifier.degree         <- hyperplane$deg
-      classifier.dimProperties  <- length(hyperplane$por) - 1
-      classifier.dimFeatures    <- hyperplane$dim
+      classifier <- learn(ddalpha, i, -i,
+                          ddalpha$patterns[[i]]$depths, 
+                          anotherClass)
+      
+      classifier$index          = counter
+      classifier$index1         = i
+      classifier$index2         = -i
       # Adding the classifier to the list of classifiers
-      ddalpha$classifiers[[i]] <- structure(
-        list(index = classifier.index, 
-             index0 = classifier.index0, 
-             index1 = classifier.index1, 
-             hyperplane = classifier.hyperplane, 
-             degree = classifier.degree, 
-             dimProperties = classifier.dimProperties, 
-             dimFeatures = classifier.dimFeatures), 
-        .Names = c("index", "index0", "index1", "hyperplane", "degree", "dimProperties", "dimFeatures"))
+      ddalpha$classifiers[[i]] <- classifier
     }
     ddalpha$numClassifiers <- ddalpha$numPatterns
   }
-
+  
   return (ddalpha)
 }
 
-.ddalpha.learn.knnlm <- function(ddalpha){
+.alpha_learn <- function(ddalpha, index1, index2, depths1, depths2){
+  points <- as.vector(t(rbind(depths1, depths2)))
+  numClass1 <- nrow(depths1)
+  numClass2 <- nrow(depths2)
+  numPoints <- numClass1 + numClass2
+  dimension <- ncol(depths1)
+  cardinalities <- c(numClass1, numClass2)
+  upToPower <- ddalpha$maxDegree
+  minFeatures <- 2
+  maxExtDimension <- (factorial(dimension + upToPower) / (factorial(dimension)*factorial(upToPower))) - 1;
+  
+  p <- .C("AlphaLearnCV", as.double(points), as.integer(numPoints), as.integer(dimension), as.integer(cardinalities),  as.integer(upToPower), as.integer(ddalpha$numChunks), as.integer(minFeatures), as.integer(ddalpha$debug), portrait=double(maxExtDimension + 1))$portrait
+  
+  degree <- p[1];
+  extDimension <- (factorial(dimension + degree) / (factorial(dimension)*factorial(degree))) - 1;
+  d <- 0
+  for (i in 2:(extDimension + 1)){
+    if (p[i] != 0){
+      d <- d + 1
+    }
+  }
+  
+  return(list(
+    hyperplane     = p,
+    degree         = degree,
+    dimProperties  = length(p) - 1,
+    dimFeatures    = d
+  ))
+}
+
+.alpha_classify <- function(ddalpha, classifier, depths){
+  toClassify <- as.double(as.vector(t(depths)))
+  m = as.integer(nrow(depths))
+  q = as.integer(ncol(depths))
+  result <- .C("AlphaClassify", 
+               toClassify, 
+               m, q, 
+               as.integer(classifier$degree), 
+               as.double(classifier$hyperplane), 
+               output=integer(m))$output
+  return(result)
+}
+
+.polynomial_learn <- function(ddalpha, index1, index2, depths1, depths2){
+  
+  polynomial <- .polynomial_learn_C(ddalpha$maxDegree, 
+                                    rbind(depths1[,c(index1, index2)], depths2[,c(index1, index2)]),
+                                    nrow(depths1), nrow(depths2), 
+                                    ddalpha$numChunks, ddalpha$seed)
+  return(list(
+    polynomial     = polynomial$coefficients,
+    degree         = polynomial$degree,
+    axis           = polynomial$axis))
+}
+
+.polynomial_classify <- function(ddalpha, classifier, depths){
+  x = ifelse(classifier$axis == 0, classifier$index1, classifier$index2)
+  y = ifelse(classifier$axis == 0, classifier$index2, classifier$index1)
+  
+  result <- (- depths[,y])
+  for (obj in 1:nrow(depths)){        
+    val <- depths[obj,x]
+    for(j in 1:classifier$degree){
+      result[obj] <- result[obj] + classifier$polynomial[j]*val^j
+    }
+    if(classifier$axis != 0)
+      result[obj] <- (- result[obj])
+  }
+  return(result)
+}
+
+
+.ddalpha.learn.multiclass <- function(ddalpha){
+  
+  fname = paste0(".", ddalpha$methodSeparator, "_learn")
+  learn <- try(match.fun(fname), silent = T)
+  if (!is.function(learn))
+    stop("Wrong or absent function: ", fname)
+  
+  
+  classifier <- learn(ddalpha)
+      
+  ddalpha$classifiers[[1]] <- classifier
+  ddalpha$numClassifiers <- 1
+  
+  return (ddalpha)
+}
+
+#.ddalpha.learn.knnlm 
+.knnlm_learn <- function(ddalpha){
   
   x <- NULL
   y <- NULL
@@ -269,13 +325,31 @@
           as.integer(ddalpha$knnrange), 
           as.integer(2), 
           k=integer(1))$k
-  # Collect results
-  ddalpha$knnK <- k
-  ddalpha$knnX <- x
-  ddalpha$knnY <- y
-  
-  return (ddalpha)
+
+  return (list(knnK = k,
+               knnX = x,
+               knnY = y))
 }
+
+.knnlm_classify <- function(ddalpha, classifier, depths){
+  z <- as.vector(t(depths))
+  output <- .C("KnnClassify", 
+               as.double(z), 
+               as.integer(nrow(depths)), 
+               as.double(classifier$knnX), 
+               as.integer(classifier$knnY), 
+               as.integer(ddalpha$numPoints), 
+               as.integer(ddalpha$numPatterns), 
+               as.integer(classifier$knnK), 
+               as.integer(2), 
+               output=integer(nrow(depths)))$output
+  
+  return(output+1)
+}
+
+.maxD_learn <- function(ddalpha) return(list())
+
+.maxD_classify <- function(ddalpha, classifier, depths) apply(depths, 1, which.max)
 
 .ddalpha.learn.outsiders <- function(ddalpha, methodsOutsider = "LDA", settingsOutsider = NULL){
   # Refine treatments
@@ -291,7 +365,7 @@
   for (i in 1:length(ddalpha$methodsOutsider)){
     .treatment = treatments[[ddalpha$methodsOutsider[[i]]$method]]
     if(is.null(.treatment)) stop("Unknown outsiders treatment method ", ddalpha$methodsOutsider[[i]]$method)
-    if(is.na(.treatment)) next; # need no training
+    if(!is.function(.treatment)) next; # need no training
     ddalpha$methodsOutsider[[i]] <- .treatment(ddalpha, ddalpha$methodsOutsider[[i]])
   }
   
@@ -404,7 +478,7 @@
       rez <- .C("HDSpace", as.double(x), as.integer(ncol(points)), as.integer(c), as.integer(ddalpha$numPatterns), as.integer(k), as.integer(1), as.integer(ddalpha$seed), dspc=double(nrow(points)*ddalpha$numPatterns), dirs=double(k*ncol(points)), prjs=double(k*nrow(points)))
       return (list(dspace=matrix(rez$dspc, nrow=nrow(points), ncol=ddalpha$numPatterns, byrow=TRUE), directions=rez$dirs, projections=rez$prjs))
     }else{
-      rez <- .C("HDSpace", as.double(x), as.integer(ncol(points)), as.integer(c), as.integer(ddalpha$numPatterns), as.integer(k), as.integer(0), as.integer(ddalpha$seed), dspc=double(nrow(points)*ddalpha$numPatterns), dirs=double(1), prjs=double(1))
+      rez <- .C("HDSpace", as.double(x), as.integer(ncol(points)), as.integer(c), as.integer(ddalpha$numPatterns), as.integer(k), as.integer(0), as.integer(ddalpha$seed), dspc=double(nrow(points)*ddalpha$numPatterns), dirs=double(k*ncol(points)), prjs=double(k*nrow(points)))
       return (list(dspace=matrix(rez$dspc, nrow=nrow(points), ncol=ddalpha$numPatterns, byrow=TRUE), directions=0, projections=0))
     }
   } else 
@@ -461,8 +535,8 @@
                    as.integer(ncol(points)), 
                    as.integer(c), 
                    as.integer(ddalpha$numPatterns), 
-                   as.double(0), 
-                   as.double(0), 
+                   dirs=double(k*ncol(points)), 
+                   prjs=double(k*nrow(points)),
                    as.integer(k), 
                    as.integer(0), 
                    as.integer(ddalpha$seed),
@@ -508,18 +582,57 @@
   return (depths)
 }
 
-.Mahalanobis_depths <- function(ddalpha, objects){
-  depths <- NULL
-  if (ddalpha$mahEstimate == "moment"){
-    for (j in 1:ddalpha$numPatterns){
-      depths <- cbind(depths, .Mahalanobis_depth (objects, center = ddalpha$patterns[[j]]$center, sigma = ddalpha$patterns[[j]]$sigma))
+.estimate_moments <- function(ddalpha){
+  for (i in 1:ddalpha$numPatterns){
+    if (ddalpha$mahEstimate == "moment"){
+      
+      ddalpha$patterns[[i]]$center <- colMeans(ddalpha$patterns[[i]]$points)
+      ddalpha$patterns[[i]]$cov    <- cov(ddalpha$patterns[[i]]$points)
+      try(
+        ddalpha$patterns[[i]]$sigma  <- solve(ddalpha$patterns[[i]]$cov)
+      )        
+    }
+    if (ddalpha$mahEstimate == "MCD"){
+      try(
+        estimate <- covMcd(ddalpha$patterns[[i]]$points, ddalpha$mahParMcd)
+      )
+      try(
+        ddalpha$patterns[[i]]$center <- estimate$center
+      )
+      try(
+        ddalpha$patterns[[i]]$cov    <- estimate$cov
+      )
+      try(
+        ddalpha$patterns[[i]]$sigma  <- solve(estimate$cov)
+      )
     }
   }
-  if (ddalpha$mahEstimate == "MCD"){
-    for (j in 1:ddalpha$numPatterns){
-      depths <- cbind(depths, .Mahalanobis_depth (objects, center = ddalpha$patterns[[j]]$centerMcd, sigma = ddalpha$patterns[[j]]$sigmaMcd))
+  return(ddalpha)
+}
+
+.Mahalanobis_learn <- function(ddalpha){
+
+  if (is.null(ddalpha$mahPriors)){
+    ddalpha$mahPriors <- c()
+    for (i in 1:ddalpha$numPatterns){
+      ddalpha$mahPriors[i] <- ddalpha$patterns[[i]]$cardinality/ddalpha$numPoints
     }
-  }  
+  }
+  
+  ddalpha <- .estimate_moments(ddalpha)
+  
+  for (i in 1:ddalpha$numPatterns){
+    ddalpha$patterns[[i]]$depths <- .Mahalanobis_depths(ddalpha, ddalpha$patterns[[i]]$points)
+  }
+  
+  return(ddalpha)
+}
+
+.Mahalanobis_depths <- function(ddalpha, objects){
+  depths <- NULL
+  for (j in 1:ddalpha$numPatterns){
+    depths <- cbind(depths, .Mahalanobis_depth (objects, center = ddalpha$patterns[[j]]$center, sigma = ddalpha$patterns[[j]]$sigma))
+  }
   return (depths)
 }
 
@@ -669,17 +782,52 @@
   return (depths) 
 }
 
+
+
+.spatial_learn <- function(ddalpha){
+  if (ddalpha$mahEstimate == "none"){
+    for (i in 1:ddalpha$numPatterns){
+        ddalpha$patterns[[i]]$center <- colMeans(ddalpha$patterns[[i]]$points)
+        ddalpha$patterns[[i]]$cov <- NA
+    }
+  }else{
+    ddalpha <- .estimate_moments(ddalpha)
+  }
+  
+  for (i in 1:ddalpha$numPatterns){
+    ddalpha$patterns[[i]]$depths <- .spatial_depths(ddalpha, ddalpha$patterns[[i]]$points)
+  }
+  
+  return(ddalpha)
+}
+
+.spatialLocal_learn <- function(ddalpha){
+  
+  ddalpha <- .estimate_moments(ddalpha)
+  
+  for (i in 1:ddalpha$numPatterns){
+    ddalpha$patterns[[i]]$depths <- .spatialLocal_depths(ddalpha, ddalpha$patterns[[i]]$points)
+  }
+  
+  return(ddalpha)
+}
+
 .spatial_depths <- function(ddalpha, objects){
   if (is.data.frame(objects))
     objects = as.matrix(objects)
   depths <- NULL
   for (i in 1:ddalpha$numPatterns){
     pattern <- ddalpha$patterns[[i]]$points
-    mean <- colMeans(pattern)
-    cov <- cov(pattern)
-    cov.eig <- eigen(cov)
-    B <- cov.eig$vectors %*% diag(sqrt(cov.eig$values))
-    lambda <- solve(B)
+    mean <- ddalpha$patterns[[i]]$center
+    cov <- ddalpha$patterns[[i]]$cov
+    suppressWarnings(
+    if(!is.na(cov)){
+      cov.eig <- eigen(cov)
+      B <- cov.eig$vectors %*% diag(sqrt(cov.eig$values))
+      lambda <- solve(B)
+    } else{
+      lambda = diag(ncol(pattern))
+    })
     ds <- rep(-1, nrow(objects))
     for (i in 1:nrow(objects)){
       tmp1 <- t(lambda %*% (objects[i,] - t(pattern)))
@@ -707,7 +855,7 @@
 }
 #==========================================================
 
-.alpha_learn <- function(maxDegree, data, numClass1, numClass2, numChunks){
+.alpha_learnOLD <- function(maxDegree, data, numClass1, numClass2, numChunks, debug = F){
   points <- as.vector(t(data))
   numPoints <- numClass1 + numClass2
   dimension <- ncol(data)
@@ -716,7 +864,7 @@
   minFeatures <- 2
   maxExtDimension <- (factorial(dimension + maxDegree) / (factorial(dimension)*factorial(maxDegree))) - 1;
   
-  p <- .C("AlphaLearnCV", as.double(points), as.integer(numPoints), as.integer(dimension), as.integer(cardinalities),  as.integer(upToPower), as.integer(numChunks), as.integer(minFeatures), portrait=double(maxExtDimension + 1))$portrait
+  p <- .C("AlphaLearnCV", as.double(points), as.integer(numPoints), as.integer(dimension), as.integer(cardinalities),  as.integer(upToPower), as.integer(numChunks), as.integer(minFeatures), as.integer(debug), portrait=double(maxExtDimension + 1))$portrait
   
   degree <- p[1];
   extDimension <- (factorial(dimension + degree) / (factorial(dimension)*factorial(degree))) - 1;
@@ -1042,6 +1190,7 @@
 
 .lda_classify <- function(objects, ddalpha, settings){
   if (!is.data.frame(objects)) objects = as.data.frame(objects)
+  names(objects) <- names(ddalpha$raw)[1:ncol(objects)]
   return (as.list(predict(settings$lda, objects)$class))
 }
 
@@ -1053,6 +1202,7 @@
 
 .qda_classify <- function(objects, ddalpha, settings){
   if (!is.data.frame(objects)) objects = as.data.frame(objects)
+  names(objects) <- names(ddalpha$raw)[1:ncol(objects)]
   return (as.list(predict(settings$qda, objects)$class))
 }
 
@@ -1064,8 +1214,8 @@
       for (j in (i + 1):ddalpha$numPatterns){
         # Creating a classifier
         classifier.index          <- counter
-        classifier.index0         <- i
-        classifier.index1         <- j
+        classifier.index1         <- i
+        classifier.index2         <- j
         classifier.points         <- as.double(t(rbind(ddalpha$patterns[[i]]$points, ddalpha$patterns[[j]]$points)))
         classifier.cardinalities  <- as.integer(c(ddalpha$patterns[[i]]$cardinality, ddalpha$patterns[[j]]$cardinality))
         if (settings$knnAff.k < 1 || settings$knnAff.k > (ddalpha$patterns[[i]]$cardinality + ddalpha$patterns[[j]]$cardinality - 1))
@@ -1089,15 +1239,14 @@
           classifier.k <- as.integer(settings$knnAff.k)
         }
         # Adding the classifier to the list of classifiers
-        settings$knnAff.classifiers[[counter]] <- structure(
+        settings$knnAff.classifiers[[counter]] <- 
           list(index = classifier.index, 
-               index0 = classifier.index0, 
                index1 = classifier.index1, 
+               index2 = classifier.index2, 
                points = classifier.points, 
                cardinalities = classifier.cardinalities, 
                k = classifier.k, 
-               range = classifier.range), 
-          .Names = c("index", "index0", "index1", "points", "cardinalities", "k", "range"))
+               range = classifier.range)
         counter <- counter + 1
       }
     }
@@ -1111,8 +1260,8 @@
         }
       }
       classifier.index          <- counter
-      classifier.index0         <- i
-      classifier.index1         <- -1
+      classifier.index1         <- i
+      classifier.index2         <- -1
       classifier.points         <- as.double(t(rbind(ddalpha$patterns[[i]]$points, anotherClass)))
       classifier.cardinalities  <- as.integer(c(ddalpha$patterns[[i]]$cardinality, nrow(anotherClass)))
       if (settings$knnAff.k < 1 || settings$knnAff.k > ddalpha$numPoints)
@@ -1136,15 +1285,14 @@
         classifier.k <- as.integer(settings$knnAff.k)
       }
       # Adding the classifier to the list of classifiers
-      settings$knnAff.classifiers[[counter]] <- structure(
+      settings$knnAff.classifiers[[counter]] <- 
         list(index = classifier.index, 
-             index0 = classifier.index0, 
              index1 = classifier.index1, 
+             index2 = classifier.index2, 
              points = classifier.points, 
              cardinalities = classifier.cardinalities, 
              k = classifier.k, 
-             range = classifier.range), 
-        .Names = c("index", "index0", "index1", "points", "cardinalities", "k", "range"))
+             range = classifier.range)
       counter <- counter + 1
     }
   }
@@ -1169,9 +1317,9 @@
               output=integer(nrow(objects)))$output
     for (j in 1:nrow(objects)){
       if (res[j] == 0){
-        votes[j,settings$knnAff.classifiers[[i]]$index0] <- votes[j,settings$knnAff.classifiers[[i]]$index0] + 1
-      }else{
         votes[j,settings$knnAff.classifiers[[i]]$index1] <- votes[j,settings$knnAff.classifiers[[i]]$index1] + 1
+      }else{
+        votes[j,settings$knnAff.classifiers[[i]]$index2] <- votes[j,settings$knnAff.classifiers[[i]]$index2] + 1
       }
     }
   }

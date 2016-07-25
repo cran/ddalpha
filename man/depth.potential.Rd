@@ -4,7 +4,7 @@
 Calculate the potential of the data
 }
 \description{
-Calculate the potential of the points w.r.t. a multivariate data set. The potential is the kernel-estimated dencity multiplied by the prior probability of a class.
+Calculate the potential of the points w.r.t. a multivariate data set. The potential is the kernel-estimated dencity multiplied by the prior probability of a class. Different from the data depths, a density estimate measures at a given point how much mass is located around it.
 }
 \usage{
 depth.potential (x, data, pretransform = "1Mom", 

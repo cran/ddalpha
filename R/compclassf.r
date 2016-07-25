@@ -1,6 +1,6 @@
 compclassf.train <- function(dataf, labels, 
                             to.equalize = TRUE, 
-                            to.reduce = FALSE, 
+                            to.reduce = TRUE, 
                             classifier.type = c("ddalpha", "maxdepth", "knnaff", "lda", "qda"), 
                             ...){
   # Trains the functional componentwise classifier

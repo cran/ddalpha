@@ -6,7 +6,7 @@ Functional data set spectrometric data (Tecator)
 }
 \description{
 This dataset is a part of the original one which can be found at
-\url{http://lib.stat.cmu.edu/datasets/tecator}. For each peace of finely chopped meat we observe one spectrometric curve which
+\url{http://stat.cmu.edu}. For each peace of finely chopped meat we observe one spectrometric curve which
 corresponds to the absorbance measured at 100 wavelengths. 
 The peaces are split according to Ferraty and Vieu (2006) into two classes: with small (<20) and large fat
 content obtained by an analytical chemical processing.
@@ -33,7 +33,7 @@ Febrero-Bande, M and Oviedo de la Fuente, Manuel
 }
 \source{
 
-\url{http://lib.stat.cmu.edu/datasets/tecator}
+\url{http://stat.cmu.edu}
 
 }
 \references{

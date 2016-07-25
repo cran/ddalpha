@@ -1,3 +1,15 @@
+################################################################################
+# File:             depth.projection.r
+# Created by:       Pavlo Mozharovskyi
+# First published:  28.02.2013
+# Last revised:     13.11.2015
+# 
+# Computation of the projection data depth.
+################################################################################
+# Conrains R-codes written by Subhajit Dutta,
+# taken from http://www.isical.ac.in/~tijahbus/GAM/r_wilcox.txt.
+################################################################################
+
 depth.projection <- function(x, data, method = "random", num.directions = 1000, seed = 0){
   if (seed!=0) set.seed(seed)
   if (!(is.matrix(data) && is.numeric(data)
@@ -14,7 +26,7 @@ depth.projection <- function(x, data, method = "random", num.directions = 1000, 
     z <- as.vector(t(x))
     m <- nrow(x)
     d <- ncol(data)
-    c <- nrow(data)
+    n <- nrow(data)
     q <- 1
     k <- num.directions
     newDirs <- 1
@@ -22,10 +34,10 @@ depth.projection <- function(x, data, method = "random", num.directions = 1000, 
               as.double(z), 
               as.integer(m), 
               as.integer(d), 
-              as.integer(c), 
+              as.integer(n), 
               as.integer(q), 
               dirs=double(k*d), 
-              prjs=double(k*c), 
+              prjs=double(k*n), 
               as.integer(k), 
               as.integer(1), 
               as.integer(seed),

@@ -279,6 +279,36 @@ int Standardize(vector<TPoint> &x, TPoint& means, TPoint& sds){
 	return 0;
 }
 
+int GetMeansSds(TDMatrix& x, int n, int d, TPoint *means, TPoint *sds){
+	/*
+	Get means and standard deviations, coordinatewise
+	*/
+	for (int j = 0; j < d; j++){
+		double tmpMean = 0; double tmpVar = 0;
+		for (int i = 0; i < n; i++){
+			tmpMean += x[i][j];
+		}
+		(*means)[j] = tmpMean / n;
+		for (int i = 0; i < n; i++){
+			tmpVar += std::pow(x[i][j] - (*means)[j], 2);
+		}
+		(*sds)[j] = sqrt(tmpVar / (n - 1));
+	}
+	return 0;
+}
+
+int Standardize(TDMatrix &x, int n, int d, TPoint& means, TPoint& sds){
+	/*
+	Standardize data cloud, coordinatewise
+	*/;
+	for (int i = 0; i < n; i++){
+		for (int j = 0; j < d; j++){
+			x[i][j] = (x[i][j] - means[j]) / sds[j];
+		}
+	}
+	return 0;
+}
+
 int Standardize(TPoint &x, TPoint& means, TPoint& sds){
 /*
 	Standardize point, coordinatewise
@@ -416,7 +446,7 @@ int InConvexes(TMatrix& points, TVariables& cardinalities, TMatrix& objects, int
 			x[j] = points[startIndex + j];
 		}
 		/* Standardize */
-		TPoint means;TPoint sds;
+		TPoint means(d);TPoint sds(d);
 		GetMeansSds(x, &means, &sds);
 		Standardize(x, means, sds);
 		for (int j = 0; j < m; j++){ // Cycling through points

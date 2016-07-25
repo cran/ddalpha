@@ -2,13 +2,14 @@
   File:             Common.cpp
   Created by:       Pavlo Mozharovskyi
   First published:  17.05.2013
-  Last revised:     17.05.2013
+  Last revised:     13.11.2015
   
   Commonly used functions.
 */
 
 #include "stdafx.h"
 
+// by rows
 TDMatrix asMatrix(double* arr, int n, int d){
 	TDMatrix mat = new double*[n];
 	for (int i = 0; i < n; i++)
@@ -26,15 +27,19 @@ void deleteM(TDMatrix X){
 	delete[] X;
 }
 
+TDMatrix copyM(TDMatrix X, int n, int d){
+	double* a = new double[n*d];
+	memcpy(a, X[0], n*d*sizeof(double));
+	return asMatrix(a, n, d);
+}
+
 void printMatrix(TDMatrix mat, int n, int d){
-#ifdef _MSC_VER
 	for (int i = 0; i < n; i++){
 		for (int j = 0; j < d; j++)
-			cout << mat[i][j] << "\t";
-		cout << "\n";
+			Rcout << mat[i][j] << "\t";
+		Rcout << endl;
 	}
-	cout << "\n";
-#endif
+	Rcout << endl;
 }
 
 
@@ -112,13 +117,13 @@ bool solveUnique(TDMatrix A, double* b, double* x, int d){
 			b[i] -= factor * b[k];
 		}
 	}
-	// Rücksubstituition
+	// R?cksubstituition
 	colp[d - 1] = d - 1;
 	for (int k = d - 1; k >= 0; k--) {
 		x[k] = b[k] / A[k][k];
 		for (int i = k - 1; i >= 0; i--) b[i] -= x[k] * A[i][k];
 	}
-	// Spaltenvertauschungen rückgängig machen
+	// Spaltenvertauschungen r?ckg?ngig machen
 	for (int k = d - 1; k >= 0; k--) {
 		if (colp[k] != k) {
 			double temp = x[k];
@@ -146,6 +151,17 @@ double determinant(bMatrix& m)
 		det *= mLu(i, i);
 	}
 	return det;
+}
+
+double* means(TDMatrix X, int n, int d) {
+	double* ms = new double[d];
+	for (unsigned i = 0; i < d; i++) {
+		ms[i] = 0.0;
+		for (unsigned j = 0; j < n; j++)
+			ms[i] += X[j][i];
+		ms[i] /= n;
+	}
+	return ms;
 }
 
 TDMatrix cov(TDMatrix X, int n, int d) {
@@ -186,10 +202,9 @@ TDMatrix cov(TDMatrix X, int n, int d) {
 	return covX;
 }
 
-void GetDirections(TMatrix *directions, unsigned int k, unsigned int d){
-	directions->resize(k);
+void GetDirections(TDMatrix directions, unsigned int k, unsigned int d){
 	for (unsigned int i = 0; i < k; i++){
-		TPoint direction(d);
+		double* direction = directions[i];
 		double sqrSum = 0;
 		for (unsigned int j = 0; j < d; j++){
 			direction[j] = normDist(rEngine);
@@ -199,18 +214,12 @@ void GetDirections(TMatrix *directions, unsigned int k, unsigned int d){
 		for (unsigned int j = 0; j < d; j++){
 			direction[j] = direction[j]/sqrSum;
 		}
-		(*directions)[i] = direction;
 	}
 }
 
-void GetProjections(TMatrix& points, TMatrix& directions, TMatrix *projections){
-	int d = points[0].size();
-	int n = points.size();
-	int k = directions.size();
-
-	projections->resize(k);
+void GetProjections(TDMatrix points, int n, int d, TDMatrix directions, int k, TDMatrix projections){
 	for (int i = 0; i < k; i++){
-		TPoint projection(n);
+		double* projection = projections[i];
 		for (int j = 0; j < n; j++){
 			double sum = 0;
 			for (int l = 0; l < d; l++){
@@ -218,6 +227,55 @@ void GetProjections(TMatrix& points, TMatrix& directions, TMatrix *projections){
 			}
 			projection[j] = sum;
 		}
-		(*projections)[i] = projection;
 	}
+}
+
+
+void outVector(TVariables& point){
+
+}
+
+
+
+bool OUT_ALPHA = false;
+
+void outString(char* str){
+#ifdef DEF_OUT_ALPHA
+	if (!OUT_ALPHA) return;
+	Rcout << str << endl;
+#endif
+}
+
+//template<typename T>
+void outVector(TPoint& point){
+#ifdef DEF_OUT_ALPHA
+	if (!OUT_ALPHA) return;
+	for (int j = 0; j < point.size(); j++){
+		Rcout << point[j] << ", ";
+	}
+	Rcout << endl;
+#endif
+}
+
+void outMatrix(TMatrix& points){
+#ifdef DEF_OUT_ALPHA
+	if (!OUT_ALPHA) return;
+	for (int i = 0; i < points.size(); i++){
+		//Rcout << i << ": ";
+		for (int j = 0; j < points[i].size(); j++){
+			Rcout << points[i][j] << ", ";
+		}
+		Rcout << endl;
+	}
+#endif
+}
+
+void outFeatures(Features fs){
+#ifdef DEF_OUT_ALPHA
+	if (!OUT_ALPHA) return;
+	Rcout << "order\t number\t angle\t error" << endl;
+	for (int i = 0; i < fs.size(); i++){
+		Rcout << fs[i].order << ",\t " << fs[i].number << ",\t " << fs[i].angle << ",\t " << fs[i].error << endl;
+	}
+#endif
 }

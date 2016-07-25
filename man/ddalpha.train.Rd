@@ -37,12 +37,14 @@ ddalpha.train(data,
 \arguments{
   \item{data}{
 Matrix containing training sample where each of \eqn{n} rows is one object of the training sample where first \eqn{d} entries are inputs and the last entry is output (class label).
+
+A pre-calculated DD-plot may be used as \code{data} with \code{depth="ddplot"}.
 }
   \item{depth}{
-Character string determining which depth notion to use; the default value is \code{"halfspace"}. The list of the supported depths is given in section \emph{\bold{\code{Depths}}}.
+Character string determining which depth notion to use; the default value is \code{"halfspace"}. The list of the supported depths is given in section \emph{\bold{\code{Depths}}}. To use a custom depth, see topic \code{\link{Custom Methods}}. To use an outsider treatment only set \code{depth = NULL}.
 }
   \item{separator}{
-The method used for separation on the DD-plot; can be \code{"alpha"} (the default), \code{"knnlm"} or \code{"maxD"}. See section \emph{\bold{\code{Separators}}} for the description of the sparators and additional parameters.
+The method used for separation on the DD-plot; can be \code{"alpha"} (the default), \code{"polynomial"}, \code{"knnlm"} or \code{"maxD"}. See section \emph{\bold{\code{Separators}}} for the description of the sparators and additional parameters. To use a custom separator, see topic \code{\link{Custom Methods}}.
 }
   \item{outsider.methods}{
 Vector of character strings each being a name of a basic outsider method for eventual classification; possible names are: \code{"LDA"} (the default), \code{"LDA"}, \code{"kNN"}, \code{"kNNAff"}, \code{"depth.Mahalanobis"}, \code{"RandProp"}, \code{"RandEqual"} and \code{"Ignore"}. Each method can be specified only once, replications are ignored. By specifying treatments in such a way only a basic treatment method can be chosen (by the name), and the default settings for each of the methods are applied, see 'Details'.
@@ -89,6 +91,12 @@ The parameters for the depth calculating and separation methods.
 
 \subsection{Depths}{
 
+For \code{depth="ddplot"} the pre-calculated DD-plot shall be passed as \code{data}.
+
+To use a custom depth, see topic \code{\link{Custom Methods}}.
+
+To use an outsider treatment only set \code{depth = NULL}.
+
 The following depths are supported:
 
 \code{\link{depth.halfspace}} for calculation of the Tukey depth.
@@ -112,6 +120,8 @@ The additional parameters are described in the corresponding topics.
 \subsection{Separators}{
 
 The separators classify data on the 2-dimensional space of a DD-plot built using the depths.
+
+To use a custom separator, see topic \code{\link{Custom Methods}}.
 
 \subsection{alpha}{
 
@@ -279,6 +289,25 @@ cat("   Error (mahd1): ",
     sum(unlist(classes31) != data$test[,classVar])/200, ".\n", sep = "")
 cat("   Error (rand1): ", 
     sum(unlist(classes32) != data$test[,classVar])/200, ".\n", sep = "")
+    
+#Use the pre-calculated DD-plot
+data = cbind(rbind(mvrnorm(n = 50, mu = c(0,0), Sigma = diag(2)),
+                   mvrnorm(n = 50, mu = c(5,10), Sigma = diag(2)),
+                   mvrnorm(n = 50, mu = c(10,0), Sigma = diag(2))),
+             rep(c(1,2,3), each = 50))
+plot(data[,1:2], col = (data[,3]+1))
+
+ddplot = depth.space.Mahalanobis(data = data[,1:2], cardinalities = c(50,50,50))
+ddplot = cbind(ddplot, data[,3])
+ddalphaD = ddalpha.train(data = ddplot, depth = "ddplot", separator = "alpha")
+c = ddalpha.classify(ddplot[,1:3], ddalphaD)
+errors = sum(unlist(c) != data[,3])/nrow(data)
+print(paste("Error rate: ",errors))
+
+ddalpha = ddalpha.train(data = data, depth = "Mahalanobis", separator = "alpha")
+c = ddalpha.classify(data[,1:2], ddalpha)
+errors = sum(unlist(c) != data[,3])/nrow(data)
+print(paste("Error rate: ",errors))
 }
 \keyword{ robust }
 \keyword{ multivariate }

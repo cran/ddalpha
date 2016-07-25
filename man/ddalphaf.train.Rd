@@ -13,6 +13,7 @@ ddalphaf.train(dataf, labels,
                                numDer = -1), 
                 classifier.type = c("ddalpha", "maxdepth", "knnaff", "lda", "qda"), 
                 cv.complete = FALSE, 
+                maxNumIntervals = min(25, ceiling(length(dataf[[1]]$args)/2)),
                 seed = 0,
                 ...)
 }
@@ -22,7 +23,7 @@ ddalphaf.train(dataf, labels,
 list containing lists (functions) of two vectors of equal length, named "args" and "vals": arguments sorted in ascending order and corresponding them values respectively
 }
   \item{labels}{
-list of output labels of the functinal observations
+list of output labels of the functional observations
 }
   \item{adc.args}{
 Represents a function sample as a multidimensional (dimension=\code{"numFcn"+"numDer"}) 
@@ -47,6 +48,8 @@ type of discretizing the functions: \cr
     }
   }
   Set \code{numFcn} and \code{numDer} to -1 to apply cross-validation.
+  
+  Set  \code{adc.args} to a list of "adc.args" objects to cross-validate only over these values.
 }
   \item{classifier.type}{
 the classifier which is used on the transformed space. The default value is 'ddalpha'.
@@ -54,6 +57,9 @@ the classifier which is used on the transformed space. The default value is 'dda
   \item{cv.complete}{
 T: apply complete cross-validation\cr
 F: restrict cross-validation by Vapnik-Chervonenkis bound
+}
+  \item{maxNumIntervals}{
+maximal number of intervals for cross-validation ( max(numFcn + numDer) = maxNumIntervals )
 }
   \item{seed}{
 the random seed. The dafault value \code{seed=0} makes no changes.
@@ -98,6 +104,7 @@ Mosler, K., & Mozharovskyi, P. (2014). Fast DD-classification of functional data
 \examples{
 
 \dontrun{
+
 ## load the Growth dataset
 dataf = dataf.growth()
 
@@ -105,11 +112,28 @@ learn = c(head(dataf$dataf, 49), tail(dataf$dataf, 34))
 labels= c(head(dataf$labels, 49), tail(dataf$labels, 34)) 
 test  = tail(head(dataf$dataf, 59), 10)    # elements 50:59. 5 girls, 5 boys
 
-c = ddalphaf.train (learn, labels, classifier.type = "ddalpha")
+#cross-validate over the whole variants up to dimension 3
+c1 = ddalphaf.train (learn, labels, classifier.type = "ddalpha", maxNumIntervals = 3)
 
-classified = ddalphaf.classify(test, c)
+classified1 = ddalphaf.classify(test, c1)
 
-print(unlist(classified))
+print(unlist(classified1))
+print(c1$adc.args) 
+
+# cross-validate over these two variants
+c2 = ddalphaf.train (learn, labels, classifier.type = "ddalpha", 
+                     adc.args = list(
+                       list(instance = "avr", 
+                            numFcn = 1, 
+                            numDer = 2),
+                       list(instance = "avr", 
+                            numFcn = 0, 
+                            numDer = 2)))
+
+classified2 = ddalphaf.classify(test, c2)
+
+print(unlist(classified2))
+print(c2$adc.args) 
 
 }
 }

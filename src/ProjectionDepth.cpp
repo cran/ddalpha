@@ -2,7 +2,7 @@
   File:             ProjectionDepth.cpp
   Created by:       Pavlo Mozharovskyi
   First published:  17.05.2013
-  Last revised:     17.05.2013
+  Last revised:     13.11.2015
   
   Computation of the projection depth using random sampling.
 
@@ -39,13 +39,10 @@ static void GetMedMad(TPoint &points, double &median, double &mad){
 	mad = deviations[n/2];
 }
 
-void GetPtsPrjDepths(TPoint projection, TPoint objectsProjection,
+void GetPtsPrjDepths(double* projection, int n, double* objectsProjection, int m,
 					 TVariables cardinalities, TMatrix *ptsPrjDepths){
 	/* Collect basic statistics */
 	int q = cardinalities.size();
-	int n = projection.size();
-	int m = objectsProjection.size();
-	ptsPrjDepths->resize(q);
 	for (int i = 0; i < q; i++){
 		/* Prepare data and obtain median and mad*/
 		int beginIndex = 0;
@@ -54,59 +51,52 @@ void GetPtsPrjDepths(TPoint projection, TPoint objectsProjection,
 			beginIndex += cardinalities[j];
 		}
 		int endIndex = beginIndex + cardinalities[i];
-		TPoint curClassProjection(projection.begin() + beginIndex,
-			projection.begin() + endIndex);
+		TPoint curClassProjection(projection + beginIndex, projection + endIndex);
 		double median, mad;GetMedMad(curClassProjection, median, mad);
 		/* Calculate i-class projectional univariate depths */
-		(*ptsPrjDepths)[i] = TPoint(m);
 		for (int j = 0; j < m; j++){
 			(*ptsPrjDepths)[i][j] = (objectsProjection[j] - median)/mad;
 		}
 	}
 }
 
-int GetDepthsPrj(TMatrix points, TMatrix objects, TVariables cardinalities,
-				  int k, bool newDirs, TMatrix *depths, TMatrix *directions,
-				  TMatrix *projections){
+int GetDepthsPrj(TDMatrix points, int n, int d, TDMatrix objects, int m,
+				  TVariables cardinalities, int k, bool newDirs, 
+				  TDMatrix depths, TDMatrix directions, TDMatrix projections){
 	/* 1. Collecting basic statistics */
-	int d = points[0].size();
-	int n = points.size();
-	int m = objects.size();
 	int q = cardinalities.size();
-	TMatrix objectsProjections;
+	TDMatrix objectsProjections = newM(k,m);
 	if (newDirs){
 		GetDirections(directions, k, d);
-		GetProjections(points, (*directions), projections);
+		GetProjections(points, n, d, directions, k, projections);
 	}
-	GetProjections(objects, (*directions), &objectsProjections);
+	GetProjections(objects, m, d, directions, k, objectsProjections);
 	/* 2. Calculate projection depths */
-	vector<vector<vector<double> > > prjDepths(k);
+	vector<vector<vector<double> > > prjDepths(k, vector<vector<double> >(q, vector<double > (m)));
 	for (int i = 0; i < k; i++){
-		prjDepths[i] = TMatrix(0);
-		GetPtsPrjDepths((*projections)[i], objectsProjections[i], cardinalities,
+		GetPtsPrjDepths(projections[i], n, objectsProjections[i], m, cardinalities,
 			&prjDepths[i]);
 	}
 	/* 3. Merge depths */
-	depths->resize(m);
 	for (int i = 0; i < m; i++){
-		(*depths)[i].resize(q);
 		for (int j = 0; j < q; j++){
-			(*depths)[i][j] = DBL_MIN;
+			depths[i][j] = DBL_MIN;
 		}
 	}
 	for (int i = 0; i < k; i++){
 		for (int j = 0; j < q; j++){
 			for (int l = 0; l < m; l++){
-				if (prjDepths[i][j][l] > (*depths)[l][j]){
-					(*depths)[l][j] = prjDepths[i][j][l];
+				if (prjDepths[i][j][l] > depths[l][j]){
+					depths[l][j] = prjDepths[i][j][l];
 				}
 			}
 		}
 	}
 	for (int i = 0; i < m; i++){
 		for (int j = 0; j < q; j++){		
-			(*depths)[i][j] = 1/(1 + (*depths)[i][j]);
+			depths[i][j] = 1/(1 + depths[i][j]);
 		}
 	}
+	deleteM(objectsProjections);
 	return 0;
 }

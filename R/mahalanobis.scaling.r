@@ -61,7 +61,33 @@ depth.Mahalanobis <- function(x, data, mah.estimate = "moment", mah.parMcd = 0.7
   else if (mah.estimate == "MCD") s = solve(covMcd(data, alpha = mah.parMcd)$cov)
   else stop ("Wrong parameter 'estimate'")
   
-  depths <- .Mahalanobis_depth(x, center = colMeans(data), sigma = s)
+  if (is.matrix(x) || is.data.frame(x)) {
+    nx = nrow(x)
+    if (ncol(x) != ncol(data))
+      stop("Wrong dimension of x")
+  }
+  else if (is.vector(x)) {
+    nx = 1
+    if (length(x) != ncol(data))
+      stop("Wrong dimension of x")
+  } else stop("Wrong type of x")
+  
+#  if (mah.estimate == "MCD"){     # MCD in c++ is much slower
+    depths <- .Mahalanobis_depth(x, center = colMeans(data), sigma = s)
+    return (depths)
+#  }
+  
+  points <- as.vector(t(data))
+  objects <- as.vector(t(x))
+  depths <- .C("MahalanobisDepth", 
+           as.double(points), 
+           as.double(objects), 
+           as.integer(nrow(data)), 
+           as.integer(nx), 
+           as.integer(ncol(data)), 
+           as.double(mah.parMcd),
+           depths=double(nx))$depths
+  
   return (depths)
 }
 

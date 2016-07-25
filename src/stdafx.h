@@ -23,6 +23,10 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/random/linear_congruential.hpp>
 #include <boost/random.hpp>
+#ifndef _MSC_VER
+#include <Rcpp.h> 
+using namespace Rcpp;
+#endif
 
 using namespace std;
 
@@ -32,12 +36,14 @@ using namespace std;
 #include "TukeyDepth.h"
 #include "HD.h"
 #include "ZonoidDepth.h"
+#include "Mahalanobis.h"
 #include "SimplicialDepth.h"
 #include "OjaDepth.h"
 #include "Knn.h"
 #include "Polynomial.h"
 #include "PotentialDepth.h"
 #include "ProjectionDepth.h"
+#include "DKnn.h"
 
 
 static boost::random::rand48 rEngine;
@@ -46,9 +52,6 @@ static boost::random::normal_distribution<double> normDist;
 #define ran(x) rEngine()%x
 #define setseed(x) rEngine.seed(x)
 
-//#ifndef _MSC_VER
-////#include <Rcpp.h> 
-////using namespace Rcpp;
 //#include <Rmath.h> 
 //
 ////#include <Rcpp/stats/random/runif.h>

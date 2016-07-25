@@ -9,7 +9,7 @@ Builds the data depth contours for 2-dimensional data.
 \usage{
 depth.contours(data, depth, 
               main = "", xlab="", ylab = "", 
-              drawplot = T, frequency=100, 
+              drawplot = T, frequency=100, levels = 10,
               col = "red",
               ...)
 }
@@ -32,6 +32,10 @@ if set to false, the contours are built on the existing plot.
 }
   \item{frequency}{
 number of points on each direction, x and y. Impacts the smoothness of the contures. 
+}
+  \item{levels}{
+numeric vector of levels at which to draw contour lines. 
+If the vector contains only ONE element, the levels are generated automatically as \code{seq(0, max(depth), length.out = levels)}.
 }
   \item{col}{
 color, used to draw points and contours

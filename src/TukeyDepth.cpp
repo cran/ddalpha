@@ -2,7 +2,7 @@
   File:             TukeyDepth.cpp
   Created by:       Pavlo Mozharovskyi
   First published:  28.02.2013
-  Last revised:     28.02.2013
+  Last revised:     13.11.2015
   
   Computation of the random Tukey data depth.
 
@@ -23,9 +23,8 @@ static int CompareDec(OrderRec x, OrderRec y)
 	return (x.value > y.value);
 }
 
-void GetPrjDepths(TPoint& projection, TVariables& cardinalities, unsigned curClass, TVariables *prjDepths){
+void GetPrjDepths(double* projection, int n, TVariables& cardinalities, unsigned curClass, TVariables *prjDepths){
 	//Collecting basic statistics
-	int n = projection.size();
 	int beginIndex = 0;
 	for (unsigned i = 0; i < cardinalities.size(); i++){
 		if (i >= curClass){break;}
@@ -58,7 +57,6 @@ void GetPrjDepths(TPoint& projection, TVariables& cardinalities, unsigned curCla
 		depthsBackwards[prjSort[i].order] = curDepth;
 	}
 	//Merge
-	prjDepths->resize(n);
 	for (int i = 0; i < n; i++){
 		if (depthsForwards[i] < depthsBackwards[i]){
 			(*prjDepths)[i] = depthsForwards[i];
@@ -68,10 +66,8 @@ void GetPrjDepths(TPoint& projection, TVariables& cardinalities, unsigned curCla
 	}
 }
 
-void GetPtPrjDepths(TPoint& projection, double point, TVariables& cardinalities, TPoint *ptPrjDepths){
+inline void GetPtPrjDepths(double* projection, int n, double point, TVariables& cardinalities, double* ptPrjDepths){
 	int q = cardinalities.size();
-	int n = projection.size();
-	ptPrjDepths->resize(q);
 	for (int i = 0; i < q; i++){
 		int beginIndex = 0;
 		for (int j = 0; j < q; j++){
@@ -85,104 +81,90 @@ void GetPtPrjDepths(TPoint& projection, double point, TVariables& cardinalities,
 			if (projection[j] <= point){nPtsBelow++;}
 			if (projection[j] >= point){nPtsAbove++;}
 		}
-		(*ptPrjDepths)[i] = (nPtsBelow <= nPtsAbove)?(double)nPtsBelow:(double)nPtsAbove;
+		ptPrjDepths[i] = (nPtsBelow <= nPtsAbove)?(double)nPtsBelow:(double)nPtsAbove;
 	}
 }
 
 //Indexing from zero
-void GetDSpace(vector<TPoint>& points, TVariables& cardinalities, int k, bool atOnce, vector<TPoint> *dSpace, vector<TPoint> *directions, vector<TPoint> *projections){
+void GetDSpace(TDMatrix points, int n, int d, TVariables& cardinalities, int k, bool atOnce, TDMatrix dSpace, TDMatrix directions, TDMatrix projections){
 	//1. Collecting basic statistics
-	int d = points[0].size();
-	int n = points.size();
 	int q = cardinalities.size();
+
 	if (!atOnce){
-		dSpace->resize(n);
+		TDMatrix ptPrjDepths = newM(k, q);
 		for (int i = 0; i < n; i++){
-      TMatrix dir(0), proj(0);
-			GetDepths(points[i], points, cardinalities, k, false, dir, proj, &(*dSpace)[i]);
+/*			TMatrix dir(k, TPoint(d));
+			TMatrix proj(k, TPoint(q));*/
+			GetDepths(points[i], points, n, d, cardinalities, k, false, directions, projections, dSpace[i], ptPrjDepths);
 		}
+		deleteM(ptPrjDepths);
 		return;
 	}
 	GetDirections(directions, k, d);
-	GetProjections(points, (*directions), projections);
+	GetProjections(points, n, d, directions, k, projections);
 	//2. Calculate projection depths
-	vector<vector<TVariables> > prjDepths(k);
+	vector<vector<TVariables> > prjDepths(k, vector<TVariables>(q, TVariables(n)));
 	for (int i = 0; i < k; i++){
-		vector<TVariables> onePrjDepths(q);
-		prjDepths[i] = onePrjDepths;
 		for (int j = 0; j < q; j++){
-			GetPrjDepths((*projections)[i], cardinalities, j, &prjDepths[i][j]);
+			GetPrjDepths(projections[i], n, cardinalities, j, &prjDepths[i][j]);
 		}
 	}
 	//3. Merge depths
-	dSpace->resize(n);
 	for (int i = 0; i < n; i++){
-		(*dSpace)[i].resize(q);
 		for (int j = 0; j < q; j++){
-			(*dSpace)[i][j] = cardinalities[j] + 1;
+			dSpace[i][j] = cardinalities[j] + 1;
 		}
 	}
 	for (int i = 0; i < k; i++){
 		for (int j = 0; j < q; j++){
 			for (int l = 0; l < n; l++){
-				if (prjDepths[i][j][l] < (*dSpace)[l][j]){
-					(*dSpace)[l][j] = prjDepths[i][j][l];
+				if (prjDepths[i][j][l] < dSpace[l][j]){
+					dSpace[l][j] = prjDepths[i][j][l];
 				}
 			}
 		}
 	}
 	for (int i = 0; i < q; i++){
 		for (int j = 0; j < n; j++){
-			(*dSpace)[j][i] /= cardinalities[i];
+			dSpace[j][i] /= cardinalities[i];
 		}
 	}
 }
 
-void GetDepths(TPoint& point, vector<TPoint>& points, TVariables& cardinalities, int k, bool atOnce, vector<TPoint>& directions, vector<TPoint>& projections, TPoint *depths){
+void GetDepths(double* point, TDMatrix points, int n, int d, 
+	TVariables& cardinalities, int k, bool atOnce, 
+	TDMatrix directions, TDMatrix projections, double* depths,
+	TDMatrix ptPrjDepths /*accu, k*q */){
 	//1. Collecting basic statistics
-	int d = points[0].size();
-	int n = points.size();
 	int q = cardinalities.size();
-	int _k = 0;
-	TMatrix& _directions = directions;
-	TMatrix& _projections = projections;
 	if (!atOnce){
-		_k = k;
-		GetDirections(&_directions, _k, d);
-		GetProjections(points, _directions, &_projections);
-	}else{
-		_k = directions.size();
-//		_directions = directions;
-//		_projections = projections;
+		GetDirections(directions, k, d);
+		GetProjections(points, n, d, directions, k, projections);
 	}	
 	//2. Calculate projection depths
-	TPoint pointProjections(_k);
-	for (int i = 0; i < _k; i++){
+	TPoint pointProjections(k);
+	for (int i = 0; i < k; i++){
 		double curPrj = 0;
 		for (int j = 0; j < d; j++){
-			curPrj += point[j]*_directions[i][j];
+			curPrj += point[j]*directions[i][j];
 		}
 		pointProjections[i] = curPrj;
 	}
-	TMatrix ptPrjDepths(_k);
-	for (int i = 0; i < _k; i++){
-//		TPoint onePrjDepths(q);
-//		ptPrjDepths[i] = onePrjDepths;
-		GetPtPrjDepths(_projections[i], pointProjections[i], cardinalities, &ptPrjDepths[i]);
+	for (int i = 0; i < k; i++){
+		GetPtPrjDepths(projections[i], n, pointProjections[i], cardinalities, ptPrjDepths[i]);
 	}
 	//3. Merge depths
-	depths->resize(q);
 	for (int i = 0; i < q; i++){
-		(*depths)[i] = cardinalities[i] + 1;
+		depths[i] = cardinalities[i] + 1;
 	}
-	for (int i = 0; i < _k; i++){
+	for (int i = 0; i < k; i++){
 		for (int j = 0; j < q; j++){
-			if (ptPrjDepths[i][j] < (*depths)[j]){
-				(*depths)[j] = ptPrjDepths[i][j];
+			if (ptPrjDepths[i][j] < depths[j]){
+				depths[j] = ptPrjDepths[i][j];
 			}
 		}
 	}
 	for (int i = 0; i < q; i++){
-		(*depths)[i] /= (double)cardinalities[i];
+		depths[i] /= (double)cardinalities[i];
 	}
 }

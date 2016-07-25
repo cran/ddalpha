@@ -1,6 +1,16 @@
+################################################################################
+# File:             depth.contours.r
+# Created by:       Oleksii Pokotylo
+# First published:  03.07.2015
+# Last revised:     13.11.2015
+# 
+# Visualization of the depth contours
+################################################################################
+
+
 gcolors = c("red", "blue", "green", "orange", "violet")
 
-depth.contours.ddalpha <- function(ddalpha, main = "", xlab="", ylab = "", drawplot = T, frequency=100){
+depth.contours.ddalpha <- function(ddalpha, main = "", xlab="", ylab = "", drawplot = T, frequency=100, levels = 10, ...){
   
   if(class(ddalpha)!="ddalpha")
     stop("Not a 'ddalpha' classifier")
@@ -11,29 +21,37 @@ depth.contours.ddalpha <- function(ddalpha, main = "", xlab="", ylab = "", drawp
     return(0)
   }
   
-  if (ddalpha$needtransform == 1)
-    data = rbind(ddalpha$patterns[[1]]$transformer(ddalpha$patterns[[1]]$points, inv = T), ddalpha$patterns[[2]]$transformer(ddalpha$patterns[[2]]$points, inv = T))
-  else
-    data = rbind(ddalpha$patterns[[1]]$points, ddalpha$patterns[[2]]$points)
-  classes = c(rep(ddalpha$patterns[[1]]$name, ddalpha$patterns[[1]]$cardinality), rep(ddalpha$patterns[[2]]$name, ddalpha$patterns[[2]]$cardinality))
+  if (ddalpha$needtransform == 1){
+    data = ddalpha$patterns[[1]]$transformer(ddalpha$patterns[[1]]$points, inv = T)
+    for (i in 1:length(ddalpha$patterns))
+      data = rbind(data, ddalpha$patterns[[i]]$transformer(ddalpha$patterns[[i]]$points, inv = T))
+  }else{
+    data = ddalpha$patterns[[1]]$points
+    for (i in 1:length(ddalpha$patterns))
+      data = rbind(data, ddalpha$patterns[[i]]$points)
+  }
+  classes = rep(gcolors[1], ddalpha$patterns[[1]]$cardinality)
+  for (i in 1:length(ddalpha$patterns))
+    classes = c(classes, rep(gcolors[i], ddalpha$patterns[[i]]$cardinality))
   margins = c(min(data[,1]), max(data[,1]), min(data[,2]), max(data[,2]));  margins = margins + c(-0.1*(margins[2]-margins[1]), 0.1*(margins[2]-margins[1]), -0.1*(margins[4]-margins[3]), 0.1*(margins[4]-margins[3]))
   C = ncol(data)
   
+  
   if (drawplot)
-    plot(data, col = ifelse (classes == ddalpha$patterns[[1]]$name, "red", "blue"), main = main, xlab=xlab, ylab = ylab)
+    plot(data, col = classes, main = main, xlab=xlab, ylab = ylab, ...)
   if (is.null(ddalpha$methodDepth))
-    return(0)
+    invisible(0)
   
   if (ddalpha$methodDepth == "Mahalanobis" && ddalpha$mahEstimate == "moment"){
     # Mahalanobis depth
     for (i in seq(length(ddalpha$patterns))){
-      mahalanobisRegions(ddalpha$patterns[[i]]$points, col = gcolors[i])
+      mahalanobisRegions(ddalpha$patterns[[i]]$points, levels, col = gcolors[i])
     }
   } else 
     if (ddalpha$methodDepth == "Mahalanobis" && ddalpha$mahEstimate == "MCD"){
       # Mahalanobis depth mit MCD
       for (i in seq(length(ddalpha$patterns))){
-        mahalanobisMCDRegions(ddalpha$patterns[[i]]$points, ddalpha$mahParMcd, col = gcolors[i])
+        mahalanobisMCDRegions(ddalpha$patterns[[i]]$points, ddalpha$mahParMcd, levels, col = gcolors[i])
       }
     } else 
 #       if (ddalpha$methodDepth == "zonoid"){
@@ -53,14 +71,14 @@ depth.contours.ddalpha <- function(ddalpha, main = "", xlab="", ylab = "", drawp
 #         }  else
           # no formal depth regions
         {
-          return (contourRegions(ddalpha, margins = margins, depths = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1), frequency=frequency))
+          return (contourRegions(ddalpha, margins = margins, depths = levels, frequency=frequency))
         }   
   
   return (0)
 }
 
 
-depth.contours <- function(data, depth, main = "", xlab="", ylab = "", drawplot = T, frequency=100, col = "red", ...){
+depth.contours <- function(data, depth, main = "", xlab="", ylab = "", drawplot = T, frequency=100, levels = 10, col = "red", ...){
   
   if(!(is.matrix(data)||is.data.frame(data)))
     stop("Data is not a matrix or a data frame")
@@ -75,10 +93,9 @@ depth.contours <- function(data, depth, main = "", xlab="", ylab = "", drawplot 
     plot(data, col = col, main = main, xlab=xlab, ylab = ylab, ...)
   margins = c(min(data[,1]), max(data[,1]), min(data[,2]), max(data[,2]));  margins = margins + c(-0.1*(margins[2]-margins[1]), 0.1*(margins[2]-margins[1]), -0.1*(margins[4]-margins[3]), 0.1*(margins[4]-margins[3]))
   
-  
   if (depth == "Mahalanobis"){
     # Mahalanobis depth
-    mahalanobisRegions(data, col = col)
+    mahalanobisRegions(data, levels, col = col)
   } else 
 #     if (depth == "zonoid"){
 #       if (require(WMTregions))
@@ -93,10 +110,10 @@ depth.contours <- function(data, depth, main = "", xlab="", ylab = "", drawplot 
 #       }  else 
         # no formal depth regions
       {
-        return (contourRegionsData(data, depth = depth, margins = margins, depths = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1), frequency=frequency, col = col, ...))
+        invisible(contourRegionsData(data, depth = depth, margins = margins, depths = levels, frequency=frequency, col = col, ...))
       }   
   
-  return(0)
+  invisible(0)
 }
 
 
@@ -135,6 +152,12 @@ depth.contours <- function(data, depth, main = "", xlab="", ylab = "", drawplot 
 # }
 
 mahalanobisRegions <- function(x, depths = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1), col = "black"){
+  
+  if(is.na(depths) || is.null(depths))
+    depths = 10
+  if(length(depths) == 1 && depths > 1)
+    depths = seq(0.0001, 1, length.out = depths)
+  
   c <- c(0,0)
   for (i in 1:nrow(x)){
     c <- c + x[i,]
@@ -147,6 +170,12 @@ mahalanobisRegions <- function(x, depths = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 
 }
 
 mahalanobisMCDRegions <- function(x, alpha = 1/2, depths = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1), col = "black"){
+  
+  if(is.na(depths) || is.null(depths))
+    depths = 10
+  if(length(depths) == 1 && depths > 1)
+    depths = seq(0.0001, 1, length.out = depths)
+  
   #  library(robustbase)
   estimate <- covMcd(x, alpha = alpha)
   mu <- estimate$center
@@ -156,7 +185,7 @@ mahalanobisMCDRegions <- function(x, alpha = 1/2, depths = c(0.1, 0.2, 0.3, 0.4,
   }
 }
 
-contourRegions <- function(ddalpha, margins = NULL, depths = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1), frequency=100){
+contourRegions <- function(ddalpha, margins = NULL, depths, frequency=100){
   
   if (is.null(margins)){
     if (ddalpha$needtransform == 1)
@@ -172,17 +201,24 @@ contourRegions <- function(ddalpha, margins = NULL, depths = c(0.1, 0.2, 0.3, 0.
   
   depthcontours <- .ddalpha.count.depths(ddalpha, y)  
   
+  if(is.na(depths) || is.null(depths))
+    depths = 10
+  
+  if(length(depths) == 1 && depths > 1)
+    depths = seq(0, max(depthcontours), length.out = depths)
+  
   for (i in seq(length(ddalpha$patterns))){
     contour(gx, gy, matrix(depthcontours[,i], nrow=length(gx), ncol=length(gy)), add=TRUE, levels=depths*max(depthcontours), drawlabels=FALSE, col = gcolors[i])
   }
   
-  return(depthcontours)
+  invisible(list(gx = gx, gy = gy, depthcontours = depthcontours))
 }
 
 contourRegionsData <- function(data, depth, margins = NULL, depths = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1), frequency=100, col = "red", ...){
   
-  if (is.null(depth) || depth == "none")
-    return (0);
+  if (is.null(depth) || depth == "none"){
+    invisible (0);}
+  else{
   df = switch(depth,
               "zonoid" = depth.zonoid,
               "halfspace" = depth.halfspace,
@@ -192,7 +228,6 @@ contourRegionsData <- function(data, depth, margins = NULL, depths = c(0.1, 0.2,
               "projection" = depth.projection,
               "spatial" = depth.spatial
   )
-  
   
   if (is.null(margins)){
     margins = c(min(data[,1]), max(data[,1]), min(data[,2]), max(data[,2]));  margins = margins + c(-0.1*(margins[2]-margins[1]), 0.1*(margins[2]-margins[1]), -0.1*(margins[4]-margins[3]), 0.1*(margins[4]-margins[3]))
@@ -204,9 +239,15 @@ contourRegionsData <- function(data, depth, margins = NULL, depths = c(0.1, 0.2,
   
   depthcontours <- df(y,data,...)  
   
-  contour(gx, gy, matrix(depthcontours, nrow=length(gx), ncol=length(gy)), add=TRUE, levels=depths*max(depthcontours), drawlabels=FALSE, col = col)
+  if(is.na(depths) || is.null(depths))
+    depths = 10
+  if(length(depths) == 1 && depths > 1)
+    depths = seq(0.0001, max(depthcontours), length.out = depths)
   
-  return(depthcontours)
+  contour(gx, gy, matrix(depthcontours, nrow=length(gx), ncol=length(gy)), add=TRUE, levels=depths, drawlabels=FALSE, col = col)
+  
+  invisible(list(gx = gx, gy = gy, depthcontours = depthcontours))
+  }
 }
 
 

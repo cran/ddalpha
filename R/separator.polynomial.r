@@ -25,8 +25,8 @@
         ddalpha$classifiers[[counter]] <- 
           list(
             index          = counter,
-            index0         = i,
-            index1         = j,
+            index1         = i,
+            index2         = j,
             polynomial     = polynomial$coefficients,
             degree         = polynomial$degree,
             axis           = polynomial$axis)
@@ -50,8 +50,8 @@
       # Adding the classifier to the list of classifiers
       ddalpha$classifiers[[i]] <- 
         list(index          = counter, 
-             index0         = i, 
-             index1         = -1, 
+             index1         = i, 
+             index2         = -1, 
              polynomial     = polynomial$coefficients,
              degree         = polynomial$degree,
              axis           = polynomial$axis)
@@ -65,10 +65,6 @@
 ################################################################################
 # Functions for intermediate calculations are presented below
 ################################################################################
-
-nlm_optimize_r <- function(r_minCandidate, r_points, numClass1, numClass2){
-  return ( nlm(CGetEmpiricalRiskSmoothed, r_minCandidate, r_points, numClass1, numClass2)$estimate )
-}
 
 .polynomial_learn_C <- function(maxDegree, data, numClass1, numClass2, numChunks, seed){
   points <- as.vector(t(data))

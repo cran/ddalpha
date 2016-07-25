@@ -9,7 +9,7 @@ The function draws the \emph{DD}-plot either of the existing DD\eqn{\alpha}-clas
 \usage{
 draw.ddplot(ddalpha, depth.space, cardinalities, 
             main = "DD plot", xlab = "C1", ylab = "C2", 
-            classes = c(1, 2), colors = c("red", "blue", "green"))
+            classes = c(1, 2), colors = c("red", "blue", "green"), drawsep = T)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -32,6 +32,9 @@ vector of numbers of two classes used for depth calculation
 }
   \item{colors}{
 vector of the classes' colors
+}
+  \item{drawsep}{
+draws the separation on the DD-plot (currently for 2 classes and not for knn)
 }
 }
 

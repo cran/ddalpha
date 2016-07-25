@@ -2,7 +2,7 @@
   File:             Knn.cpp
   Created by:       Pavlo Mozharovskyi
   First published:  28.02.2013
-  Last revised:     28.02.2013
+  Last revised:     13.11.2015
 
   The realization of the fast binary affine-invariante KNN classifier.
 */
@@ -60,10 +60,6 @@ static int GetCov(TMatrix x, TMatrix *cov){
 static int GetInverted(TMatrix x, TMatrix *inv){
 	unsigned int d = x.size();if (d <= 0){return -1;}
 	unsigned int _d = x[0].size();if (_d != d){return -1;}
- 
-#ifndef _MSC_VER
-
-//  NumericMatrix A(d,d);
   
 	boost::numeric::ublas::matrix<double> A(d, d);A.clear();
 	for (unsigned int i = 0; i < d; i++){
@@ -78,20 +74,14 @@ static int GetInverted(TMatrix x, TMatrix *inv){
 	if (res != 0){return -1;}
 	Inv.assign(boost::numeric::ublas::identity_matrix<double> (A.size1()));
 	boost::numeric::ublas::lu_substitute(A, pm, Inv);
-	
- /* Function solve("solve");
-  NumericMatrix Inv = solve(A);*/
   
-  inv->resize(d);for(unsigned int i = 0; i < d; i++){(*inv)[i].resize(d);}
-  for (unsigned int i = 0; i < d; i++){
+	inv->resize(d); for (unsigned int i = 0; i < d; i++){ (*inv)[i].resize(d); }
+	for (unsigned int i = 0; i < d; i++){
 		for (unsigned int j = 0; j < d; j++){
 			 (*inv)[i][j] = Inv(i,j);
 		}
 	}
 	return 0;
-#else
-	return 1;
-#endif // _MSC_VER
 }
 
 static double GetNormalized(TPoint dif){
@@ -158,9 +148,8 @@ int KnnCv(TMatrix points, TVariables labels, unsigned int kMax, int distType, un
 	if (labels.size() != n){return -1;}
 	// Prepare indicator array for Jack-Knifing
 	TMatrix dist;GetDistances(points, &dist, distType);
-	vector<vector<UPoint> > indicators;indicators.resize(n);
+	vector<vector<UPoint> > indicators(n, vector<UPoint>(n));
 	for (unsigned i = 0; i < n; i++){
-		indicators[i].resize(n);
 		for (unsigned j = 0; j < n; j++){
 			indicators[i][j] = UPoint(labels[j], dist[i][j]);
 		}
@@ -170,8 +159,7 @@ int KnnCv(TMatrix points, TVariables labels, unsigned int kMax, int distType, un
 		sort(indicators[i].begin(), indicators[i].end(), CompareValue);
 	}
 	// Jack-knifing
-	vector<TVariables> decisions(kMax + 1);
-	for (unsigned int i = 0; i < kMax + 1; i++){decisions[i].resize(n);}
+	vector<TVariables> decisions(kMax + 1, TVariables(n));
 	for (unsigned int i = 0; i < n; i++){decisions[0][i] = labels[i];}
 	for (unsigned int i = 0; i < n; i++){
 		TVariables locVotes(q);

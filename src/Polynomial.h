@@ -11,6 +11,4 @@
 DD-plot, Journal of the American Statistical Association 107(498): 737 - 753.
 */
 
-TPoint GetPolynomial(unsigned degree, TMatrix& points);
-
-TPoint PolynomialLearnCV(TMatrix& input, unsigned numClass1, unsigned int maxDegree, unsigned int chunkNumber, int *degree, int *axis);
+TPoint PolynomialLearnCV(TDMatrix input, unsigned numClass1, unsigned numClass2, unsigned int maxDegree, unsigned int chunkNumber, int *degree, int *axis);

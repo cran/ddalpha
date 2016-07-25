@@ -2,7 +2,7 @@
   File:             AlphaProcedure.cpp
   Created by:       Pavlo Mozharovskyi
   First published:  28.02.2013
-  Last revised:     28.02.2013
+  Last revised:     13.11.2015
 
   Contains the modified alpha-procedure for the DDalpha-classifier.
 
@@ -75,16 +75,26 @@ static unsigned int DGetMinError(unsigned int yAxisNumber, Feature *yFeature){
 		angles[i] = UPoint((x[yAxisNumber][i] == 0 && curFeature[i] == 0) ? 0 : y[i] , atan2(x[yAxisNumber][i], curFeature[i]));
 	}
 	sort(angles.begin(), angles.end(), Compare);
-
+/*
+	for (unsigned i = 0; i < n; i++){
+		cout << (angles[i].pattern > 0 ? 1 : angles[i].pattern < 0 ? 0 : 3);
+	}
+	cout << endl;
+*/
 	/* Look for the optimal threshold */
 	int leftDiff = 0; unsigned int optThreshold = 0; int maxCorr = 0; double nextValue = angles[0].value;
-	for (unsigned i = 0; i < n - 1; i++){leftDiff+=angles[i].pattern;
-		if (angles[i + 1].value == nextValue){continue;} nextValue = angles[i].value;
-		int corr = abs(leftDiff) + abs(difference - leftDiff); if (corr > maxCorr){maxCorr = corr; optThreshold = i;}
+	for (unsigned i = 0; i < n - 1; i++){
+		leftDiff += angles[i].pattern;
+		if (angles[i + 1].value == nextValue){ continue; } nextValue = angles[i].value;
+		int corr = max(numMore - leftDiff, numLess + leftDiff);
+		//int corr = abs(leftDiff) + abs(difference - leftDiff); 
+		if (corr > maxCorr){ maxCorr = corr; optThreshold = i; }
+//		cout << i << " " << corr << "; ";
 	}
+//	cout << endl;
 
 	/* Determine the angle of the separating direction */
-	yFeature->angle = (angles[optThreshold].value + angles[optThreshold + 1].value)/2. - PI2; yFeature->error = n - maxCorr; yFeature->number = yAxisNumber;
+	yFeature->angle = (angles[optThreshold].value + angles[optThreshold + 1].value) / 2. - PI2; yFeature->error = n - maxCorr; yFeature->number = yAxisNumber;
 	return yFeature->error;
 }
 
@@ -103,7 +113,13 @@ static unsigned int GetRay(TPoint *ray){
 		for (unsigned int j = 0; j < d; j++){
 			points[i].value += (*ray)[j]*x[j][i];
 		}
+#ifdef DEF_OUT_ALPHA
+		if (OUT_ALPHA) Rcout << points[i].value << ", ";
+#endif
 	}
+#ifdef DEF_OUT_ALPHA
+	if (OUT_ALPHA) Rcout << endl;
+#endif
 	sort(points.begin(), points.end(), Compare);
 	unsigned int numLeftLess = 0;
 	unsigned int numLeftMore = 0;
@@ -115,9 +131,14 @@ static unsigned int GetRay(TPoint *ray){
 	unsigned int errorLeftMore = numLeftLess + numMore - numLeftMore;
 	if (errorLeftLess > errorLeftMore){
 		for (unsigned int i = 0; i < d; i++){
-			(*ray)[i] *= -1;
+			(*ray)[i] *= -1.;
 		}
 	}
+#ifdef DEF_OUT_ALPHA
+	if (OUT_ALPHA){
+	Rcout << errorLeftLess << " " << errorLeftMore << " ";
+	}
+#endif
 	return 0;
 }
 
@@ -150,6 +171,8 @@ int Alpha(TPoint *ray){
 	properties.resize(d); for (unsigned int i = 0; i < d; i++){properties[i] = i;} // initialize properties: all available
 	features.clear();
 
+	outMatrix(x);
+
 	/* 1. Null-cycle */
 	if (numStartFeatures == 2){ // start with two features?
 		Feature optFeatureX;
@@ -160,6 +183,11 @@ int Alpha(TPoint *ray){
 				Feature tmpFeature;
 				curFeature = x[properties[i]];
 				unsigned int error = DGetMinError(properties[j], &tmpFeature);
+#ifdef DEF_OUT_ALPHA
+				if (OUT_ALPHA){
+					Rcout << properties[i] << ", " << properties[j] << ", " << tmpFeature.angle << ", " << error << ", " << endl;
+				}
+#endif
 				if (error < optFeatureY.error){optFeatureX.number = properties[i]; optFeatureY = tmpFeature;}
 			}
 		}
@@ -169,7 +197,10 @@ int Alpha(TPoint *ray){
 			if (properties[i] == optFeatureX.number){properties.erase(properties.begin() + i);}
 			if (properties[i] == optFeatureY.number){properties.erase(properties.begin() + i);}
 		}
+		curFeature = x[features[0].number];
 		UpdateCurFeature();
+		outString("Feature 1:");
+		outVector(curFeature);
 	}
 
 	/* 2. Main cycle */
@@ -180,6 +211,11 @@ int Alpha(TPoint *ray){
 			/* Calculating minimal error on the plane of the curFeature and the j-th properties */
 			Feature tmpFeature;
 			unsigned int error = DGetMinError(properties[i], &tmpFeature);
+#ifdef DEF_OUT_ALPHA
+			if (OUT_ALPHA){
+				Rcout << properties[i] << ", " << tmpFeature.angle << ", " << error << ", " << endl;
+			}
+#endif
 			if (error < optFeature.error){optFeature = tmpFeature;}
 		}		
 		if (optFeature.error < features[features.size() - 1].error){
@@ -188,9 +224,14 @@ int Alpha(TPoint *ray){
 				if (properties[i] == optFeature.number){properties.erase(properties.begin() + i);}
 			}
 			UpdateCurFeature();
+			outString("Feature :");
+			outVector(curFeature);
 		}else{break;}
 	}
 	
+	outString("Features:");
+	outFeatures(features);
+
 	/* Restoring the projection vector */
 	GetRay(ray);
 	return features[features.size() - 1].error;
@@ -231,6 +272,8 @@ int Learn(TMatrix input, TVariables output, unsigned int minFeatures, TPoint *ra
 }
 
 int LearnCV(TMatrix input,  TVariables output, unsigned int minFeatures, unsigned int upToPower, unsigned int folds, TPoint *ray, unsigned int *power){
+	bool oldOUT_ALPHA = OUT_ALPHA;
+	OUT_ALPHA = false;
 	unsigned int optDegree = 0;
 	unsigned int optError = INT_MAX;
 	unsigned int shortFolds = folds - 1;
@@ -279,6 +322,7 @@ int LearnCV(TMatrix input,  TVariables output, unsigned int minFeatures, unsigne
 		if (error < optError){optError = error; optDegree = i + 1; if (optError == 0){break;}}
 	}
 
+	OUT_ALPHA = oldOUT_ALPHA;
 	/* Eventually get the classification ray */
 	Initialization(spaceExtensions[optDegree - 1], output, minFeatures); // initialize
 	power[0] = optDegree;

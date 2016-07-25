@@ -28,16 +28,19 @@ additional parameters passed to \code{\link{ddalpha.train}}
 \value{
 
   \item{errors}{
-  the part of incorrectly classified data
+  the part of incorrectly classified data (mean)
   }
   \item{errors_sd}{
-  the standart deviation of errors
+  the standard deviation of errors
+  }
+  \item{errors_vec}{
+  vector of errors
   }
   \item{time}{
   the mean training time
   }
   \item{time_sd}{
-  the standart deviation of training time
+  the standard deviation of training time
   }
 
 }

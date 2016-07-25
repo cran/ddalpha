@@ -57,7 +57,7 @@
 Data for classification
 }
 \description{
-50 multivariate data sets for binnary classification. For more details refer {\url{http://www.wisostat.uni-koeln.de/28969.html}}
+50 multivariate data sets for binnary classification. For more details refer {\url{http://www.wisostat.uni-koeln.de/de/forschung/software-und-daten/data-for-classification/}}
 
 The \code{getdata} function gets the data set from the package, and returns it. The dataset itself does not appear in the global environment and the existing variables with the same name remain unchanged.
 }
@@ -106,7 +106,7 @@ The general list of sources consists of:
 
 {\url{http://archive.ics.uci.edu/ml}}, se also Frank, A. & Asuncion, A. (2010). UCI Machine Learning Repository [{\url{http://archive.ics.uci.edu/ml}}]. Irvine, CA: University of California, School of Information and Computer Science.
 {\url{http://cran.r-project.org/web/packages}} 
-{\url{http://lib.stat.cmu.edu/datasets}} 
+{\url{http://stat.cmu.edu}} 
 {\url{http://stat.ethz.ch/Teaching/Datasets}} 
 {\url{http://www.stats.ox.ac.uk/pub/PRNN}} 
 }
@@ -183,6 +183,9 @@ hemophilia = "This is some existing object called 'hemophilia'. It remains uncha
 d = getdata("hemophilia")
 head(d)
 print(hemophilia)
+
+#get the list of all data sets
+names = data(package = "ddalpha")$results[,3]
 
 }
 

@@ -35,5 +35,8 @@ int GetMeansSds(vector<TPoint>& x, TPoint *means, TPoint *sds);
 int Standardize(vector<TPoint> &x, TPoint& means, TPoint& sds);
 int Standardize(TPoint &x, TPoint& means, TPoint& sds);
 
+int GetMeansSds(TDMatrix &x, int n, int d, TPoint *means, TPoint *sds);
+int Standardize(TDMatrix &x, int n, int d, TPoint& means, TPoint& sds);
+
 #endif
 

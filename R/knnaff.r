@@ -108,8 +108,8 @@ knnaff.docv <- function(knnaff){
       for (j in (i + 1):knnaff$numPatterns){
         # Creating a classifier
         classifier.index          <- counter
-        classifier.index0         <- i
-        classifier.index1         <- j
+        classifier.index1         <- i
+        classifier.index2         <- j
         classifier.points         <- as.double(t(rbind(knnaff$patterns[[i]]$points, knnaff$patterns[[j]]$points)))
         classifier.cardinalities  <- as.integer(c(knnaff$patterns[[i]]$cardinality, knnaff$patterns[[j]]$cardinality))
         if (knnaff$k < 1 || knnaff$k > (knnaff$patterns[[i]]$cardinality + knnaff$patterns[[j]]$cardinality - 1))
@@ -133,15 +133,14 @@ knnaff.docv <- function(knnaff){
           classifier.k <- as.integer(knnaff$k)
         }
         # Adding the classifier to the list of classifiers
-        knnaff$classifiers[[counter]] <- structure(
+        knnaff$classifiers[[counter]] <- 
           list(index = classifier.index, 
-               index0 = classifier.index0, 
                index1 = classifier.index1, 
+               index2 = classifier.index2, 
                points = classifier.points, 
                cardinalities = classifier.cardinalities, 
                k = classifier.k, 
-               range = classifier.range), 
-          .Names = c("index", "index0", "index1", "points", "cardinalities", "k", "range"))
+               range = classifier.range)
         counter <- counter + 1
       }
     }
@@ -155,8 +154,8 @@ knnaff.docv <- function(knnaff){
         }
       }
       classifier.index          <- counter
-      classifier.index0         <- i
-      classifier.index1         <- -1
+      classifier.index1         <- i
+      classifier.index2         <- -1
       classifier.points         <- as.double(t(rbind(knnaff$patterns[[i]]$points, anotherClass)))
       classifier.cardinalities  <- as.integer(c(knnaff$patterns[[i]]$cardinality, nrow(anotherClass)))
       if (knnaff$k < 1 || knnaff$k > knnaff$numPoints)
@@ -180,15 +179,14 @@ knnaff.docv <- function(knnaff){
         classifier.k <- as.integer(knnaff$k)
       }
       # Adding the classifier to the list of classifiers
-      knnaff$classifiers[[counter]] <- structure(
+      knnaff$classifiers[[counter]] <- 
         list(index = classifier.index, 
-             index0 = classifier.index0, 
              index1 = classifier.index1, 
+             index2 = classifier.index2, 
              points = classifier.points, 
              cardinalities = classifier.cardinalities, 
              k = classifier.k, 
-             range = classifier.range), 
-        .Names = c("index", "index0", "index1", "points", "cardinalities", "k", "range"))
+             range = classifier.range)
       counter <- counter + 1
     }
   }
@@ -215,9 +213,9 @@ knnaff.classify <- function(objects, knnaff){
               output=integer(nrow(objects)))$output
     for (j in 1:nrow(objects)){
       if (res[j] == 0){
-        votes[j,knnaff$classifiers[[i]]$index0] <- votes[j,knnaff$classifiers[[i]]$index0] + 1
-      }else{
         votes[j,knnaff$classifiers[[i]]$index1] <- votes[j,knnaff$classifiers[[i]]$index1] + 1
+      }else{
+        votes[j,knnaff$classifiers[[i]]$index2] <- votes[j,knnaff$classifiers[[i]]$index2] + 1
       }
     }
   }

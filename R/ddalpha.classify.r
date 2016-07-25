@@ -30,6 +30,11 @@ ddalpha.classify <- function(objects,
     warning("Dimension of the objects to be classified does not correspond to the dimension of the trained classifier. Classification can not be performed!!!")
     return (NULL)
   }
+  
+  
+  if (ddalpha$methodSeparator == "Dknn")
+    return(dknn.classify.trained(objects, ddalpha))
+  
 #  if (!is.character(outsider.method) 
 #      || length(outsider.method) != 1){
 #    warning("Argument \"outsidet.method\" not specified correctly. Outsiders will be ignored!!!")
@@ -63,11 +68,13 @@ ddalpha.classify <- function(objects,
     }else{
       depths <- .ddalpha.count.depths(ddalpha, objects[classifiableIndices,])
       
-      freePoints <- matrix(objects[-classifiableIndices,], 
+      freePoints <- matrix(objects[-classifiableIndices,,drop=F], 
                            nrow=nrow(objects)-length(classifiableIndices))
     }
   }else{
-    depths <- .ddalpha.count.depths(ddalpha, objects)
+    ifelse(ddalpha$methodDepth == "ddplot",
+      depths <- objects,
+      depths <- .ddalpha.count.depths(ddalpha, objects) )
 
     classifiableIndices <- c()
     for (i in 1:nrow(depths)){
@@ -81,93 +88,51 @@ ddalpha.classify <- function(objects,
     }else{
       depths <- suppressWarnings( matrix(depths[classifiableIndices,], 
                        nrow=length(classifiableIndices), ncol=ddalpha$numPatterns))
-      freePoints <- suppressWarnings( matrix(objects[-classifiableIndices,], 
-                           nrow=nrow(objects)-length(classifiableIndices), 
-                           ncol=ncol(objects)))
+      freePoints <- objects[-classifiableIndices,,drop=F]# suppressWarnings( matrix(objects[-classifiableIndices,], 
+                           #nrow=nrow(objects)-length(classifiableIndices), 
+                           #ncol=ncol(objects)))
     }
   }
   
   # Classify with the pure DD classifiers
   resultsDepths <- list()
   if (nrow(depths) > 0){
-    if (ddalpha$methodSeparator == "alpha"){
+
+    fname = paste0(".", ddalpha$methodSeparator, "_classify")
+    classify <- .getFunction(fname)
+
+    resultsDepths1 <- list()
+    if (ddalpha$methodSeparatorBinary){
+      #### Binary classifiers
+      
       votes <- matrix(rep(0, nrow(depths)*ddalpha$numPatterns), nrow=nrow(depths), ncol=ddalpha$numPatterns)
-      toClassify <- as.double(as.vector(t(depths)))
-      m <- as.integer(nrow(depths))
-      q <- as.integer(ncol(depths))
       for (i in 1:ddalpha$numClassifiers){
-        result <- .C("AlphaClassify", 
-                     toClassify, 
-                     m, 
-                     q, 
-                     as.integer(ddalpha$classifiers[[i]]$degree), 
-                     as.double(ddalpha$classifiers[[i]]$hyperplane), 
-                     output=integer(m))$output
-        for (j in 1:m){
-          if (result[j] > 0){
-            votes[j,ddalpha$classifiers[[i]]$index0] <- votes[j,ddalpha$classifiers[[i]]$index0] + 1
-          }else{
-            votes[j,ddalpha$classifiers[[i]]$index1] <- votes[j,ddalpha$classifiers[[i]]$index1] + 1
-          }
-        }
-      }
-      for (i in 1:m){
-        resultsDepths[[i]] <- ddalpha$patterns[[which.max(votes[i,])]]$name
-      }
-    }
-    if (ddalpha$methodSeparator == "polynomial"){
-      votes <- matrix(rep(0, nrow(depths)*ddalpha$numPatterns), nrow=nrow(depths), ncol=ddalpha$numPatterns)
-            
-      m <- as.integer(nrow(depths))
-      q <- as.integer(ncol(depths))
-      for (i in 1:ddalpha$numClassifiers){
+        xAxis <- ddalpha$classifiers[[i]]$index1
+        yAxis <- ddalpha$classifiers[[i]]$index2
         
-        if (ddalpha$classifiers[[i]]$axis == 0){
-          xAxis <- ddalpha$classifiers[[i]]$index0
-          yAxis <- ddalpha$classifiers[[i]]$index1
-        }else{
-          xAxis <- ddalpha$classifiers[[i]]$index1
-          yAxis <- ddalpha$classifiers[[i]]$index0
-        }
+        result <- classify(ddalpha, ddalpha$classifiers[[i]], depths)
         
-        for (obj in 1:m){        
-          val <- depths[obj,xAxis]
-          res <- 0
-          for(j in 1:ddalpha$classifiers[[i]]$degree){res <- res + ddalpha$classifiers[[i]]$polynomial[j]*val^j}
-          if (depths[obj,yAxis] < res){
+        for (obj in 1:nrow(depths)){
+          if (result[obj] > 0){
             votes[obj,xAxis] <- votes[obj,xAxis] + 1
           }else{
             votes[obj,yAxis] <- votes[obj,yAxis] + 1
           }
-        }      
+        }
       }
-      
-      for (i in 1:m){
+      for (i in 1:nrow(depths)){
         resultsDepths[[i]] <- ddalpha$patterns[[which.max(votes[i,])]]$name
       }
-    }
-    if (ddalpha$methodSeparator == "knnlm"){
-      z <- as.vector(t(depths))
-      output <- .C("KnnClassify", 
-                   as.double(z), 
-                   as.integer(nrow(depths)), 
-                   as.double(ddalpha$knnX), 
-                   as.integer(ddalpha$knnY), 
-                   as.integer(ddalpha$numPoints), 
-                   as.integer(ddalpha$numPatterns), 
-                   as.integer(ddalpha$knnK), 
-                   as.integer(2), 
-                   output=integer(nrow(depths)))$output
-      for (i in 1:nrow(depths)){
-        resultsDepths[[i]] <- ddalpha$patterns[[output[i] + 1]]$name
-      }
-    }
-    if (ddalpha$methodSeparator == "maxD"){
-      indexes <- apply(depths, 1, which.max)
+    } else {
+      #### Multiclass classifiers
+      
+      indexes <- classify(ddalpha, ddalpha$classifiers[[1]], depths)
+      
       for (i in 1:nrow(depths)){
         resultsDepths[[i]] <- ddalpha$patterns[[indexes[i]]]$name
       }
     }
+
   }
   } # end if(!is.null(ddalpha$methodDepth))
   

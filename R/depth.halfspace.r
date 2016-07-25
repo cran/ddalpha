@@ -2,7 +2,7 @@
 # File:             depth.halfspace.r
 # Created by:       Pavlo Mozharovskyi
 # First published:  28.02.2013
-# Last revised:     18.06.2015
+# Last revised:     13.11.2015
 # 
 # Computation of the Tukey data depth.
 ################################################################################
@@ -83,8 +83,8 @@ depth.halfspace <- function(x, data, exact, method, num.directions = 1000, seed 
              as.integer(ncol(data)), 
              as.integer(c), 
              as.integer(1), 
-             as.double(0), 
-             as.double(0), 
+             dirs=double(k*ncol(data)), 
+             prjs=double(k*nrow(data)), 
              as.integer(k), 
              as.integer(1), # use the same directions and projections
              as.integer(seed),
@@ -161,7 +161,8 @@ depth.space.halfspace <- function(data, cardinalities, exact, method, num.direct
               as.integer(ncol(data)), 
               as.integer(c), 
               as.integer(length(cardinalities)), 
-              as.integer(k), as.integer(1), 
+              as.integer(k), 
+              as.integer(1), 
               as.integer(seed),
               dspc=double(nrow(data)*length(cardinalities)), 
               dirs=double(k*ncol(data)), 

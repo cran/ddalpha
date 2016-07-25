@@ -8,9 +8,12 @@
 */
 #pragma once
 
-
+#ifndef PI2
 #define PI2 1.5707963267948966192313216916398
+#endif
+#ifndef PI
 #define PI (PI2*2)
+#endif
 
 typedef vector<double> TPoint;
 typedef vector<vector<double> > TMatrix;
@@ -24,6 +27,7 @@ TDMatrix asMatrix(double* arr, int n, int d);
 
 double** newM(int n, int d);
 void deleteM(TDMatrix X);
+TDMatrix copyM(TDMatrix X, int n, int d);
 void printMatrix(TDMatrix mat, int n, int d);
 
 

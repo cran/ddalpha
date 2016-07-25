@@ -2,7 +2,7 @@
   File:             TukeyDepth.h
   Created by:       Pavlo Mozharovskyi
   First published:  28.02.2013
-  Last revised:     28.02.2013
+  Last revised:     13.11.2015
 
   Computation of the random Tukey data depth.
 
@@ -11,5 +11,5 @@
     Mozharovskyi, P., Mosler, K. and Lange, T. (2013). Classifying real-world data with the DDalpha-procedure. Mimeo.
 */
 
-void GetDSpace(vector<TPoint>& points, TVariables& cardinalities, int k, bool atOnce, vector<TPoint> *dSpace, vector<TPoint> *directions, vector<TPoint> *projections);
-void GetDepths(TPoint& point, vector<TPoint>& points, TVariables& cardinalities, int k, bool atOnce, vector<TPoint>& directions, vector<TPoint>& projections, TPoint *depths);
+void GetDSpace(TDMatrix points, int n, int d, TVariables& cardinalities, int k, bool atOnce, TDMatrix dSpace, TDMatrix directions, TDMatrix projections);
+void GetDepths(double* point, TDMatrix points, int n, int d, TVariables& cardinalities, int k, bool atOnce, TDMatrix directions, TDMatrix projections, double* depths, TDMatrix ptPrjDepths /*accu, k*q */);

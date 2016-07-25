@@ -9,7 +9,7 @@ Trains the functional componentwise classifier
 \usage{
 compclassf.train (dataf, labels, 
                   to.equalize = TRUE, 
-                  to.reduce = FALSE, 
+                  to.reduce = TRUE, 
                   classifier.type = c("ddalpha", "maxdepth", "knnaff", "lda", "qda"), 
                   ...)
 }
@@ -19,7 +19,7 @@ compclassf.train (dataf, labels,
 list containing lists (functions) of two vectors of equal length, named "args" and "vals": arguments sorted in ascending order and corresponding them values respectively
 }
   \item{labels}{
-list of output labels of the functinal observations
+list of output labels of the functional observations
 }
   \item{to.equalize}{
 Adjust the data to have equal (the largest) argument interval.

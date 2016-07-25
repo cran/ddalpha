@@ -114,3 +114,62 @@ delete[] counters;
 delete[] A;
 delete[] a;
 }
+
+//#include <stdexcept>
+
+
+/*******************************************************************************************************************************************************
+*
+*     intSD2
+*
+******************************************************************************************************************************************************/
+
+unsigned long long intSD2(double** x, int n) {
+	const double eps = 1e-10;
+	double* alpha = new double[n];
+	int nt = 0; // Wie oft ist 0 in Points enthalten ? 
+	int nh = 0; // Wie viele Punkte im Halbraum ?
+	//  Winkel alpha berechnen und array initialisieren 
+	for (int i = 0; i < n; i++) {
+		if (hypot(x[i][0], x[i][1]) <= eps)
+			nt++;
+		else {
+			alpha[i - nt] = atan2(x[i][1], x[i][0]);  // alpha in (-pi,pi]
+			if (alpha[i - nt] < -M_PI + eps) alpha[i - nt] = M_PI; //  Korrektur für Zahlen wie (-1, -1e-16)
+			if (alpha[i - nt] <= eps) nh++;
+		}
+	}
+	unsigned long long nn = n - nt;
+	// Winkel sortieren
+	sort(alpha, alpha + nn);
+	// Simpliziale Tiefe berechnen
+	unsigned long long result = nn * (nn - 1) * (nn - 2) / 6;
+	int j = nh;
+	for (int i = 0; i < nh; i++) {
+		while ((j <= nn - 1) && (alpha[j] - M_PI <= alpha[i] - eps)) j++;
+		result -= (j - i - 1) * (j - i - 2) / 2;
+	}
+	j = 0;
+	for (int i = nh; i < nn; i++) {
+		while ((j <= nh - 1) && (alpha[j] + M_PI <= alpha[i] - eps)) j++;
+		result -= (nn + j - i - 1) * (nn + j - i - 2) / 2;
+	}
+	delete[] alpha;
+	result += choose(nt, 1)*choose(nn, 2) + choose(nt, 2)*choose(nn, 1) + choose(nt, 3);
+	return result;
+}
+
+void SimplicialDepths2(TDMatrix X, TDMatrix x, int n, int nx, double *depths) {
+	if (n <= 0) throw invalid_argument("n <= 0");
+	double c = (double)(n * (n - 1) * (n - 2) / 6);  // Anzahl aller Simplizes
+	double** xz = newM(n, 2);
+	for (int zi = 0; zi < nx; zi++){
+		// z in Ursprung verschieben
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j < 2; j++) 
+				xz[i][j] = X[i][j] - x[zi][j];
+		unsigned long long result = intSD2(xz, n);
+		depths[zi] = result / c;
+	}
+	deleteM(xz);
+}

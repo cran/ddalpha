@@ -1,10 +1,10 @@
-is.numeric_data.frame=function(x){
+is.numeric_data.frame <- function(x){
   if (is.data.frame(x) && all(sapply(x,base::is.numeric)))
     return (T)
   return (F)
 }
 
-is.numeric=function(x){
+is.numeric <- function(x){
   if (base::is.numeric(x))
     return (T)
   if (is.data.frame(x) && all(sapply(x,base::is.numeric)))

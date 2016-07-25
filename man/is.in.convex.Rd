@@ -56,8 +56,8 @@ testData <- rbind(cbind(class1[testIndices,], rep(1, 500)),
 data <- list(train = trainData, test = testData)
 
 # Count outsiders
-numOutsiders = sum(is.in.convex(data$test[,propertyVars], 
-                                data$train[,propertyVars], c(200, 200)) == 0)
+numOutsiders = sum(rowSums(is.in.convex(data$test[,propertyVars], 
+                                data$train[,propertyVars], c(200, 200))) == 0)
 cat(numOutsiders, "outsiders found in the testing sample.\n")
 }
 \keyword{ multivariate }

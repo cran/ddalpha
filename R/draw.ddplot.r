@@ -1,5 +1,5 @@
 draw.ddplot <- function(ddalpha, depth.space, cardinalities,
-                        main = "DD plot", xlab = "C1", ylab = "C2", classes = c(1,2), colors = c("red", "blue", "green")){
+                        main = "DD plot", xlab = "C1", ylab = "C2", classes = c(1,2), colors = c("red", "blue", "green"), drawsep = T){
   
   if(!missing(ddalpha)){
     
@@ -15,7 +15,41 @@ draw.ddplot <- function(ddalpha, depth.space, cardinalities,
       ylab = ddalpha$patterns[[2]]$name
     }
     
-    plot(points, col = col, main = main, xlab = xlab, ylab = ylab)
+    plot(points, col = col, main = main, xlab = xlab, ylab = ylab, asp = T, xlim = c(0, max(points[,])), ylim = c(0, max(points[,])))
+    
+    if(drawsep && ddalpha$methodSeparator %in% c("alpha", "polynomial"))
+    {
+      gx <- seq(-0.1, 1.2*max(points[,1]), length=100)
+      gy <- seq(0, 1.2*max(points[,2]), length=100)
+      y <- as.matrix(expand.grid(x = gx, y = gy))   
+      
+      if (ddalpha$methodSeparator == "alpha") {
+      ray = ddalpha$classifiers[[1]]$hyperplane[-1]
+      
+      funcs = list(function(x) x[1], function(x) x[2], function(x) x[1]^2, function(x) x[1]*x[2], function(x) x[2]^2, function(x) x[1]^3, function(x) x[1]^2*x[2], function(x) x[1]*x[2]^2, function(x) x[2]^3)
+      
+      depthcontours = apply(y, 1, function(xx) {
+        res = 0
+        for(i in 1:ddalpha$classifiers[[1]]$dimProperties)(res = res+funcs[[i]](xx)*ray[i])
+        res
+        })
+      } else if (ddalpha$methodSeparator == "polynomial"){
+        if (ddalpha$classifiers[[1]]$axis == 0){
+          xAxis <- ddalpha$classifiers[[1]]$index1
+          yAxis <- ddalpha$classifiers[[1]]$index2
+        }else{
+          xAxis <- ddalpha$classifiers[[1]]$index2
+          yAxis <- ddalpha$classifiers[[1]]$index1
+        }
+        
+       depthcontours = apply(y, 1, function(xx) {
+          res = 0
+        for(j in 1:ddalpha$classifiers[[1]]$degree){res <- res + ddalpha$classifiers[[1]]$polynomial[j]*xx[xAxis]^j}
+          res = res-xx[yAxis]
+        })
+      }
+      contour(gx, gy, matrix(depthcontours, nrow=length(gx), ncol=length(gy)), add=TRUE, levels=0, drawlabels=FALSE, col = "black")
+    }
     
   } else if(!missing(depth.space)){
     

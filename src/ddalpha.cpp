@@ -2,7 +2,7 @@
   File:             ddalpha.cpp
   Created by:       Pavlo Mozharovskyi
   First published:  28.02.2013
-  Last revised:     03.07.2015
+  Last revised:     13.11.2015
 
   Defines the exported functions for the 'ddalpha'-package.
 
@@ -73,7 +73,7 @@ void ZDepth(double *points, double *objects, int *numPoints, int *numObjects, in
 			x[i][j] = points[i * dimension[0] + j];
 		}
 	}
-	TPoint means;TPoint sds;
+	TPoint means(*dimension); TPoint sds(*dimension);
 	GetMeansSds(x, &means, &sds);
 	Standardize(x, means, sds);
 	TMatrix z(numObjects[0]);
@@ -88,68 +88,84 @@ void ZDepth(double *points, double *objects, int *numPoints, int *numObjects, in
 	}
 }
 
-void HDepth(double *points, double *objects, int *numObjects, int *dimension, int *cardinalities, int *numClasses, double *directions, double *projections, int *k, int *sameDirs, int *seed, double *depths){
+void HDepth(double *points, double *objects, int *numObjects, int *dimension, 
+	int *cardinalities, int *numClasses, double *directions, double *projections, 
+	int *k, int *sameDirs, int *seed, double *depths){
 	setSeed(*seed);
 	int numPoints = 0;for (int i = 0; i < numClasses[0]; i++){numPoints += cardinalities[i];}
-	TMatrix x(numPoints);
-	for (int i = 0; i < numPoints; i++){x[i] = TPoint(dimension[0]);}
-	for (int i = 0; i < numPoints; i++){
-		for (int j = 0; j < dimension[0]; j++){
-			x[i][j] = points[i * dimension[0] + j];
-		}
-	}
-	TMatrix z(numObjects[0]);
-	for (int i = 0; i < numObjects[0]; i++){z[i] = TPoint(dimension[0]);}
-	for (int i = 0; i < numObjects[0]; i++){
-		for (int j = 0; j < dimension[0]; j++){
-			z[i][j] = objects[i * dimension[0] + j];
-		}
-	}
+	TDMatrix x = asMatrix(points, numPoints, dimension[0]);
+	TDMatrix z = asMatrix(objects, numObjects[0], dimension[0]);
+
 	TVariables cars(numClasses[0]);
 	for (int i = 0; i < numClasses[0]; i++){
 		cars[i] = cardinalities[i];
 	}
-	TMatrix dirs;
-	TMatrix prjs;
+
+	TDMatrix dirs = asMatrix(directions, k[0], *dimension);
+	TDMatrix prjs = asMatrix(projections,k[0], numPoints);
+	TDMatrix ptPrjDepths = newM(*k, *numClasses);
 	for (int i = 0; i < numObjects[0]; i++){
-		TPoint dps;
-		GetDepths(z[i], x, cars, k[0], i == 0 ? 0 : sameDirs[0] /*at the first step fill the matrices*/, dirs, prjs, &dps);
-		for (int j = 0; j < numClasses[0]; j++){
+		GetDepths(z[i], x, numPoints, *dimension, cars, 
+			k[0], i == 0 ? 0 : sameDirs[0] /*at the first step fill the matrices*/, 
+			dirs, prjs, depths + i * numClasses[0], ptPrjDepths);
+	/*	for (int j = 0; j < numClasses[0]; j++){
 			depths[i * numClasses[0] + j] = dps[j];
-		}
+		}*/
 	}
+	deleteM(ptPrjDepths);
+
+/*	if (*sameDirs){
+		for (int i = 0; i < k[0] * dimension[0]; i++){
+			directions[i] = dirs[i / dimension[0]][i%dimension[0]];
+		}
+		for (int i = 0; i < k[0] * numPoints; i++){
+			projections[i] = prjs[i / numPoints][i%numPoints];
+		}
+		}
+	deleteM(dirs);
+	deleteM(prjs);
+*/
+
+	delete[] x;
+	delete[] z;
+	delete[] dirs;
+	delete[] prjs;
 }
 
 void HDSpace(double *points, int *dimension, int *cardinalities, int *numClasses,
 	int *k, int *sameDirs, int *seed, double *dSpace, double *directions, double *projections){
 	setSeed(*seed);
 	int numPoints = 0;for (int i = 0; i < numClasses[0]; i++){numPoints += cardinalities[i];}
-	TMatrix x(numPoints);
-	for (int i = 0; i < numPoints; i++){x[i] = TPoint(dimension[0]);}
-	for (int i = 0; i < numPoints; i++){
-		for (int j = 0; j < dimension[0]; j++){
-			x[i][j] = points[i * dimension[0] + j];
-		}
-	}
+	TDMatrix x = asMatrix(points, numPoints, *dimension);
+
 	TVariables cars(numClasses[0]);
 	for (int i = 0; i < numClasses[0]; i++){
 		cars[i] = cardinalities[i];
 	}
-	TMatrix dsps;
-	TMatrix dirs;
-	TMatrix prjs;
-	GetDSpace(x, cars, k[0], sameDirs[0], &dsps, &dirs, &prjs);
-	for (int i = 0; i < numPoints*numClasses[0]; i++){
+	TDMatrix dsps = asMatrix(dSpace, numPoints, *numClasses);
+	TDMatrix dirs = asMatrix(directions, k[0], (*dimension));
+	TDMatrix prjs = asMatrix(projections, k[0], (numPoints));
+	GetDSpace(x, numPoints, *dimension, cars, k[0], sameDirs[0], dsps, dirs, prjs);
+/*	for (int i = 0; i < numPoints*numClasses[0]; i++){
 		dSpace[i] = dsps[i/numClasses[0]][i%numClasses[0]];
 	}
-	if (sameDirs[0]){
-		for (int i = 0; i < k[0]*dimension[0]; i++){
-			directions[i] = dirs[i/dimension[0]][i%dimension[0]];
-		}
-		for (int i = 0; i < k[0]*numPoints; i++){
-			projections[i] = prjs[i/numPoints][i%numPoints];
-		}
+*/
+	/*	if (*sameDirs){
+	for (int i = 0; i < k[0] * dimension[0]; i++){
+	directions[i] = dirs[i / dimension[0]][i%dimension[0]];
 	}
+	for (int i = 0; i < k[0] * numPoints; i++){
+	projections[i] = prjs[i / numPoints][i%numPoints];
+	}
+	}
+	deleteM(dirs);
+	deleteM(prjs);
+	*/
+
+	delete[] x;
+	delete[] dsps;
+	delete[] dirs;
+	delete[] prjs;
 }
 
 void HDepthSpaceEx(double *points, double *objects, int *cardinalities, int *numClasses, int *numObjects,
@@ -168,13 +184,12 @@ void HDepthSpaceEx(double *points, double *objects, int *cardinalities, int *num
 		func = 0; break;
 	}
 
-	TDMatrix X;
 	TDMatrix x = asMatrix(objects, *numObjects, *dimension);
 	int classBegin = 0;
 
 	if (func)
 	for (int c = 0; c < *numClasses; c++){
-		X = asMatrix(objects+classBegin, cardinalities[c], *dimension);
+		TDMatrix X = asMatrix(points+classBegin, cardinalities[c], *dimension);
 	//	printMatrix(X, cardinalities[c], *dimension);
 		for (int i = 0; i < *numObjects; i++){
 			depths[c * (*numObjects) + i] = func(x[i], X, cardinalities[c], *dimension);
@@ -211,6 +226,15 @@ void HDepthEx(double *points, double *objects, int *numPoints, int *numObjects, 
 	delete[] x;
 }
 
+void MahalanobisDepth(double *points, double *objects, int *numPoints, int *numObjects, int *dimension, double* MCD, double *depths){
+	TDMatrix X = asMatrix(points, *numPoints, *dimension);
+	TDMatrix x = asMatrix(objects, *numObjects, *dimension);
+
+	MahalanobisDepth(X, x, *dimension, *numPoints, *numObjects, *MCD, depths);
+
+	delete[] X;
+	delete[] x;
+}
 
 void OjaDepth(double *points, double *objects, int *numPoints, int *numObjects, int *dimension, int *seed, int* exact, int *k, double *depths){
 	setSeed(*seed);
@@ -232,7 +256,9 @@ void SimplicialDepth(double *points, double *objects, int *numPoints, int *numOb
 	TDMatrix X = asMatrix(points, *numPoints, *dimension);
 	TDMatrix x = asMatrix(objects, *numObjects, *dimension);
 
-	if (*exact) 
+	if (*dimension == 2)
+		SimplicialDepths2(X, x, *numPoints, *numObjects, depths);
+	else if (*exact)
 		SimplicialDepthsEx(X, x, *dimension, *numPoints, *numObjects, depths);
 	else {
 		long long K = ((long long)2000000000)*k[0] + k[1];
@@ -258,6 +284,7 @@ void AlphaLearn(double *points, int *numPoints, int *dimension, int *cardinaliti
 	TMatrix _x;
 	ExtendWithProducts(x, degree[0], &_x);
 	TPoint direction;
+	OUT_ALPHA = true;
 	Learn(_x, y, minFeatures[0], &direction);
 	ray[0] = degree[0];
 	for (unsigned i = 0; i < direction.size(); i++){
@@ -265,9 +292,8 @@ void AlphaLearn(double *points, int *numPoints, int *dimension, int *cardinaliti
 	}
 }
 
-void AlphaLearnCV(double *points, int *numPoints, int *dimension, int *cardinalities, int *upToPower, int *numFolds, int *minFeatures, double *ray){
-	TMatrix x(numPoints[0]);
-	for (int i = 0; i < numPoints[0]; i++){x[i] = TPoint(dimension[0]);}
+void AlphaLearnCV(double *points, int *numPoints, int *dimension, int *cardinalities, int *upToPower, int *numFolds, int *minFeatures, int *debug, double *ray){
+	TMatrix x(numPoints[0],TPoint(dimension[0]));
 	for (int i = 0; i < numPoints[0]; i++){
 		for (int j = 0; j < dimension[0]; j++){
 			x[i][j] = points[i * dimension[0] + j];
@@ -277,6 +303,7 @@ void AlphaLearnCV(double *points, int *numPoints, int *dimension, int *cardinali
 	for (int i = 0; i < cardinalities[0]; i++){y[i] = 1;}
 	for (int i = cardinalities[0]; i < numPoints[0]; i++){y[i] = -1;}
 	TPoint direction; unsigned int power;
+	OUT_ALPHA = (debug[0])!=0;
 	LearnCV(x, y, minFeatures[0], upToPower[0], numFolds[0], &direction, &power);
 	ray[0] = power;
 	for (unsigned i = 0; i < direction.size(); i++){
@@ -377,24 +404,36 @@ void KnnClassify(double *objects, int *numObjects, double *points, int *labels, 
 	}
 }
 
+void DKnnLearnCv(double *points, int *labels, int *numPoints, int *dimension, int *kmax, int *depthType, int *k, int* chunkNumber, int *seed){
+	setSeed(*seed);
+	TDMatrix x = asMatrix(points, *numPoints, *dimension);
+	*k = DKnnCv(x, *numPoints, *dimension, labels, *kmax, *depthType, *chunkNumber);
+	delete[] x;
+}
+
+void DKnnClassify(double *objects, int *numObjects, double *points, int *labels, int *numPoints, int *dimension, int *k, int *depthType, int *seed, int *output){
+	setSeed(*seed);
+	TDMatrix x = asMatrix(points, *numPoints, *dimension);
+	TDMatrix z = asMatrix(objects, *numObjects, *dimension);
+	
+	DKnnClassify(x, *numPoints, *dimension, labels, z, *numObjects, *k, *depthType, output);
+	delete[] x;
+	delete[] z;
+}
+
 void PolynomialLearnCV(double *points, int *numPoints, int *dimension, int *cardinalities, int *maxDegree, int *chunkNumber, int *seed, /*OUT*/ int *degree, /*OUT*/ int *axis, /*OUT*/ double *polynomial){
 	setSeed(*seed);
-	TMatrix x(numPoints[0]);
-	for (int i = 0; i < numPoints[0]; i++){ x[i] = TPoint(dimension[0]); }
-	for (int i = 0; i < numPoints[0]; i++){
-		for (int j = 0; j < dimension[0]; j++){
-			x[i][j] = points[i * dimension[0] + j];
-		}
-	}
+	TDMatrix x = asMatrix(points, numPoints[0], dimension[0]);
 	TVariables y(numPoints[0]);
 	for (int i = 0; i < cardinalities[0]; i++){ y[i] = 1; }
 	for (int i = cardinalities[0]; i < numPoints[0]; i++){ y[i] = -1; }
 	
-	TPoint pol = PolynomialLearnCV(x, cardinalities[0], *maxDegree, *chunkNumber, degree, axis);
+	TPoint pol = PolynomialLearnCV(x, cardinalities[0], cardinalities[1], *maxDegree, *chunkNumber, degree, axis);
 
 	for (unsigned i = 0; i < pol.size(); i++){
 		polynomial[i] = pol[i];
 	}
+	delete[] x;
 }
 /* everything implemented in R
 void PolynomialClassify(double *points, int *numPoints, int *dimension, int *degree, double *ray, int *output){
@@ -424,46 +463,21 @@ void ProjectionDepth(double *points, double *objects, int *numObjects,
 					 double *directions, double *projections, int *k,
 					 int *newDirs, int *seed, double *depths){
 	setSeed(*seed);
+	TVariables cars(numClasses[0]);
 	int numPoints = 0;
 	for (int i = 0; i < numClasses[0]; i++){
 		numPoints += cardinalities[i];
-	}
-	TMatrix x(numPoints);
-	for (int i = 0; i < numPoints; i++){x[i] = TPoint(dimension[0]);}
-	for (int i = 0; i < numPoints; i++){
-		for (int j = 0; j < dimension[0]; j++){
-			x[i][j] = points[i * dimension[0] + j];
-		}
-	}
-	TMatrix z(numObjects[0]);
-	for (int i = 0; i < numObjects[0]; i++){z[i] = TPoint(dimension[0]);}
-	for (int i = 0; i < numObjects[0]; i++){
-		for (int j = 0; j < dimension[0]; j++){
-			z[i][j] = objects[i * dimension[0] + j];
-		}
-	}
-	TVariables cars(numClasses[0]);
-	for (int i = 0; i < numClasses[0]; i++){
 		cars[i] = cardinalities[i];
 	}
-	TMatrix dirs(0);
-	TMatrix prjs(0);
-	if (!newDirs[0]){
-		dirs.resize(k[0]);prjs.resize(k[0]);
-		for (int i = 0; i < k[0]; i++){
-			dirs[i].resize(dimension[0]);
-			for (int j = 0; j < dimension[0]; j++){
-				dirs[i][j] = directions[i * dimension[0] + j];
-			}
-			prjs[i].resize(numPoints);
-			for (int j = 0; j < numPoints; j++){
-				prjs[i][j] = projections[i * numPoints + j];
-			}
-		}
-	}
-	TMatrix _depths;
-	GetDepthsPrj(x, z, cars, k[0], newDirs[0], &_depths, &dirs, &prjs);
-	for (int i = 0; i < numObjects[0]; i++){
+	TDMatrix x = asMatrix(points, numPoints, *dimension);
+	TDMatrix z = asMatrix(objects, *numObjects, *dimension);
+
+	TDMatrix dirs = asMatrix(directions, k[0], *dimension);
+	TDMatrix prjs = asMatrix(projections, k[0], numPoints);
+	TDMatrix _depths = asMatrix(depths, *numObjects, *numClasses);
+	GetDepthsPrj(x, numPoints, *dimension, z, *numObjects, cars, 
+		*k, *newDirs, _depths, dirs, prjs);
+/*	for (int i = 0; i < numObjects[0]; i++){
 		for (int j = 0; j < numClasses[0]; j++){
 			depths[i * numClasses[0] + j] = _depths[i][j];
 		}
@@ -476,6 +490,13 @@ void ProjectionDepth(double *points, double *objects, int *numObjects,
 			projections[i] = prjs[i/numPoints][i%numPoints];
 		}
 	}
+	*/
+
+	delete[] x;
+	delete[] z;
+	delete[] dirs;
+	delete[] prjs;
+	delete[] _depths;
 }
 
 void PotentialDepthsCount(double *points, int *numPoints, int *dimension, int *classes, int *cardinalities, double *testpoints, int *numTestPoints, int* kernelType, double *a, int* ignoreself, double *depths){

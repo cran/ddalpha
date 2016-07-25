@@ -1,18 +1,19 @@
-export(nlm_optimize_r,
-       ddalpha.train, ddalpha.classify,  
+export(ddalpha.train, ddalpha.classify,  
        ddalpha.test, ddalpha.getErrorRateCV, ddalpha.getErrorRatePart,
        ddalphaf.train, ddalphaf.classify, 
+       ddalphaf.test, ddalphaf.getErrorRateCV, ddalphaf.getErrorRatePart,
        compclassf.train, compclassf.classify,
        depth.zonoid, depth.halfspace, depth.Mahalanobis, depth.projection, depth.spatial, depth.simplicial, depth.simplicialVolume, depth.potential,
        depth.space.zonoid, depth.space.halfspace, depth.space.Mahalanobis, depth.space.projection, depth.space.spatial, depth.space.simplicial, depth.space.simplicialVolume, depth.space.potential,
        is.in.convex, 
+       dknn.train, dknn.classify, dknn.classify.trained,
        resetPar, depth.graph, draw.ddplot, depth.contours, depth.contours.ddalpha,
        getdata,
        dataf.geneexp, dataf.growth, dataf.medflies, dataf.tecator,
        dataf.sim.1.CFF07, dataf.sim.2.CFF07, 
        plotf
        )
-useDynLib(ddalpha, IsInConvexes, ZDepth, HDepth, HDSpace, AlphaLearn, AlphaLearnCV, AlphaClassify, KnnAffInvLearnJK, KnnAffInvClassify)
+useDynLib(ddalpha, IsInConvexes, MahalanobisDepth, ZDepth, HDepth, HDSpace, AlphaLearn, AlphaLearnCV, AlphaClassify, KnnAffInvLearnJK, KnnAffInvClassify)
 S3method(print, ddalpha)
 S3method(print, ddalpha.pattern)
 S3method(print, ddalphaf)

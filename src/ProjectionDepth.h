@@ -2,7 +2,7 @@
   File:             ProjectionDepth.h
   Created by:       Pavlo Mozharovskyi
   First published:  17.05.2013
-  Last revised:     17.05.2013
+  Last revised:     13.11.2015
   
   Computation of the projection depth using random sampling.
 
@@ -11,6 +11,6 @@
 	  function. Annals of Statistics 28, 461-482.
 */
 
-int GetDepthsPrj(TMatrix points, TMatrix objects, TVariables cardinalities,
-				 int k, bool newDirs, TMatrix *depths, TMatrix *directions,
-				 TMatrix *projections);
+int GetDepthsPrj(TDMatrix points, int n, int d, TDMatrix objects, int m,
+	TVariables cardinalities, int k, bool newDirs,
+	TDMatrix depths, TDMatrix directions, TDMatrix projections);

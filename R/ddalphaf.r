@@ -4,6 +4,7 @@ ddalphaf.train <- function(dataf, labels,
                                            numDer = -1), 
                            classifier.type = c("ddalpha", "maxdepth", "knnaff", "lda", "qda"), 
                            cv.complete = FALSE, 
+                           maxNumIntervals = min(25, ceiling(length(dataf[[1]]$args)/2)),
                            seed = 0,
                            ...){
   # Trains the functional DDalpha-classifier
@@ -29,7 +30,7 @@ ddalphaf.train <- function(dataf, labels,
       stop("Argument 'dataf' must be a list containing lists (functions) of two vectors of equal length, named 'args' and 'vals': arguments sorted in ascending order and corresponding them values respectively")
   
   # Check "labels"
-  if (!(length(dataf)==length(labels) && length(unique(labels)>=2)))
+  if (!(length(dataf)==length(labels) && length(unique(labels))>=2))
     stop("Argument 'labels' has wrong format")
   
   # Check classifier.type
@@ -41,19 +42,30 @@ ddalphaf.train <- function(dataf, labels,
   if (seed != 0) set.seed(seed)
   
   # Check "adc.args"
-  if (!(adc.args$instance %in% c("val", "avr") && 
-      ((adc.args$numFcn >= 0 &&  adc.args$numDer >= 0 && (adc.args$numFcn + adc.args$numDer >= 2)) ||
-       (adc.args$numFcn == -1 &&  adc.args$numDer == -1))))
-    stop("Argument 'adc.args' has wrong format")
+  if(!is.null(names(adc.args))){
+    if (!(adc.args$instance %in% c("val", "avr") && 
+        ((adc.args$numFcn >= 0 &&  adc.args$numDer >= 0 && (adc.args$numFcn + adc.args$numDer >= 2)) ||
+         (adc.args$numFcn == -1 &&  adc.args$numDer == -1))))
+      stop("Argument 'adc.args' has wrong format")
+  } else {
+    if(!is.list(adc.args))
+      stop("Argument 'adc.args' has wrong format")
+    for(.adc.args in adc.args){
+        if (!(.adc.args$instance %in% c("val", "avr") && 
+            ((.adc.args$numFcn >= 0 &&  .adc.args$numDer >= 0 && (.adc.args$numFcn + .adc.args$numDer >= 2)) ||
+             (.adc.args$numFcn == -1 &&  .adc.args$numDer == -1))))
+        stop("Argument 'adc.args' has wrong format")
+    }
+  }
   
   # CV
-  if (adc.args$numFcn == -1 && adc.args$numDer == -1){
+  if (is.null(names(adc.args)) || adc.args$numFcn == -1 && adc.args$numDer == -1){
     if (cv.complete){
       res <- getBestSpaceCV(dataf, labels, adc.method, adc.args, 
-                            classifier.type, num.chunks=10, ...)
+                            classifier.type, num.chunks=10, numMax = maxNumIntervals, ...)
     }else{
       res <- getBestSpace(dataf, labels, adc.method, adc.args,
-                          classifier.type, num.chunks=10, ...)
+                          classifier.type, num.chunks=10, numMax = maxNumIntervals, ...)
     }
     the.args <- res$args
     num.cv <- res$num.cv
@@ -63,6 +75,12 @@ ddalphaf.train <- function(dataf, labels,
   }
   # Pointize
   points <- GetPoints(dataf, labels, adc.method, the.args)
+  
+  if(any(!is.finite(points$data))) {
+    warning("infinite or missing values in 'points$data'")
+    return (NA)
+  }
+  
   # Apply chosen classifier to train the data
   if (classifier.type == "ddalpha"){
     classifier <- ddalpha.train(points$data, seed = seed, ...)
@@ -606,6 +624,12 @@ GetPoints <- function(dataf, labels, adc.method, adc.args){
     newDim <- ncol(input)
     for (i in 1:length(names)){
       classi <- input[output == i,1:ncol(input)]
+      
+      if(any(!is.finite(classi))) {
+        warning("infinite or missing values in 'classi'")
+        next
+      }
+      
       princompsi <- prcomp(x=classi, tol=sqrt(.Machine$double.eps))
       #print(princompsi$sdev)
       newDimi <- sum(princompsi$sdev > sqrt(.Machine$double.eps))
@@ -633,7 +657,7 @@ GetPoints <- function(dataf, labels, adc.method, adc.args){
 GetPointsAll <- function(dataf, labels, adc.method = "equalCover", 
                          adc.args = list(instance = "avr", 
                                          numFcn = -1, 
-                                         numDer = -1)){
+                                         numDer = -1), numMax){
   # Numerize labels
   names <- unique(labels)
   output <- rep(0, length(labels))
@@ -646,7 +670,6 @@ GetPointsAll <- function(dataf, labels, adc.method = "equalCover",
     }
   }
   # Prepare values
-  numMax <- ceiling(length(dataf[[1]]$args)/2 + sqrt(.Machine$double.eps))
   min <- dataf[[1]]$args[1]
   max <- dataf[[1]]$args[length(dataf[[1]]$args)]
   args <- dataf[[1]]$args
@@ -759,27 +782,43 @@ GetPointsAll <- function(dataf, labels, adc.method = "equalCover",
   return (pointsAll)
 }
 
+# adc.args is a list of args
+GetPointsArgs <- function(dataf, labels, adc.method = "equalCover", 
+                         adc.args){
+  pointsAll = list()
+  counter = 1
+  for(tmp.args in adc.args){
+    dat = GetPoints(dataf, labels, adc.method, tmp.args)
+    pointsAll[[counter]] <- list(data = dat$data, 
+                                 adc.args = tmp.args, 
+                                 adc.transmat = dat$adc.transmat)
+    counter <- counter + 1
+  
+  }
+  return (pointsAll)
+}
+
 getBestSpace <- function(dataf, labels, adc.method = "equalCover", 
                          adc.args = list(instance = "avr", 
                                          numFcn = -1, 
                                          numDer = -1), 
                          classifier.type = "ddalpha", 
-                         num.chunks = 10, 
+                         num.chunks = 10, numMax,
                          ...){
   # First, get Vapnik bounds for all plausible spaces
-  numMax <- ceiling(length(dataf[[1]]$args)/2 + sqrt(.Machine$double.eps))
-  numTries <- numMax * (numMax + 1) / 2 + numMax + 1 - 3
+  if(!is.null(names(adc.args))){
+    pointsAll <- GetPointsAll(dataf, labels, adc.method, adc.args, numMax)
+    numTries <- numMax * (numMax + 1) / 2 + numMax + 1 - 3  
+  } else {
+    pointsAll <- GetPointsArgs(dataf, labels, adc.method, adc.args)  
+    numTries <- length(adc.args)
+  }
   Vapnik.bounds <- rep(Inf, numTries)
-  numsFcn <- rep(Inf, numTries)
-  numsDer <- rep(Inf, numTries)
   curTry <- 1
-  pointsAll <- GetPointsAll(dataf, labels, adc.method, adc.args)  
   for (i in 1:length(pointsAll)){
     tmp.args <- pointsAll[[i]]$adc.args
     tmp.points <- pointsAll[[i]]$data
     Vapnik.bounds[curTry] <- getVapnikBound(tmp.points, ncol(tmp.points) - 1)
-    numsFcn[curTry] <- pointsAll[[i]]$adc.args$numFcn
-    numsDer[curTry] <- pointsAll[[i]]$adc.args$numDer
     curTry <- curTry + 1
   }
   # Second, get 5 best (i.e. lowest) Vapnik bounds
@@ -790,13 +829,11 @@ getBestSpace <- function(dataf, labels, adc.method = "equalCover",
   #     etalons <- etalons[-1]
   #   }
   #   best.indices <- best.indices[1:5]
-  best.indices <- which(Vapnik.bounds %in% sort(Vapnik.bounds)[1:5])
+  best.indices <- which(Vapnik.bounds %in% sort(Vapnik.bounds)[1:min(5, numTries)])
   # Third, cross-validate over these best spaces
   errors <- rep(0, length(best.indices))
   for (i in 1:length(best.indices)){
-    tmp.args <- adc.args
-    tmp.args$numFcn <- numsFcn[best.indices[i]]
-    tmp.args$numDer <- numsDer[best.indices[i]]
+    tmp.args <- pointsAll[[best.indices[i]]]$adc.args
     points.all <- pointsAll[[best.indices[i]]]$data
     d <- ncol(points.all) - 1
     # Actually CV
@@ -833,9 +870,7 @@ getBestSpace <- function(dataf, labels, adc.method = "equalCover",
     }
   }
   best.i <- which.min(errors)
-  new.args <- adc.args
-  new.args$numFcn <- numsFcn[best.indices[best.i]]
-  new.args$numDer <- numsDer[best.indices[best.i]]
+  new.args <- pointsAll[[best.indices[best.i]]]$adc.args
   return (list(args = new.args, num.cv = length(best.indices)))
 }
 
@@ -844,12 +879,16 @@ getBestSpaceCV <- function(dataf, labels, adc.method = "equalCover",
                                            numFcn = -1, 
                                            numDer = -1), 
                            classifier.type = "ddalpha", 
-                           num.chunks = 10, 
+                           num.chunks = 10, numMax,
                          ...){
-  numMax <- ceiling(length(dataf[[1]]$args)/2 + sqrt(.Machine$double.eps))
-  numTries <- numMax * (numMax + 1) / 2 + numMax + 1 - 3
+  if(!is.null(names(adc.args))){
+    pointsAll <- GetPointsAll(dataf, labels, adc.method, adc.args, numMax)  
+    numTries <- numMax * (numMax + 1) / 2 + numMax + 1 - 3
+  } else {
+    pointsAll <- GetPointsArgs(dataf, labels, adc.method, adc.args)  
+    numTries <- length(adc.args)
+  }
   curTry <- 1
-  pointsAll <- GetPointsAll(dataf, labels, adc.method, adc.args)
   errors <- rep(0, length(pointsAll))
   for (i in 1:length(pointsAll)){
     points.all <- pointsAll[[i]]$data
@@ -888,8 +927,6 @@ getBestSpaceCV <- function(dataf, labels, adc.method = "equalCover",
     }
   }
   best.i <- which.min(errors)
-  new.args <- adc.args
-  new.args$numFcn <- pointsAll[[best.i]]$adc.args$numFcn
-  new.args$numDer <- pointsAll[[best.i]]$adc.args$numDer
+  new.args <- pointsAll[[best.i]]$adc.args
   return (list(args = new.args, num.cv = length(pointsAll)))
 }

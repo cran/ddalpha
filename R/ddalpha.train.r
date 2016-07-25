@@ -45,6 +45,9 @@ ddalpha.train <- function(data,
       || is.data.frame(data) && prod(sapply(data[,-ncol(data)], is.numeric)))){
     stop("Argument data has unacceptable format. Classifier can not be trained!!!")
   }
+  
+  if(separator == "Dknn")
+    return(dknn.train(data, depth = depth, seed = seed, ...))
 
   # Raw data processing
   ddalpha <- .ddalpha.create.structure(data)
@@ -68,35 +71,63 @@ ddalpha.train <- function(data,
   ddalpha$seed = seed
   
   ## Validating the properties
-  depthsThatNeedNoScaling = c("zonoid", "halfspace", "Mahalanobis", "projection", "spatial", "simplicial", "simplicialVolume")
+  depthsThatNeedNoScaling = c("zonoid", "halfspace", "Mahalanobis", "projection", "spatial", "spatialLocal", "simplicial", "simplicialVolume", "ddplot") # note: "spatialLocal" thansforms the data inside, by itself
   supportedDepths = c(depthsThatNeedNoScaling, "potential")
   if (is.null(depth) || toupper(depth) %in% c("NULL", "NONE")){
       ddalpha$methodDepth <- NULL
       warning("Argument \"depth\" specified as NULL.")    
   } else
   if (!is.character(depth)
-      || length(depth) != 1
-      || !(depth %in% supportedDepths)){
-    ddalpha$methodDepth <- "halfspace"
-    warning("Argument \"depth\" not specified correctly. \"halfspace\" is used as a default value")
+      || length(depth) != 1){
+    stop("Argument \"depth\" not specified correctly.")
+  } else
+  if(!(depth %in% supportedDepths)){
+    fname = paste0(".", depth, "_validate")
+    f <- try(match.fun(fname), silent = T)
+    if (!is.function(f))
+      warning(paste0("No validator function: ", fname))
+    fname = paste0(".", depth, "_learn")
+    f <- (match.fun(fname))
+    if (!is.function(f))
+      stop(paste0("No function: ", fname))
+    fname = paste0(".", depth, "_depths")
+    f <- (match.fun(fname))
+    if (!is.function(f))
+      stop(paste0("No function: ", fname))
+    ddalpha$methodDepth <- depth
   }else{
     ddalpha$methodDepth <- depth
   }
   if (!is.character(separator)
-      || length(separator) != 1
-      || !(separator %in% c("alpha", "polynomial", "knnlm", "maxD"))){
-    ddalpha$methodSeparator <- "alpha"
-    warning("Argument \"separator\" not specified correctly. \"alpha\" is used as a default value")
+      || length(separator) != 1){
+    stop("Argument \"separator\" not specified correctly.")
+  } else
+  if(!(separator %in% c("alpha", "polynomial", "knnlm", "maxD"))){
+    fname = paste0(".", separator, "_validate")
+    f <- try(match.fun(fname), silent = T)
+    if (!is.function(f))
+      warning(paste0("No validator function: ", fname, ". Cannot set 'methodSeparatorBinary'."))
+    fname = paste0(".", separator, "_learn")
+    f <- (match.fun(fname))
+    if (!is.function(f))
+      stop(paste0("No function: ", fname))
+    fname = paste0(".", separator, "_classify")
+    f <- (match.fun(fname))
+    if (!is.function(f))
+      stop(paste0("No function: ", fname))
+    ddalpha$methodSeparator <- separator
   }else{
     ddalpha$methodSeparator <- separator
   }
   if (!is.character(aggregation.method)
       || length(aggregation.method) != 1
-      || !(aggregation.method %in% c("majority", "sequent"))){
+      || !(aggregation.method %in% c("majority", "sequent", "none"))){
     ddalpha$methodAggregation <- "majority"
     warning("Argument \"aggregation.method\" not specified correctly. \"majority\" is used as a default value")
   }else{
     ddalpha$methodAggregation <- aggregation.method
+    
+    ddalpha$methodSeparatorBinary = (aggregation.method !="none")
   }
   
   ddalpha$needtransform = 0
@@ -136,7 +167,7 @@ ddalpha.train <- function(data,
   # NO errors or warnings if the function doesn't exist!!
   # ddalpha is READONLY inside the validators
   validate <- function(method_name){
-    f <- try(match.fun(paste0(method_name, ".validate")), silent = T)
+    f <- try(match.fun(paste0(".", method_name, "_validate")), silent = T)
     if (is.function(f)){
       lst  <- f(ddalpha, ...)
       ddalpha.append(lst) 
@@ -166,18 +197,34 @@ ddalpha.train <- function(data,
   
   if (!is.null(ddalpha$methodDepth)){
     # Calculate depths
-    ddalpha <- .ddalpha.learn.depth(ddalpha)
+    if(ddalpha$methodDepth == "ddplot"){
+      for(i in 1:ddalpha$numPatterns)
+        ddalpha$patterns[[i]]$depths <- ddalpha$patterns[[i]]$points
+    } else{
+      ddalpha <- .ddalpha.learn.depth(ddalpha)
+      if(is.null(ddalpha))
+        stop("The depth method did not return the 'ddalpha' object.")
+    }
     
     # Learn classification machine
-    if (ddalpha$methodSeparator == "alpha"){
-      ddalpha <- .ddalpha.learn.alpha(ddalpha)
+    if (ddalpha$methodSeparatorBinary){
+      ddalpha <- .ddalpha.learn.binary(ddalpha)
+    } else {
+      ddalpha <- .ddalpha.learn.multiclass(ddalpha)
     }
-    if (ddalpha$methodSeparator == "polynomial"){
-      ddalpha <- .ddalpha.learn.polynomial(ddalpha)
-    }
-    if (ddalpha$methodSeparator == "knnlm"){
-      ddalpha <- .ddalpha.learn.knnlm(ddalpha)
-    }
+    if(is.null(ddalpha))
+      stop("The separator method did not return the 'ddalpha' object.")
+    
+    # if (ddalpha$methodSeparator == "alpha"){
+    #   ddalpha <- .ddalpha.learn.alpha(ddalpha)
+    # } else
+    # if (ddalpha$methodSeparator == "polynomial"){
+    #   ddalpha <- .ddalpha.learn.polynomial(ddalpha)
+    # } else
+    # if (ddalpha$methodSeparator == "knnlm"){
+    #   ddalpha <- .ddalpha.learn.knnlm(ddalpha)
+    # } else
+    #   stop("Define custom classifier")
   }
   
   # Learn outsider treatments if needed
@@ -196,7 +243,7 @@ ddalpha.train <- function(data,
 # Validation functions
 ################################################################################
 
-alpha.validate  <- function(ddalpha, num.chunks = 10, max.degree = 3,...){
+.alpha_validate  <- function(ddalpha, num.chunks = 10, max.degree = 3, debug = F,...){
   
   if (ddalpha$methodAggregation == "majority"){
     maxChunks <- ddalpha$patterns[[ddalpha$numPatterns]]$cardinality + ddalpha$patterns[[ddalpha$numPatterns - 1]]$cardinality
@@ -225,12 +272,12 @@ alpha.validate  <- function(ddalpha, num.chunks = 10, max.degree = 3,...){
     warning("Argument \"max.degree\" not specified correctly. 3 is used as a default value")
   }
   
-  return (list(numChunks = num.chunks, maxDegree = max.degree))  
+  return (list(numChunks = num.chunks, maxDegree = max.degree, debug = (debug == T), methodSeparatorBinary = T))  
 }
 
-polynomial.validate  <- alpha.validate  # the same  
+.polynomial_validate  <- .alpha_validate  # the same  
 
-knnlm.validate  <- function(ddalpha, knnrange = 10*( (ddalpha$numPoints)^(1/ddalpha$numPatterns) ) + 1,...){
+.knnlm_validate  <- function(ddalpha, knnrange = 10*( (ddalpha$numPoints)^(1/ddalpha$numPatterns) ) + 1,...){
   isnull = missing(knnrange) || is.null(knnrange)
   
   if (is.character(knnrange) && toupper(knnrange)=="MAX")
@@ -248,10 +295,19 @@ knnlm.validate  <- function(ddalpha, knnrange = 10*( (ddalpha$numPoints)^(1/ddal
     
     if (!isnull) warning("Argument \"knnrange\" not specified correctly. ", knnrange, " is used instead")
   }
-  return (list(knnrange = knnrange))
+  return (list(knnrange = knnrange, methodSeparatorBinary = F))
 }
 
-halfspace.validate  <- function(ddalpha, exact, method, num.directions = 1000,...){
+.maxD_validate  <- function(ddalpha,...){
+  return(list(methodSeparatorBinary = F))
+}
+
+.ddplot_validate <- function(ddalpha, ...){
+  if(ddalpha$dimension!=ddalpha$numPatterns)
+    stop("You must pass a DD-plot, with the number of columns equal to the number of classes as data.")
+}
+
+.halfspace_validate  <- function(ddalpha, exact, method, num.directions = 1000,...){
   method = .parse_HSD_pars(exact, method)
   if(method == 0)
     if(!is.numeric(num.directions) 
@@ -265,7 +321,7 @@ halfspace.validate  <- function(ddalpha, exact, method, num.directions = 1000,..
   return (list(dmethod = method, numDirections = num.directions))
 }
 
-projection.validate <- function(ddalpha, method = "random", num.directions = 1000,...){
+.projection_validate <- function(ddalpha, method = "random", num.directions = 1000,...){
   if (!(method %in% c("random","linearize")))
     stop("Wrong method")
   if(method == "random")
@@ -280,7 +336,7 @@ projection.validate <- function(ddalpha, method = "random", num.directions = 100
   return (list(dmethod = method, numDirections = num.directions))
 }
 
-simplicial.validate <- function(ddalpha, exact = F, k = 0.05, ...){
+.simplicial_validate <- function(ddalpha, exact = F, k = 0.05, ...){
   if (exact)
     return(list(d_exact = exact))
   
@@ -289,9 +345,9 @@ simplicial.validate <- function(ddalpha, exact = F, k = 0.05, ...){
   
   return(list(d_exact = exact, d_k = k))
 }
-simplicialVolume.validate <- simplicial.validate
+.simplicialVolume_validate <- .simplicial_validate
 
-Mahalanobis.validate  <- function(ddalpha, mah.estimate = "moment", mah.priors = NULL, mah.parMcd = 0.75, ...){ 
+.Mahalanobis_validate  <- function(ddalpha, mah.estimate = "moment", mah.priors = NULL, mah.parMcd = 0.75, ...){ 
   if (!is.character(mah.estimate) 
       || length(mah.estimate) != 1 
       || !(mah.estimate %in% c("moment", "MCD"))){
@@ -330,8 +386,18 @@ Mahalanobis.validate  <- function(ddalpha, mah.estimate = "moment", mah.priors =
   return (ret)
 }
 
-spatialLocal.validate  <- function(ddalpha, kernel = "GKernel", kernel.bandwidth = 1, ...)
+.spatial_validate <- function(ddalpha, mah.estimate = "moment", mah.parMcd = 0.75, ...){ 
+  if(mah.estimate == "none")
+    return(list(mahEstimate = "none"))
+  
+  return(.Mahalanobis_validate(ddalpha, mah.estimate = mah.estimate, mah.parMcd = mah.parMcd, ...))
+}
+
+.spatialLocal_validate  <- function(ddalpha, kernel = "GKernel", kernel.bandwidth = 1, ...)
 {  
+  # validate paraameters mah.estimate, mah.parMcd
+  spatial_val = .spatial_validate(ddalpha, ...)
+  
   if (is.null(kernel)
       || suppressWarnings (
         !((kernel  %in% .potentialKernelTypes) || !is.na(as.numeric(kernel))&&(as.numeric(kernel) %in% c(1:length(.potentialKernelTypes))))
@@ -359,10 +425,13 @@ spatialLocal.validate  <- function(ddalpha, kernel = "GKernel", kernel.bandwidth
     kernel.bandwidth = kernel.bandwidth[order(names)]
   }
   
-  return(list("kernel" = kernel, "kernel.bandwidth" = kernel.bandwidth))
+  spatial_val$kernel = kernel
+  spatial_val$kernel.bandwidth = kernel.bandwidth
+  
+  return(spatial_val)
 }
 
-potential.validate  <- function(ddalpha, kernel = "GKernel", kernel.bandwidth = NULL, ignoreself = FALSE, ...)
+.potential_validate  <- function(ddalpha, kernel = "GKernel", kernel.bandwidth = NULL, ignoreself = FALSE, ...)
 {  
   # if kernel.bandwidth is a vector - the values are given in the alphabetical order of the classes nemes
   if (ddalpha$needtransform == 0)

@@ -1,21 +1,29 @@
-depth.spatial.local <- function(x, data, h){
+depth.spatial.local <- function(x, data, mah.estimate = "moment", mah.parMcd = 0.75, kernel.bandwidth = 1){
   if (!is.matrix(x) 
       && is.vector(x)){
     x <- matrix(x, nrow=1)
   }
   mean <- colMeans(data)
-  cov <- cov(data)
-  cov.eig <- eigen(cov)
-  B <- cov.eig$vectors %*% diag(sqrt(cov.eig$values))
-  lambda <- solve(B)
+  if(mah.estimate == "none"){
+    lambda = diag(ncol(data))
+  } else {
+    if(mah.estimate == "moment"){
+      cov <- cov(data)
+    } else if(mah.estimate == "MCD"){
+      cov <- covMcd(data, mah.parMcd)$cov
+    } else {stop("Wrong parameter 'mah.estimate'")}
+    cov.eig <- eigen(cov)
+    B <- cov.eig$vectors %*% diag(sqrt(cov.eig$values))
+    lambda <- solve(B)
+  }
   
-  if (h>1){
+  if (kernel.bandwidth>1){
     k <- function(x){
-      return(sqrt(2*pi)^(-ncol(x))*exp(-rowSums(x^2)/2/h))
+      return(sqrt(2*pi)^(-ncol(x))*exp(-rowSums(x^2)/2/kernel.bandwidth))
     }
-  }else{  #1/h^d
+  }else{  #1/kernel.bandwidth^d
     k <- function(x){
-      return((sqrt(2*pi)*h)^(-ncol(x))*exp(-rowSums(x^2)/2/h))
+      return((sqrt(2*pi)*kernel.bandwidth)^(-ncol(x))*exp(-rowSums(x^2)/2/kernel.bandwidth))
     }
   }  
 
@@ -30,7 +38,7 @@ depth.spatial.local <- function(x, data, h){
   return (depths)
 }
 
-depth.spatial <- function(x, data){
+depth.spatial <- function(x, data, mah.estimate = "moment", mah.parMcd = 0.75){
   if (!(is.matrix(data) && is.numeric(data)
         || is.data.frame(data) && prod(sapply(data, is.numeric))) 
       || ncol(data) < 2){
@@ -45,10 +53,19 @@ depth.spatial <- function(x, data){
       x = data.matrix(x)
   }
   mean <- colMeans(data)
-  cov <- cov(data)
-  cov.eig <- eigen(cov)
-  B <- cov.eig$vectors %*% diag(sqrt(cov.eig$values))
-  lambda <- solve(B)
+  if(mah.estimate == "none"){
+    lambda = diag(ncol(data))
+  } else {
+    if(mah.estimate == "moment"){
+      cov <- cov(data)
+    } else if(mah.estimate == "MCD"){
+      cov <- covMcd(data, mah.parMcd)$cov
+    } else {stop("Wrong parameter 'mah.estimate'")}
+    cov.eig <- eigen(cov)
+    B <- cov.eig$vectors %*% diag(sqrt(cov.eig$values))
+    lambda <- solve(B)
+  }
+  
   depths <- rep(-1, nrow(x))
   for (i in 1:nrow(x)){
     tmp1 <- t(lambda %*% (x[i,] - t(data)))
@@ -59,7 +76,7 @@ depth.spatial <- function(x, data){
   return (depths)
 }
 
-depth.space.spatial <- function(data, cardinalities){
+depth.space.spatial <- function(data, cardinalities, mah.estimate = "moment", mah.parMcd = 0.75){
   if (!(is.matrix(data) && is.numeric(data)
         || is.data.frame(data) && prod(sapply(data, is.numeric))) 
       || ncol(data) < 2){
@@ -79,7 +96,7 @@ depth.space.spatial <- function(data, cardinalities){
   depth.space <- NULL
   for (i in 1:length(cardinalities)){
     pattern <- data[(1 + sum(cardinalities[0:(i - 1)])):sum(cardinalities[1:i]),]
-    pattern.depths <- depth.spatial (data, pattern)
+    pattern.depths <- depth.spatial (data, pattern, mah.estimate, mah.parMcd)
     depth.space <- cbind(depth.space, pattern.depths, deparse.level = 0)
   }
   

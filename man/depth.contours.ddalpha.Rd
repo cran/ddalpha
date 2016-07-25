@@ -9,7 +9,7 @@ Builds the data depth contours for multiclass 2-dimensional data using the train
 \usage{
 depth.contours.ddalpha(ddalpha,
               main = "", xlab="", ylab = "", 
-              drawplot = T, frequency=100)
+              drawplot = T, frequency=100, levels = 10, ...)
 }
 
 \arguments{
@@ -27,6 +27,13 @@ if set to false, the contours are built on the existing plot.
 }
   \item{frequency}{
 number of points on each direction, x and y. Impacts the smoothness of the contures. 
+}
+  \item{levels}{
+numeric vector of levels at which to draw contour lines. 
+If the vector contains only ONE element, the levels are generated automatically as \code{seq(0, max(depth), length.out = levels)}.
+}
+  \item{\dots}{
+additional parameters passed to the depth fuynctions and to \code{\link{plot}}
 }
 }
 
