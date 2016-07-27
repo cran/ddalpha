@@ -239,7 +239,7 @@ void outVector(TVariables& point){
 
 bool OUT_ALPHA = false;
 
-void outString(char* str){
+void outString(char const * str){
 #ifdef DEF_OUT_ALPHA
 	if (!OUT_ALPHA) return;
 	Rcout << str << endl;

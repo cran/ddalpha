@@ -1,4 +1,4 @@
-a063f6bcc06c0eaeace208fb87b33a23 *DESCRIPTION
+f2453d7eea93287238f3921ee49723a3 *DESCRIPTION
 c93cb9959e33bc07ede811341cc80b03 *NAMESPACE
 33b180055630ecd97abb4fb3003471e2 *R/compclassf.r
 173b7fd5da0f99db95da6d523d3b18a8 *R/dataf.geneexp.r
@@ -93,7 +93,7 @@ cf9d7657c1db942ae1311e808eb7477d *man/dataf..Rd
 40c94053e33df43b90e6e59852d55f5e *man/dataf.sim.1.CFF07.Rd
 e5b4ce126b8ab6d9199ac1dc9ac6b4b9 *man/dataf.sim.2.CFF07.Rd
 a7436bd979a321f1518246afb492c396 *man/dataf.tecator.Rd
-2ee8c6796accb23319e6030046ef2bdc *man/ddalpha-package.Rd
+b5a45c48ea5528bdd6e22d674946888b *man/ddalpha-package.Rd
 5008b539a10a075296f75f2c9c53a13e *man/ddalpha.classify.Rd
 053777d162c38778602c7dae884e1072 *man/ddalpha.getErrorRateCV.Rd
 b6be808d0ee610fe1a3970f50daeedd8 *man/ddalpha.getErrorRatePart.Rd
@@ -135,8 +135,8 @@ e19ea6034df428cf249139bbf8bb2da0 *man/dknn.train.Rd
 c2a2508c992a39c10046544f212352be *man/resetPar.Rd
 10446d2c21fb0e77c64d393b90b51d97 *src/AlphaProcedure.cpp
 5217e4fd435c93e77ff105b5e18c043d *src/AlphaProcedure.h
-61c8fd7cdb38809dcd2c8d216012547f *src/Common.cpp
-8e5aff87a55c11abf24f21f595985d6f *src/Common.h
+9a8f8f2a2d7b110a3da5f546d8c92e50 *src/Common.cpp
+73dc91c7c9764a7494da4761d2fd06ab *src/Common.h
 1b5e18f9ea175c02253dd53d0e77763f *src/DKnn.cpp
 28070a0f96061bcaa42c56ec9cb1e42c *src/DKnn.h
 6b081eef24a9e6bc4ed34289c9a9f756 *src/DataStructures.h

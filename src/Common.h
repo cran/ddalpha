@@ -20,7 +20,7 @@ extern bool OUT_ALPHA;
 using namespace Rcpp;
 #endif
 
-void outString(char* str);
+void outString(char const * str);
 //template<typename T>
 void outVector(TPoint& point);
 void outMatrix(TMatrix& points);
