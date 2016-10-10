@@ -10,7 +10,7 @@ ddalpha.test <- function(learn, test, ...){
       ddalpha <- ddalpha.train(learn, ...)
     )
     C = ddalpha$dimension+1
-    cc = ddalpha.classify(objects = test[,-C],ddalpha = ddalpha)
+    cc = ddalpha.classify(objects = test[,-C], ddalpha = ddalpha)
     if (is.numeric(test[,C])){
       if(is.factor(cc[[1]]) || is.character(cc[[1]])){
         cc <- unlist(lapply(cc, as.character))

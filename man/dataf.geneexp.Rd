@@ -33,7 +33,7 @@ Arbeitman, M.N., Furlong, E.E.M., Imam,F., Johnson, E., Null,B.H., Baker,B.S., K
 \seealso{
 \code{\link{dataf.*}} for other functional data sets
 
-\code{\link{plotf}} for building plots of functional data
+\code{\link{plot.functional}} for building plots of functional data
 }
 \examples{
 ## load the dataset
@@ -49,7 +49,7 @@ dataf$dataf[[2]]$vals[5]
 ## plot the data
 \dontrun{
 labels = unlist(dataf$labels)
-plotf(dataf, 
+plot(dataf, 
   xlab="Time", ylab="Gene Expression Level", 
   main=paste0("Gene Expression:  1 red (", sum(labels == 1), "), ", 
             "2 green (", sum(labels == 2), "), ", 

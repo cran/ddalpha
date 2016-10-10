@@ -33,10 +33,11 @@ The depth representation is calculated in the same way as in \code{\link{depth.s
 Matrix of objects, each object (row) is represented via its depths (columns) w.r.t. each of the classes of the training sample; order of the classes in columns corresponds to the one in the argument \code{cardinalities}.
 }
 \references{
-
-Liu, R. Y. (1990). On a Notion of Data Depth Based on Random Simplices. \emph{The Annals of Statistics}, \bold{18(1)}, 405--414.
 Chaudhuri, P. (1996). On a geometric notion of quantiles for multivariate data. \emph{Journal of the Americal Statistical Association} \bold{91} 862--872.
 
+Liu, R. Y. (1990). On a Notion of Data Depth Based on Random Simplices. \emph{The Annals of Statistics} \bold{18} 405--414.
+
+Rousseeuw, P.J. and Ruts, I. (1996). Algorithm AS 307: Bivariate location depth. \emph{Journal of the Royal Statistical Society. Seriec C (Applied Statistics)} \bold{45} 516--526.
 }
 \seealso{
 \code{\link{ddalpha.train}} and \code{\link{ddalpha.classify}} for application, \code{\link{depth.simplicial}} for calculation of simplicial depth.

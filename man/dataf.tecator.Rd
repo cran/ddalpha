@@ -37,12 +37,12 @@ Febrero-Bande, M and Oviedo de la Fuente, Manuel
 
 }
 \references{
-Ferraty, F., & Vieu, P. (2006). Nonparametric functional data analysis: theory and practice. Springer.
+Ferraty, F. and Vieu, P. (2006). \emph{Nonparametric functional data analysis: theory and practice}. Springer.
 }
 \seealso{
 \code{\link{dataf.*}} for other functional data sets
 
-\code{\link{plotf}} for building plots of functional data
+\code{\link{plot.functional}} for building plots of functional data
 }
 \examples{
 ## load the dataset
@@ -58,7 +58,7 @@ dataf$dataf[[2]]$vals[5]
 ## plot the data
 \dontrun{
 labels = unlist(dataf$labels)
-plotf(dataf, 
+plot(dataf, 
   xlab="Wavelengths", ylab="Absorbances", 
   main=paste("Tecator: < 20 red (", sum(labels == "small"), "),", 
             " >= 20 blue (", sum(labels == "large"), ")", sep=""),

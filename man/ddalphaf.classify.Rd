@@ -1,5 +1,6 @@
 \name{ddalphaf.classify}
 \alias{ddalphaf.classify}
+\alias{predict.ddalphaf}
 \title{
 Classify using Functional DD\eqn{\alpha}-Classifier
 }
@@ -7,13 +8,15 @@ Classify using Functional DD\eqn{\alpha}-Classifier
 Classifies data using the functional DD\eqn{\alpha}-classifier.
 }
 \usage{
-ddalphaf.classify(objectsf, ddalphaf, ...)
+ddalphaf.classify(ddalphaf, objectsf, ...)
+
+\method{predict}{ddalphaf}(object, objectsf, ...)
 }
 \arguments{
-  \item{objectsf}{list containing lists (functions) of two vectors of equal length, named "args" and "vals": arguments sorted in ascending order and corresponding them values respectively
-}
-  \item{ddalphaf}{
+  \item{ddalphaf, object}{
 Functional DD\eqn{\alpha}-classifier (obtained by \code{\link{ddalphaf.train}}).
+}
+  \item{objectsf}{list containing lists (functions) of two vectors of equal length, named "args" and "vals": arguments sorted in ascending order and corresponding them values respectively
 }
   \item{\dots}{
 additional parameters, passed to the classifier, selected with parameter \code{classifier.type} in \code{\link{ddalphaf.train}}.
@@ -26,9 +29,9 @@ additional parameters, passed to the classifier, selected with parameter \code{c
 List containing class labels.
 }
 \references{
-Mozharovskyi, P. (2015), \emph{Contributions to Depth-based Classification and Computation of the Tukey Depth}, Verlag Dr. Kovac (Hamburg).
+Mosler, K. and Mozharovskyi, P. (2015). Fast DD-classification of functional data, \emph{Statistical Papers}, in press.
 
-Mosler, K., & Mozharovskyi, P. (2014). Fast DD-classification of functional data. arXiv preprint arXiv:1403.1158.
+Mozharovskyi, P. (2015). \emph{Contributions to Depth-based Classification and Computation of the Tukey Depth}. Verlag Dr. Kovac (Hamburg).
 }
 \seealso{
 \code{\link{ddalphaf.train}} to train the functional DD\eqn{\alpha}-classifier.
@@ -45,7 +48,7 @@ test  = tail(head(dataf$dataf, 59), 10)    # elements 50:59. 5 girls, 5 boys
 
 c = ddalphaf.train (learn, labels, classifier.type = "ddalpha")
 
-classified = ddalphaf.classify(test, c)
+classified = ddalphaf.classify(c, test)
 
 print(unlist(classified))
 

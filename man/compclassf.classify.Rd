@@ -1,5 +1,6 @@
 \name{compclassf.classify}
 \alias{compclassf.classify}
+\alias{predict.compclassf}
 \title{
 Classify using Functional componentwise classifier
 }
@@ -7,13 +8,15 @@ Classify using Functional componentwise classifier
 Classifies data using the functional componentwise classifier.
 }
 \usage{
-compclassf.classify(objectsf, compclassf, ...)
+compclassf.classify(compclassf, objectsf, ...)
+
+\method{predict}{compclassf}(object, objectsf, ...)
 }
 \arguments{
-  \item{objectsf}{list containing lists (functions) of two vectors of equal length, named "args" and "vals": arguments sorted in ascending order and corresponding them values respectively
-}
-  \item{compclassf}{
+  \item{compclassf, object}{
 Functional componentwise classifier (obtained by \code{\link{compclassf.train}}).
+}
+  \item{objectsf}{list containing lists (functions) of two vectors of equal length, named "args" and "vals": arguments sorted in ascending order and corresponding them values respectively
 }
   \item{\dots}{
 additional parameters, passed to the classifier, selected with parameter \code{classifier.type} in \code{\link{compclassf.train}}.
@@ -26,7 +29,7 @@ additional parameters, passed to the classifier, selected with parameter \code{c
 List containing class labels.
 }
 \references{
-Delaigle, A., Hall, P. and Bathia, N. (2012). Componentwise classification and clustering of functional data. Biometrika 99 299-313.
+Delaigle, A., Hall, P., and Bathia, N. (2012). Componentwise classification and clustering of functional data. \emph{Biometrika} \bold{99} 299--313.
 }
 \seealso{
 \code{\link{compclassf.train}} to train the functional componentwise classifier.
@@ -43,7 +46,7 @@ test = tail(head(dataf$dataf, 59), 10)    # elements 50:59. 5 girls, 5 boys
 
 c = compclassf.train (learn, labels, classifier.type = "ddalpha")
 
-classified = compclassf.classify(test, c)
+classified = compclassf.classify(c, test)
 
 print(unlist(classified))
 

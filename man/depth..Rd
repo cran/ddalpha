@@ -1,5 +1,5 @@
-\name{depth.*}
-\alias{depth.*}
+\name{depth.}
+\alias{depth.}
 \title{
 Calculate Depth
 }
@@ -9,6 +9,8 @@ Calculates the depth of points w.r.t. a multivariate data set.
 The detailed descriptions are found in the corresponding topics.
 }
 \usage{
+depth.(x, data, notion, ...)
+
 ## Tukey depth
 # depth.halfspace(x, data, exact, method, num.directions = 1000, seed = 0)
 
@@ -40,6 +42,12 @@ Matrix of objects (numerical vector as one object) whose depth is to be calculat
 }
   \item{data}{
 Matrix of data where each row contains a \eqn{d}-variate point, w.r.t. which the depth is to be calculated.
+}
+  \item{notion}{
+The name of the depth notion (shall also work with a user-defined depth function named \code{"depth.<name>"}).
+}
+  \item{\dots}{
+Additional parameters passed to the depth functions.
 }
 }
 
@@ -84,7 +92,7 @@ x <- mvrnorm(10, rep(1, 5),
                       0, 0, 0, 0, 1),
              nrow = 5))
                 
-depths <- depth.zonoid(x, data)
+depths <- depth.(x, data, notion = "zonoid")
 cat("Depths: ", depths, "\n")
 }
 \keyword{ robust }

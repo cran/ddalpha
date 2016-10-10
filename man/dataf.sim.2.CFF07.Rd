@@ -54,7 +54,7 @@ Cuevas, A., Febrero, M. and Fraiman, R. (2007). Robust estimation and classifica
 \seealso{
 \code{\link{dataf.*}} for other functional data sets
 
-\code{\link{plotf}} for building plots of functional data
+\code{\link{plot.functional}} for building plots of functional data
 }
 \examples{
 ## load the dataset
@@ -71,8 +71,8 @@ learn$dataf[[2]]$vals[5]
 
 \dontrun{
 ## plot the data
-plotf(learn)
-plotf(test)
+plot(learn)
+plot(test)
 
 ## or
 dataf = dataf.sim.2.CFF07(numTrain = 100, numTest = 50, numDiscrets = 51, plot = TRUE)

@@ -37,7 +37,7 @@ Tuddenham, R. D., and Snyder, M. M. (1954) "Physical growth of California boys a
 \seealso{
 \code{\link{dataf.*}} for other functional data sets
 
-\code{\link{plotf}} for building plots of functional data
+\code{\link{plot.functional}} for building plots of functional data
 }
 \examples{
 ## load the Growth dataset
@@ -53,7 +53,7 @@ dataf$dataf[[2]]$vals[5]
 ## plot the data
 \dontrun{
   labels = unlist(dataf$labels)
-  plotf(dataf, 
+  plot(dataf, 
     main = paste("Growth: girls red (", sum(labels == "girl"), "),", 
                       " boys blue (", sum(labels == "boy"), ")", sep=""),
     xlab="Year", ylab="Height, cm",

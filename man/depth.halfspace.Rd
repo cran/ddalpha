@@ -41,13 +41,13 @@ For \code{exact=T}, the Tukey depth is computed exactly as the minimum of the su
 Numerical vector of depths, one for each row in \code{x}; or one depth value if \code{x} is a numerical vector.
 }
 \references{
-Cuesta-Albertos, J.A. and Nieto-Reyes, A. (2008), The random Tukey depth, \emph{Computational Statistics and Data Analysis}, \bold{52}, 4979--4988.
+Cuesta-Albertos, J.A. and Nieto-Reyes, A. (2008). The random Tukey depth. \emph{Computational Statistics and Data Analysis} \bold{52} 4979--4988.
 
-Dyckerhoff, R. and Mozharovskyi, P. (2014), Exact computation of the halfspace depth, \emph{Mimeo}, \code{arXiv:1411:6927 [stat.CO]}.
+Dyckerhoff, R. and Mozharovskyi, P. (2016). Exact computation of the halfspace depth. \emph{Computational Statistics and Data Analysis} \bold{98} 19--30.
 
-Lange, T., Mosler, K. and Mozharovskyi, P. (2014), DD\eqn{\alpha}-classification of asymmetric and fat-tailed data, In: Spiliopoulou, M., Schmidt-Thieme, L., Janning, R. (eds), \emph{Data Analysis, Machine Learning and Knowledge Discovery}, Springer (Berlin), 71--78.
+Rousseeuw, P.J. and Ruts, I. (1996). Algorithm AS 307: Bivariate location depth. \emph{Journal of the Royal Statistical Society. Seriec C (Applied Statistics)} \bold{45} 516--526.
 
-Tukey, J.W. (1974), Mathematics and the picturing of data, In: \emph{Proceeding of the International Congress of Mathematicians}, Vancouver, 523--531.
+Tukey, J.W. (1974). Mathematics and the picturing of data. In: \emph{Proceeding of the International Congress of Mathematicians}, Vancouver, 523--531.
 }
 \seealso{
 \code{\link{depth.Mahalanobis}} for calculation of Mahalanobis depth.

@@ -27,7 +27,7 @@ depth.graph(data,
 2-dimensional numeric data frame or matrix
 }
   \item{depth_f}{
-the name of the depth function. The list of the supported depths and described in the topic \code{\link{depth.*}}.
+the name of the depth function. The list of the supported depths and described in the topic \code{\link{depth.}}.
 }
   \item{apoint}{
 a 2-dimensional point which is shown in black color.
@@ -53,7 +53,7 @@ additional parameters passed to \code{\link{persp}}
 }
 
 \seealso{
-\code{\link{depth.*}}
+\code{\link{depth.}}
 
 \code{\link{persp}}
 }

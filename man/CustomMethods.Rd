@@ -352,7 +352,7 @@ library(ddalpha)
 data = getdata("hemophilia")
 
 ddalpha = ddalpha.train(data = data, depth = "Euclidean", separator = "tree")
-c = ddalpha.classify(data[,1:2], ddalpha)
+c = ddalpha.classify(ddalpha, data[,1:2])
 errors = sum(unlist(c) != data[,3])/nrow(data)
 print(paste("Error rate: ",errors))
 

@@ -30,7 +30,7 @@ Checks are conducted w.r.t. each separate class in \code{data} using the simplex
 Matrix of \code{number of objects} rows and \code{number of classes} columns, containing \code{1} if an object belongs to the convex hull of the corresponding class, and \code{0} otherwise.
 }
 \references{
-Dyckerhoff, R., Koshevoy, G. and Mosler, K. (1996), Zonoid data depth: theory and computation. In: Prat A. (ed), \emph{COMPSTAT 1996. Proceedings in computational statistics}, Physica-Verlag (Heidelberg), 235--240.
+Dyckerhoff, R., Koshevoy, G., and Mosler, K. (1996). Zonoid data depth: theory and computation. In: Prat A. (ed), \emph{COMPSTAT 1996. Proceedings in computational statistics}, Physica-Verlag (Heidelberg), 235--240.
 }
 \author{
 Implementation of the simplex algorithm is taken from the algorithm for computation of zonoid depth (Dyckerhoff, Koshevoy and Mosler, 1996) that has been implemented in C++ by Rainer Dyckerhoff.

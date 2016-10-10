@@ -49,7 +49,7 @@ Trained functional componentwise classifier
 %% ...
 }
 \references{
-Delaigle, A., Hall, P. and Bathia, N. (2012). Componentwise classification and clustering of functional data. Biometrika 99 299-313.
+Delaigle, A., Hall, P., and Bathia, N. (2012). Componentwise classification and clustering of functional data. \emph{Biometrika} \bold{99} 299--313.
 }
 
 \seealso{
@@ -72,7 +72,7 @@ test = tail(head(dataf$dataf, 59), 10)    # elements 50:59. 5 girls, 5 boys
 
 c = compclassf.train (learn, labels, classifier.type = "ddalpha")
 
-classified = compclassf.classify(test, c)
+classified = compclassf.classify(c, test)
 
 print(unlist(classified))
 

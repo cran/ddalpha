@@ -42,7 +42,7 @@ The following datasets provide simulated data:
 
 }
 \seealso{
-\code{\link{plotf}} for building plots of functional data
+\code{\link{plot.functional}} for building plots of functional data
 }
 \examples{
 ## load the Growth dataset
@@ -55,7 +55,7 @@ unique(dataf$labels)
 dataf$dataf[[2]]$args[5]
 dataf$dataf[[2]]$vals[5]
 
-\dontrun{plotf(dataf)}
+\dontrun{plot.functional(dataf)}
 }
 \keyword{datasets}
 \keyword{functional}

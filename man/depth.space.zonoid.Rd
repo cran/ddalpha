@@ -27,13 +27,11 @@ The depth representation is calculated in the same way as in \code{\link{depth.z
 Matrix of objects, each object (row) is represented via its depths (columns) w.r.t. each of the classes of the training sample; order of the classes in columns corresponds to the one in the argument \code{cardinalities}.
 }
 \references{
-Dyckerhoff, R., Koshevoy, G. and Mosler, K. (1996), Zonoid data depth: theory and computation. In: Prat A. (ed), \emph{COMPSTAT 1996. Proceedings in computational statistics}, Physica-Verlag (Heidelberg), 235--240.
+Dyckerhoff, R., Koshevoy, G., and Mosler, K. (1996). Zonoid data depth: theory and computation. In: Prat A. (ed), \emph{COMPSTAT 1996. Proceedings in computational statistics}, Physica-Verlag (Heidelberg), 235--240.
 
-Koshevoy, G. and Mosler, K. (1997), Zonoid trimming for multivariate distributions, \emph{Annals of Statistics}, \bold{25}, 1998--2017.
+Koshevoy, G. and Mosler, K. (1997). Zonoid trimming for multivariate distributions \emph{Annals of Statistics} \bold{25} 1998--2017.
 
-Lange, T., Mosler, K. and Mozharovskyi, P. (2014), Fast nonparametric classification based on data depth, \emph{Statistical Papers}, \bold{55}, 49--69.
-
-Mosler, K. (2002), \emph{Multivariate dispersion, central regions and depth: the lift zonoid approach}, Springer (New York).
+Mosler, K. (2002). \emph{Multivariate dispersion, central regions and depth: the lift zonoid approach} Springer (New York).
 }
 \seealso{
 \code{\link{ddalpha.train}} and \code{\link{ddalpha.classify}} for application, \code{\link{depth.zonoid}} for calculation of zonoid depth.

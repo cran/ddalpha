@@ -33,10 +33,11 @@ Calculates simplicial depth. Simplicial depth is counted as a probability that a
 Numerical vector of depths, one for each row in \code{x}; or one depth value if \code{x} is a numerical vector.
 }
 \references{
-
-Liu, R. Y. (1990). On a Notion of Data Depth Based on Random Simplices. \emph{The Annals of Statistics}, \bold{18(1)}, 405--414.
 Chaudhuri, P. (1996). On a geometric notion of quantiles for multivariate data. \emph{Journal of the Americal Statistical Association} \bold{91} 862--872.
 
+Liu, R. Y. (1990). On a Notion of Data Depth Based on Random Simplices. \emph{The Annals of Statistics} \bold{18} 405--414.
+
+Rousseeuw, P.J. and Ruts, I. (1996). Algorithm AS 307: Bivariate location depth. \emph{Journal of the Royal Statistical Society. Seriec C (Applied Statistics)} \bold{45} 516--526.
 }
 \seealso{
 \code{\link{depth.halfspace}} for calculation of the Tukey depth.

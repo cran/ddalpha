@@ -33,11 +33,9 @@ The depth representation is calculated in the same way as in \code{\link{depth.s
 Matrix of objects, each object (row) is represented via its depths (columns) w.r.t. each of the classes of the training sample; order of the classes in columns corresponds to the one in the argument \code{cardinalities}.
 }
 \references{
-
-Oja, H. (1983). Descriptive statistics for multivariate distributions. \emph{Statistics & Probability Letters}, \bold{1(6)}, 327--332. 
+Oja, H. (1983). Descriptive statistics for multivariate distributions. \emph{Statistics & Probability Letters} \bold{1} 327--332.
 
 Zuo, Y.J. and Serfling, R. (2000). General notions of statistical depth function. \emph{The Annals of Statistics} \bold{28} 461--482.
-
 }
 \seealso{
 \code{\link{ddalpha.train}} and \code{\link{ddalpha.classify}} for application, \code{\link{depth.simplicialVolume}} for calculation of simplicial depth.

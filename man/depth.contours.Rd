@@ -19,7 +19,7 @@ depth.contours(data, depth,
 2-dimensional numeric data frame or matrix
 }
   \item{depth}{
-the name of the depth function. The list of the supported depths and described in the topic \code{\link{depth.*}}.
+the name of the depth function. The list of the supported depths and described in the topic \code{\link{depth.}}.
 }
   \item{main}{
 an overall title for the plot: see \code{\link{title}}
@@ -41,12 +41,12 @@ If the vector contains only ONE element, the levels are generated automatically 
 color, used to draw points and contours
 }
   \item{\dots}{
-additional parameters passed to the depth fuynctions and to \code{\link{plot}}
+additional parameters passed to the depth functions and to \code{\link{plot}}
 }
 }
 
 \seealso{
-\code{\link{depth.*}}
+\code{\link{depth.}}
 
 \code{\link{depth.contours.ddalpha}}
 

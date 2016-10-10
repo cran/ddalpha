@@ -1,25 +1,25 @@
-plotf <- function(dataf, main = "Functional data", xlab = "args", ylab = "vals", colors = c("red", "blue", "green", "black", "orange", "pink")) {
+plot.functional <- function(x, main = "Functional data", xlab = "args", ylab = "vals", colors = c("red", "blue", "green", "black", "orange", "pink"), ...) {
   
-  if(main == "Functional data" && !is.null(dataf$name))
-    main = dataf$name
-  if(xlab == "args" && !is.null(dataf$args))
-    xlab = dataf$args
-  if(ylab == "vals" && !is.null(dataf$vals))
-    ylab = dataf$vals
+  if(main == "Functional data" && !is.null(x$name))
+    main = x$name
+  if(xlab == "args" && !is.null(x$args))
+    xlab = x$args
+  if(ylab == "vals" && !is.null(x$vals))
+    ylab = x$vals
   
-  ylims = matrix(unlist(lapply(dataf$dataf, function(e) (range(e$vals)))), ncol = 2, byrow = TRUE)
-  plot(0, type="n", xlim=range(dataf$dataf[[1]]$args), ylim=c(min(ylims[,1]), max(ylims[,2])), 
+  ylims = matrix(unlist(lapply(x$dataf, function(e) (range(e$vals)))), ncol = 2, byrow = TRUE)
+  plot(0, type="n", xlim=range(x$dataf[[1]]$args), ylim=c(min(ylims[,1]), max(ylims[,2])), 
        xlab=xlab, ylab=ylab, 
-       main = main)
+       main = main, ...)
   grid()
   
-  labs = sort(unlist(unique(dataf$labels)))
+  labs = sort(unlist(unique(x$labels)))
   
-  for (i in 1:length(dataf$dataf)){
-    ind = match(dataf$labels[[i]],labs)
+  for (i in 1:length(x$dataf)){
+    ind = match(x$labels[[i]],labs)
     lineColor <- colors[ind]
     
-    lines(dataf$dataf[[i]]$args, dataf$dataf[[i]]$vals, col=lineColor)
+    lines(x$dataf[[i]]$args, x$dataf[[i]]$vals, col=lineColor)
   }
 }
 
@@ -54,8 +54,10 @@ dataf.sim.1.CFF07 <- function(numTrain = 100, numTest = 50, numDiscrets = 51, pl
   
   learn <- list(dataf = c(head(datafX, numTrain), head(datafY, numTrain)), 
                 labels = c(head(labelsX, numTrain), head(labelsY, numTrain)))
+  class(learn) = "functional"
   test <- list(dataf = c(tail(datafX, numTest), tail(datafY, numTest)), 
                labels = c(tail(labelsX, numTest), tail(labelsY, numTest)))
+  class(test) = "functional"
   if (plot){
     plot(0, type="n", xlim=c(0,1), ylim=c(0, 9), 
          main=paste("Model 1 from CuevasFF07: ", 
@@ -110,8 +112,10 @@ dataf.sim.2.CFF07 <- function(numTrain = 100, numTest = 50, numDiscrets = 51, pl
   
   learn <- list(dataf = c(head(datafX, numTrain), head(datafY, numTrain)), 
                 labels = c(head(labelsX, numTrain), head(labelsY, numTrain)))
+  class(learn) = "functional"
   test <- list(dataf = c(tail(datafX, numTest), tail(datafY, numTest)), 
                labels = c(tail(labelsX, numTest), tail(labelsY, numTest)))
+  class(test) = "functional"
   
   if (plot){
     plot(0, type="n", xlim=c(0,1), ylim=c(0, 7), 

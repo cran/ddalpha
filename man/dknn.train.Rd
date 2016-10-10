@@ -32,7 +32,7 @@ the random seed. The dafault value \code{seed=0} makes no changes.
   The returned object contains technical information for classification, including the found optimal value \code{k}.
 }
 \references{
-Paindaveine, D. and Van Bever, G. (2015). Nonparametrically consistent depth-based classifiers, \emph{Bernoulli} 21: 62-82.
+Paindaveine, D. and Van Bever, G. (2015). Nonparametrically consistent depth-based classifiers. \emph{Bernoulli} \bold{21} 62--82.
 }
 %\note{
 %%  ~~further notes~~

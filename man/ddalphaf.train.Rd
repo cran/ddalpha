@@ -88,9 +88,9 @@ Trained functional DDalpha-classifier
 %% ...
 }
 \references{
-Mozharovskyi, P. (2015), \emph{Contributions to Depth-based Classification and Computation of the Tukey Depth}, Verlag Dr. Kovac (Hamburg).
+Mosler, K. and Mozharovskyi, P. (2015). Fast DD-classification of functional data, \emph{Statistical Papers}, in press.
 
-Mosler, K., & Mozharovskyi, P. (2014). Fast DD-classification of functional data. arXiv preprint arXiv:1403.1158.
+Mozharovskyi, P. (2015). \emph{Contributions to Depth-based Classification and Computation of the Tukey Depth}. Verlag Dr. Kovac (Hamburg).
 }
 
 \seealso{

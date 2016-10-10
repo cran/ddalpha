@@ -13,7 +13,63 @@
 #     data with the DDalpha-procedure. Mimeo.
 ################################################################################
 
-.ddalpha.create.structure <- function(data){
+
+.ddalpha.create.structure <- function(formula, data, subset, ...){
+  
+  # if the user calls ddalpha(data, <other named parameters>, ...)
+  # for backward compatibility
+  if(!missing(formula) && missing(data) && (is.data.frame(formula) || is.matrix(formula))){
+    data = formula
+    formula = NULL
+  }
+  
+  # formula is present
+  if(!missing(formula) && !is.null(formula)){
+    
+    needed.frame <- sys.nframe() - 1
+
+    cl <- match.call(call = sys.call(sys.parent(n = needed.frame)))
+    mf <- match.call(expand.dots = FALSE, call = sys.call(sys.parent(n = needed.frame)))
+    m <- match(c("formula", "data", "subset"#, "weights", "na.action", "offset"
+                 ), names(mf), 0L)
+    mf <- mf[c(1L, m)]
+    mf$drop.unused.levels <- TRUE
+    mf[[1L]] <- quote(stats::model.frame)
+    mf <- eval(mf, parent.frame())
+    
+    clres = colnames(mf)
+    cat("Selected columns: ", paste(clres, collapse = ",   "), "\n")
+    classif.formula = delete.response(terms(mf))
+    
+    data = cbind(mf[,-1,drop=F], mf[,1,drop=F])
+    
+  #  y = model.response(mf)
+  #  mm = model.matrix(formula, data = mf)
+  #  mm = as.data.frame(mm[,-1,drop=F])
+    
+  #  colnames(mm) <- paste0("P_",1:ncol(mm))
+  #  data = cbind(mm, y)
+    
+    #colnames(mf) <- paste0("P_",1:ncol(mm))
+                           
+  } else {  # no formula
+    # Check for data consistency
+    if (!(is.matrix(data) && is.numeric(data)
+          || is.data.frame(data) && prod(sapply(data[,-ncol(data)], is.numeric)))){
+      stop("Argument data has unacceptable format. Classifier can not be trained!!!")
+    }
+    cl = NULL
+    classif.formula = NULL
+    clres = colnames(data)
+    
+    if(!is.data.frame(data))
+      data = as.data.frame(data)
+    if(!missing(subset))
+      data = data[subset,]
+  }
+  
+  names(data)[ncol(data)] <- "CLASS"
+  
   # Elemantary statistics
   dimension <- ncol(data) - 1
   numOfPoints <- nrow(data)
@@ -26,7 +82,10 @@
   
   # Creating overall structure
   ddalpha <- list(
-         raw = data, 
+         call = cl,
+         colnames = clres, # colnames after formula is applied
+         classif.formula = classif.formula, # for classification
+         raw = data, # after formula is applied
          dimension = dimension, 
          numPatterns = numOfClasses, 
          numPoints = numOfPoints, 
@@ -185,6 +244,12 @@
         classifier$index          = counter
         classifier$index1         = i
         classifier$index2         = j
+        
+        if(class(classifier)=="list")
+          class(classifier) <- paste0("ddalpha.", ddalpha$methodSeparator)
+        else
+          class(classifier) <- c(class(classifier), paste0("ddalpha.", ddalpha$methodSeparator))
+        
         # Adding the classifier to the list of classifiers
         ddalpha$classifiers[[counter]] <- classifier
         
@@ -208,6 +273,12 @@
       classifier$index          = counter
       classifier$index1         = i
       classifier$index2         = -i
+      
+      if(class(classifier)=="list")
+        class(classifier) <- paste0("ddalpha.", ddalpha$methodSeparator)
+      else
+        class(classifier) <- c(class(classifier), paste0("ddalpha.", ddalpha$methodSeparator))
+      
       # Adding the classifier to the list of classifiers
       ddalpha$classifiers[[i]] <- classifier
     }
@@ -296,8 +367,11 @@
   if (!is.function(learn))
     stop("Wrong or absent function: ", fname)
   
-  
   classifier <- learn(ddalpha)
+  if(class(classifier)=="list")
+    class(classifier) <- paste0("ddalpha.", ddalpha$methodSeparator)
+  else
+    class(classifier) <- c(class(classifier), paste0("ddalpha.", ddalpha$methodSeparator))
       
   ddalpha$classifiers[[1]] <- classifier
   ddalpha$numClassifiers <- 1
@@ -1445,12 +1519,18 @@
 # Function is taken from the R-documentation, "Examples" to the function "is.integer"
 .is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol
 
-print.ddalpha <- function(x, ...){
+summary.ddalpha <- function(object, printseparators = T, ...){
+  x = object
+  if(!is.null(x$call)){
+      cat("Call: ", format(x$call), "\nResulting table: ", paste(x$colnames, collapse = ",   "),"\n")
+  }
+  
   cat("ddalpha:\n")
   cat("\t num.points = ", x$numPoints, 
       ", dimension = ", x$dimension, 
       ", num.patterns = ", x$numPatterns, "\n", sep="")
   cat("\t depth = \"", x$methodDepth, "\"\n", sep="")
+  cat("\t separator = \"", x$methodSeparator, "\"\n", sep="")
   cat("\t aggregation.method = \"", x$methodAggregation, "\"\n", sep="")
   if (is.numeric(x$numChunks)) cat("\t num.chunks =", x$numChunks, "\n")
   if (is.numeric(x$numDirections)) cat("\t num.directions =", x$numDirections, "\n")
@@ -1460,7 +1540,11 @@ print.ddalpha <- function(x, ...){
   for (i in 1:length(x$patterns)){
     cat("\t ");print(x$patterns[[i]])
   }
-  cat("num.classifiers =", x$numClassifiers, "\n")
+  cat("num.classifiers = ", x$numClassifiers, "\n")
+  if(x$numClassifiers == 1 || printseparators)
+    for (i in 1:x$numClassifiers){
+      print(x$classifiers[[i]], prefix = "\t ")
+    }
   cat("outsider.methods:\n")
   if (is.null(x$methodsOutsider)){
     cat ("\t Absent\n", sep="")
@@ -1501,11 +1585,107 @@ print.ddalpha <- function(x, ...){
       }
     }
   }
+  invisible(x)
+}
+
+print.ddalpha <- function(x, printseparators = F, ...){
+  if(!is.null(x$call)){
+    cat("Call: ", format(x$call), "\nResulting table: ", paste(x$colnames, collapse = ",   "),"\n")
+  }
+
+  cat("depth = \"", x$methodDepth, "\"\n", sep="")
+  cat("separator = \"", x$methodSeparator, "\"\n", sep="")
+  cat("aggregation.method = \"", x$methodAggregation, "\"\n", sep="")
+  cat("patterns:\n")
+  for (i in 1:length(x$patterns)){
+    cat("\t ");print(x$patterns[[i]])
+  }
+  cat("num.classifiers = ", x$numClassifiers, "\n")
+  if(x$numClassifiers == 1 || printseparators)
+    for (i in 1:x$numClassifiers){
+      print(x$classifiers[[i]], prefix = "\t ", full = F)
+    }
+  cat("outsider.methods:\n")
+  if (is.null(x$methodsOutsider)){
+    cat ("\t Absent\n", sep="")
+  }else{
+    for (i in 1:length(x$methodsOutsider)){
+      cat("\t method = \"", x$methodsOutsider[[i]]$method, "\"\n", sep="")
+      if (   x$methodsOutsider[[i]]$method == "LDA" 
+             || x$methodsOutsider[[i]]$method == "RandProp" 
+             || x$methodsOutsider[[i]]$method == "depth.Mahalanobis"){
+        cat("\t priors =", x$methodsOutsider[[i]]$priors, "\n")
+      }
+      if (x$methodsOutsider[[i]]$method == "KNNAff"){
+        cat("\t aggregation.method = \"", 
+            x$methodsOutsider[[i]]$knnAff.methodAggregation, "\"\n", sep="")
+        for (j in 1:length(x$methodsOutsider[[i]]$knnAff.classifiers)){
+          cat("\t k.range = ", format(paste("1:", 
+                                              x$methodsOutsider[[i]]$knnAff.classifiers[[j]]$range, sep=""), 
+                                        justify="right", width=10), sep="")
+        }
+        cat("\n")
+        for (j in 1:length(x$methodsOutsider[[i]]$knnAff.classifiers)){
+          cat("\t k       = ", format( 
+            x$methodsOutsider[[i]]$knnAff.classifiers[[j]]$k, 
+            justify="right", width=10), sep="")
+        }
+        cat("\n")
+      }
+      if (x$methodsOutsider[[i]]$method == "KNN"){
+        cat("\t k.range = 1:", x$methodsOutsider[[i]]$knn.range, "\n", sep="")
+        cat("\t k =", x$methodsOutsider[[i]]$knn.k, "\n")
+      }
+      if (x$methodsOutsider[[i]]$method == "depth.Mahalanobis"){
+        cat("\t estimate = \"", x$methodsOutsider[[i]]$mah.estimate, "\"\n", sep="")
+        if (x$methodsOutsider[[i]]$mah.estimate == "MCD"){
+          cat("\t mcd.alpha = ", x$methodsOutsider[[i]]$mcd.alpha, "\n")
+        }
+      }
+    }
+  }
+  invisible(x)
 }
 
 print.ddalpha.pattern <- function(x, ...){
   cat("pattern[", x$index, "]:", sep="")
   cat("\t ", x$cardinality, " points, label = \"", x$name, "\"\n", sep="")
+  invisible(x)
+}
+
+print.ddalpha.alpha <- function(x, prefix = "", full = T, ...){
+  if(full){
+    cat(prefix,x$index, ". alpha:\n", sep="")
+    cat(prefix,"   degree: ", x$degree,"; axes: ", x$index1, ", ", x$index2, "\n", sep="")
+    cat(prefix,"   hyperplane: ", paste(x$hyperplane, collapse = ", "), "\n", sep="")
+  } else{
+    cat(prefix, x$index, ". degree: ", x$degree,"; axes: ", x$index1, ", ", x$index2, "\n", sep="")
+    cat(prefix,"   hyperplane: ", paste(x$hyperplane, collapse = ", "), "\n", sep="")
+  }
+  invisible(x)
+}
+print.ddalpha.polynomial <- function(x, prefix = "", full = T,...){
+  if(full){
+    cat(prefix,x$index, ". polynomial:\n", sep="")
+    cat(prefix,"   degree: ", x$degree,"; axes: ", x$index1, ", ", x$index2, ifelse(x$axis!=0, ", invert", ""), "\n", sep="")
+    cat(prefix,"   polynomial: ", paste(x$polynomial, collapse = ", "), "\n", sep="")
+  } else {
+    cat(prefix,x$index, ". degree: ", x$degree,"; axes: ", x$index1, ", ", x$index2, ifelse(x$axis!=0, ", invert", ""), "\n", sep="")
+    cat(prefix,"   polynomial: ", paste(x$polynomial, collapse = ", "), "\n", sep="")
+  }
+  invisible(x)
+}
+print.ddalpha.knnlm <- function(x, prefix = "", full = T,...){
+  if(full)
+    cat(prefix,"knnlm:  k = ", x$knnK, "\n", sep="")
+  else
+    cat(prefix,"k = ", x$knnK, "\n", sep="")
+  invisible(x)
+}
+print.ddalpha.maxD <- function(x, prefix = "", full = T,...){
+  if(full)
+    cat(prefix,"maximum depth separator\n")
+  invisible(x)
 }
 
 # .ddalpha.learn.knnlm <- function(ddalpha){

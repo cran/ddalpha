@@ -98,8 +98,9 @@ ddalphaf.train <- function(dataf, labels,
     classifier <- qda.train(points$data, ...)
   }
   # Create the eventual output structure
-  ddalphaf <- structure(
+  ddalphaf <- 
     list(dataf = points$dataf, 
+      #labels_orig = labels,
       labels = points$labels, 
       adc.method = adc.method, 
       adc.args = the.args, 
@@ -107,15 +108,13 @@ ddalphaf.train <- function(dataf, labels,
       adc.transmat = points$adc.transmat, 
       data = points$data, 
       classifier.type = classifier.type, 
-      classifier = classifier), 
-    .Names = c("dataf", "labels", "adc.method", "adc.args", "adc.num.cv", 
-               "adc.transmat", "data", "classifier.type", "classifier"))
+      classifier = classifier)
   class(ddalphaf) <- "ddalphaf"
   
   return (ddalphaf)
 }
 
-ddalphaf.classify <- function(objectsf, ddalphaf, ...){
+ddalphaf.classify <- function(ddalphaf, objectsf, ...){
   # Classifies functions
   # Args:
   #   objectsf: sample to classify, a list containing lists (functions) of 
@@ -158,16 +157,16 @@ ddalphaf.classify <- function(objectsf, ddalphaf, ...){
   }
   # Classify and assign class labels
   if (ddalphaf$classifier.type == "ddalpha" || ddalphaf$classifier.type == "maxdepth"){
-    output <- ddalpha.classify(objects = input, ddalphaf$classifier, ...)
+    output <- ddalpha.classify(objects = input, ddalpha = ddalphaf$classifier, ...)
   }
   if (ddalphaf$classifier.type == "knnaff"){
-    output <- knnaff.classify(objects = input, ddalphaf$classifier, ...)
+    output <- knnaff.classify(input, ddalphaf$classifier, ...)
   }
   if (ddalphaf$classifier.type == "lda"){
-    output <- lda.classify(objects = input, ddalphaf$classifier, ...)
+    output <- lda.classify(input, ddalphaf$classifier, ...)
   }
   if (ddalphaf$classifier.type == "qda"){
-    output <- qda.classify(objects = input, ddalphaf$classifier, ...)
+    output <- qda.classify(input, ddalphaf$classifier, ...)
   }
   classes <- list()
   for (i in 1:length(output)){
@@ -179,6 +178,10 @@ ddalphaf.classify <- function(objectsf, ddalphaf, ...){
   }
 
   return (classes)
+}
+
+predict.ddalphaf <- function(object, objectsf, ...){
+  return(ddalphaf.classify(object, objectsf, ...))
 }
 
 is.in.convexf <- function(objectsf, dataf, cardinalities, 
@@ -236,14 +239,16 @@ print.ddalphaf <- function(x, ...){
   cat("\t num.functions = ", length(x$dataf), 
   ", num.patterns = ", length(unique(x$labels)), "\n", sep="")
 #  cat("\t adc.method", x$adc.method, "\"\n", sep="")
-  cat("\t adc:", x$adc.args$instance, "; numFcn:", x$adc.args$numFcn, "; numDer:", x$adc.args$numDer, "\"\n", sep="")
-  cat("\t adc.num.cv", x$adc.num.cv, "\"\n", sep="")
-  cat("\t adc.transmat", x$adc.transmat, "\"\n", sep="")
-  cat("\t classifier.type", x$classifier.type, "\"\n", sep="")
-  cat("\t classifier:\n") 
+  cat("\t adc: \"", x$adc.args$instance, "; numFcn:", x$adc.args$numFcn, "; numDer:", x$adc.args$numDer, "\"\n", sep="")
+  cat("\t adc.num.cv \"", x$adc.num.cv, "\"\n", sep="")
+  cat("\t adc.transmat \"", x$adc.transmat, "\"\n", sep="")
+  cat("\t classifier.type \"", x$classifier.type, "\"\n", sep="")
+  cat("classifier: ") 
   print(x$classifier)
 }
 
+summary.ddalphaf <- function(object, ...) 
+  print.ddalphaf(object, ...)
 ################################################################################
 # Functions below are used for intermediate computations                       #
 ################################################################################
@@ -845,11 +850,11 @@ getBestSpace <- function(dataf, labels, adc.method = "equalCover",
       # Apply chosen classifier
       if (classifier.type == "ddalpha"){
         classifier <- ddalpha.train(points.all[-take.off,], ...)
-        results <- ddalpha.classify(points.all[take.off,1:d], classifier)
+        results <- ddalpha.classify(objects = points.all[take.off,1:d], ddalpha = classifier)
       }
       if (classifier.type == "maxdepth"){
         classifier <- ddalpha.train(points.all[-take.off,], separator = "maxD", ...)
-        results <- ddalpha.classify(points.all[take.off,1:d], classifier)
+        results <- ddalpha.classify(objects = points.all[take.off,1:d], ddalpha = classifier)
       }
       if (classifier.type == "knnaff"){
         classifier <- knnaff.train(points.all[-take.off,], i = i, ...)
@@ -902,11 +907,11 @@ getBestSpaceCV <- function(dataf, labels, adc.method = "equalCover",
       # Apply chosen classifier
       if (classifier.type == "ddalpha"){
         classifier <- ddalpha.train(points.all[-take.off,], ...)
-        results <- ddalpha.classify(points.all[take.off,1:d], classifier)
+        results <- ddalpha.classify(objects = points.all[take.off,1:d], ddalpha = classifier)
       }
       if (classifier.type == "maxdepth"){
         classifier <- ddalpha.train(points.all[-take.off,], separator = "maxD", ...)
-        results <- ddalpha.classify(points.all[take.off,1:d], classifier)
+        results <- ddalpha.classify(objects = points.all[take.off,1:d], ddalpha = classifier)
       }
       if (classifier.type == "knnaff"){
         classifier <- knnaff.train(points.all[-take.off,], i = i, ...)

@@ -29,18 +29,13 @@ The depth representation is calculated in the same way as in \code{\link{depth.s
 Matrix of objects, each object (row) is represented via its depths (columns) w.r.t. each of the classes of the training sample; order of the classes in columns corresponds to the one in the argument \code{cardinalities}.
 }
 \references{
-
 Chaudhuri, P. (1996). On a geometric notion of quantiles for multivariate data. \emph{Journal of the Americal Statistical Association} \bold{91} 862--872.
 
 Koltchinskii, V.I. (1997). M-estimation, convexity and quantiles. \emph{The Annals of Statistics} \bold{25} 435--477.
 
-Serfling, R. (2006). Depth functions in nonparametric multivariate inference. In: Liu, R.,
-Serfling, R., Souvaine, D. (eds.), \emph{Data Depth: Robust Multivariate Analysis, Computational
-Geometry and Applications}, American Mathematical Society, 1--16
+Serfling, R. (2006). Depth functions in nonparametric multivariate inference. In: Liu, R., Serfling, R., Souvaine, D. (eds.), \emph{Data Depth: Robust Multivariate Analysis, Computational Geometry and Applications}, American Mathematical Society, 1--16.
 
-Vardi, Y. and Zhang, C.H. (2000). The multivariate L1
--median and associated data depth.
-\emph{Proceedings of the National Academy of Sciences, U.S.A.} \bold{97} 1423--1426.
+Vardi, Y. and Zhang, C.H. (2000). The multivariate L1-median and associated data depth. \emph{Proceedings of the National Academy of Sciences, U.S.A.} \bold{97} 1423--1426.
 }
 \seealso{
 \code{\link{ddalpha.train}} and \code{\link{ddalpha.classify}} for application, \code{\link{depth.spatial}} for calculation of spatial depth.

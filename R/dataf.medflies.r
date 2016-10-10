@@ -2009,5 +2009,5 @@ dataf.medflies <- function() return(structure(list(
     "long-lived", "short-lived", "short-lived", "short-lived", 
     "long-lived", "short-lived", "short-lived", "short-lived", 
     "short-lived", "short-lived", "short-lived", "short-lived", 
-    "short-lived", "short-lived", "short-lived", "short-lived")))
+    "short-lived", "short-lived", "short-lived", "short-lived")), class = "functional")
 )

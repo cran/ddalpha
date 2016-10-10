@@ -18,3 +18,32 @@ resetPar <- function() {
   dev.off()
   op
 }
+
+
+tryCatchCapture <- function(expr, warn = T, err = T) {
+  val <- NULL
+  myWarnings <- NULL
+  wHandler <- function(w) {
+    myWarnings <<- c(myWarnings, w$message)
+    invokeRestart("muffleWarning")
+  }
+  myError <- NULL
+  eHandler <- function(e) {
+    myError <<- e$message
+    NULL
+  }
+  if(warn && err){
+    val <- tryCatch(withCallingHandlers(expr, warning = wHandler), error = eHandler)
+    return(list(value = val, warnings = myWarnings, error=myError))
+  }
+  if(warn){
+    val <- tryCatch(withCallingHandlers(expr, warning = wHandler))
+    return(list(value = val, warnings = myWarnings))
+  }
+  if(err){
+    val <- tryCatch(expr, error = eHandler)
+    return(list(value = val, error=myError))
+  }
+  val <- expr
+  return(list(value = val))
+}

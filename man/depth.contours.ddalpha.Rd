@@ -5,11 +5,12 @@ Depth contours
 }
 \description{
 Builds the data depth contours for multiclass 2-dimensional data using the trained classifier.
+Also accessible from \code{\link{plot.ddalpha}}.
 }
 \usage{
 depth.contours.ddalpha(ddalpha,
               main = "", xlab="", ylab = "", 
-              drawplot = T, frequency=100, levels = 10, ...)
+              drawplot = T, frequency=100, levels = 10, drawsep = T, ...)
 }
 
 \arguments{
@@ -32,13 +33,16 @@ number of points on each direction, x and y. Impacts the smoothness of the contu
 numeric vector of levels at which to draw contour lines. 
 If the vector contains only ONE element, the levels are generated automatically as \code{seq(0, max(depth), length.out = levels)}.
 }
+  \item{drawsep}{
+draws the separation on the DD-plot (currently for 2 classes and not for knn)
+}
   \item{\dots}{
-additional parameters passed to the depth fuynctions and to \code{\link{plot}}
+additional parameters passed to the depth functions and to \code{\link{plot}}
 }
 }
 
 \seealso{
-\code{\link{depth.*}}
+\code{\link{depth.}}
 
 \code{\link{depth.contours}}
 

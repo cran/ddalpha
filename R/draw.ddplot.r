@@ -63,3 +63,26 @@ draw.ddplot <- function(ddalpha, depth.space, cardinalities,
   } else stop("Both 'ddalpha' and 'depth.space' area missing")
   
 }
+
+plot.ddalpha <- function(x, type = c("ddplot", "depth.contours"), ...){
+  type = match.arg(type)
+  if(type == "ddplot") 
+    draw.ddplot(x, ...)
+  if(type == "depth.contours")
+    depth.contours.ddalpha(x, ...)
+}
+
+plot.ddalphaf <- function(x, type = c("functional.data", "ddplot", "depth.contours"), ...){
+  type = match.arg(type)
+  if(type == "functional.data")
+    plot.functional(list(dataf = x$dataf, labels = lapply(x$data[,ncol(x$data)], function(o){x$labels[[o]]})), ...)
+  
+  if(class(x$classifier)!="ddalpha")
+    stop(type, " is available only for the ddalpha classifier")
+  if(type == "ddplot") 
+    draw.ddplot(x$classifier, ...)
+  if(type == "depth.contours")
+    depth.contours.ddalpha(x$classifier, ...)
+}
+  
+  

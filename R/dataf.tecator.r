@@ -8634,4 +8634,5 @@ dataf.tecator <- function() return (structure(list(
     "small", "small", "small", "small", "small", "small", "small", 
     "small", "small", "small", "small", "small", "small", "large", 
     "large", "large", "large", "large", "large", "large", "large", 
-    "large"))))
+    "large")), class = "functional")
+)

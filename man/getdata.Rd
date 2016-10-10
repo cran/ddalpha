@@ -87,10 +87,10 @@ the data set name.
 \details{
 The package contains data sets used in the joint project of the University of Cologne and the Hochschule Merseburg "Classifying real-world data with the DDalpha-procedure". Comprehensive description of the methodology, and experimental settings and results of the study are presented in the work:
 
-Mozharovskyi, P., Mosler, K. and Lange, T. (2014): "Classifying real-world data with the DDalpha-procedure". Advances in Data Analysis and Classification, to appear. 
+Mozharovskyi, P., Mosler, K., and Lange, T. (2015). Classifying real-world data with the DD\eqn{\alpha}-procedure. \emph{Advances in Data Analysis and Classification} \bold{9} 287--314.
 
 For a more complete explanation of the technique and further experiments see:
-Lange, T., Mosler, K. and Mozharovskyi, P. (2012): "Fast nonparametric classification based on data depth". Statistical Papers 55(1), 49-69.
+Lange, T., Mosler, K., and Mozharovskyi, P. (2014). Fast nonparametric classification based on data depth. \emph{Statistical Papers} \bold{55} 49--69.
 
 50 binary classification tasks have been obtained from partitioning 33 freely accessible data sets. Multiclass problems were reasonably split into binary classification problems, some of the data set were slightly processed by removing objects or attributes and selecting prevailing classes. Each data set is provided with a (short) description and brief descriptive statistics. The name reflects the origination of the data. A letter after the name is a property filter, letters (also their combinations) in brackets separated by "vs" are the classes opposed. The letters (combinations or words) stand for labels of classes (names of properties) and are intuitive. Each description contains a link to the original data.
 
@@ -98,16 +98,16 @@ The data have been collected as open source data in January 2013. Owners of the 
 
 }
 \references{
-Mozharovskyi, P., Mosler, K. and Lange, T. (2014): "Classifying real-world data with the DDalpha-procedure". Advances in Data Analysis and Classification, to appear. 
+Lange, T., Mosler, K., and Mozharovskyi, P. (2014). Fast nonparametric classification based on data depth. \emph{Statistical Papers} \bold{55} 49--69.
 
-Lange, T., Mosler, K. and Mozharovskyi, P. (2012): "Fast nonparametric classification based on data depth". Statistical Papers 55(1), 49-69.
+Mozharovskyi, P., Mosler, K., and Lange, T. (2015). Classifying real-world data with the DD\eqn{\alpha}-procedure. \emph{Advances in Data Analysis and Classification} \bold{9} 287--314.
 
 The general list of sources consists of:
 
-{\url{http://archive.ics.uci.edu/ml}}, se also Frank, A. & Asuncion, A. (2010). UCI Machine Learning Repository [{\url{http://archive.ics.uci.edu/ml}}]. Irvine, CA: University of California, School of Information and Computer Science.
-{\url{http://cran.r-project.org/web/packages}} 
-{\url{http://stat.cmu.edu}} 
-{\url{http://stat.ethz.ch/Teaching/Datasets}} 
+UCI Machine Learning Repository {\url{http://archive.ics.uci.edu/ml}}\cr
+R-packages {\url{https://CRAN.R-project.org/}} \cr
+{\url{http://stat.cmu.edu}} \cr
+{\url{http://stat.ethz.ch/Teaching/Datasets}} \cr
 {\url{http://www.stats.ox.ac.uk/pub/PRNN}} 
 }
 

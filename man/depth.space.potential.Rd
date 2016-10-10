@@ -59,9 +59,9 @@ The potential representation is calculated in the same way as in \code{\link{dep
 Matrix of objects, each object (row) is represented via its potentials (columns) w.r.t. each of the classes of the training sample; order of the classes in columns corresponds to the one in the argument \code{cardinalities}.
 }
 \references{
-Aizerman, M. A., Braverman, E. M. and Rozonoer, L. I. (1970). \emph{The Method of Potential Functions in the Theory of Machine Learning}, Nauka, Moscow
+Aizerman, M.A., Braverman, E.M., and Rozonoer, L.I. (1970). \emph{The Method of Potential Functions in the Theory of Machine Learning}. Nauka (Moscow).
 
-Pokotylo, O. and Mosler, K. (2015). Classification with the pot-pot plot. 
+Pokotylo, O. and Mosler, K. (2015). Classification with the pot-pot plot. \emph{Mimeo}.
 }
 \seealso{
 \code{\link{ddalpha.train}} and \code{\link{ddalpha.classify}} for application, \code{\link{depth.potential}} for calculation of the potential.

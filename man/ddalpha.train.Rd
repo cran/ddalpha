@@ -21,7 +21,7 @@ The current realization of the DD-classifier allows for several alternative outs
 The function allows for classification with \eqn{q\ge 2} classes, see \code{aggregation.method} in 'Arguments'.
 }
 \usage{
-ddalpha.train(data, 
+ddalpha.train(formula, data, subset,
               depth = "halfspace", 
               separator = "alpha", 
               outsider.methods = "LDA", 
@@ -35,10 +35,16 @@ ddalpha.train(data,
 
 }
 \arguments{
+  \item{formula}{
+an object of class ``formula'' (or one that can be coerced to that class): a symbolic description of the model. If not found in \code{data}, the variables of the model are taken from environment.
+}
   \item{data}{
-Matrix containing training sample where each of \eqn{n} rows is one object of the training sample where first \eqn{d} entries are inputs and the last entry is output (class label).
+Matrix or data.frame containing training sample where each of \eqn{n} rows is one object of the training sample where first \eqn{d} entries are inputs and the last entry is output (class label).
 
 A pre-calculated DD-plot may be used as \code{data} with \code{depth="ddplot"}.
+}
+  \item{subset}{
+an optional vector specifying a subset of observations to be used in traineng the classifier.
 }
   \item{depth}{
 Character string determining which depth notion to use; the default value is \code{"halfspace"}. The list of the supported depths is given in section \emph{\bold{\code{Depths}}}. To use a custom depth, see topic \code{\link{Custom Methods}}. To use an outsider treatment only set \code{depth = NULL}.
@@ -218,23 +224,22 @@ Trained DD\eqn{\alpha}-classifier containing following - rather informative - fi
 \item{outsider.methods}{Treatments to be used to classify outsiders.}
 }
 \references{
-Mozharovskyi, P. (2015), \emph{Contributions to Depth-based Classification and Computation of the Tukey Depth}, Verlag Dr. Kovac (Hamburg).
+Dyckerhoff, R., Koshevoy, G., and Mosler, K. (1996). Zonoid data depth: theory and computation. In: Prat A. (ed), \emph{COMPSTAT 1996. Proceedings in computational statistics}, Physica-Verlag (Heidelberg), 235--240.
 
-Dyckerhoff, R., Koshevoy, G. and Mosler, K. (1996), Zonoid data depth: theory and computation. In: Prat A. (ed), \emph{COMPSTAT 1996. Proceedings in computational statistics}, Physica-Verlag (Heidelberg), 235--240.
+Lange, T., Mosler, K., and Mozharovskyi, P. (2014). Fast nonparametric classification based on data depth. \emph{Statistical Papers} \bold{55} 49--69.
 
-Lange, T., Mosler, K. and Mozharovskyi, P. (2014), Fast nonparametric classification based on data depth, \emph{Statistical Papers}, \bold{55}, 49--69.
+Li, J., Cuesta-Albertos, J.A., and Liu, R.Y. (2012). DD-classifier: Nonparametric classification procedure based on DD-plot. \emph{Journal of the American Statistical Association} \bold{107} 737--753.
 
-Mozharovskyi, P., Mosler, K. and Lange, T. (2013), Classifying real-world data with the DD\eqn{\alpha}-procedure, \emph{Mimeo}.
+Mozharovskyi, P. (2015). \emph{Contributions to Depth-based Classification and Computation of the Tukey Depth}. Verlag Dr. Kovac (Hamburg).
 
-Vasil'ev, V.I. (2003), The reduction principle in problems of revealing regularities I, \emph{Cybernetics and Systems Analysis}, \bold{39}, 686--694.
+Mozharovskyi, P., Mosler, K., and Lange, T. (2015). Classifying real-world data with the DD\eqn{\alpha}-procedure. \emph{Advances in Data Analysis and Classification} \bold{9} 287--314.
 
-Li, J., Cuesta-Albertos, J. A. and Liu, R. Y. (2012). dd-classifier: Nonparametric classification procedure based on dd-plot, Journal of the American Statistical Association
-107(498): 737\{753\}.
+Vasil'ev, V.I. (2003). The reduction principle in problems of revealing regularities I. \emph{Cybernetics and Systems Analysis} \bold{39} 686--694.
 }
 \seealso{
 \code{\link{ddalpha.classify}} for classification using DD\eqn{\alpha}-classifier, 
-\code{\link{depth.*}} for calculation of depths, 
-\code{\link{depth.space.*}} for calculation of depth spaces, 
+\code{\link{depth.}} for calculation of depths, 
+\code{\link{depth.space.}} for calculation of depth spaces, 
 \code{\link{is.in.convex}} to check whether a point is not an outsider.
 }
 \examples{
@@ -257,7 +262,7 @@ data <- list(train = trainData, test = testData)
 # Train 1st DDalpha-classifier (default settings) 
 # and get the classification error rate
 ddalpha1 <- ddalpha.train(data$train)
-classes1 <- ddalpha.classify(data$test[,propertyVars], ddalpha1)
+classes1 <- ddalpha.classify(ddalpha1, data$test[,propertyVars])
 cat("1. Classification error rate (defaults): ", 
     sum(unlist(classes1) != data$test[,classVar])/200, ".\n", sep = "")
 
@@ -266,7 +271,7 @@ cat("1. Classification error rate (defaults): ",
 # and get the classification error rate
 ddalpha2 <- ddalpha.train(data$train, depth = "zonoid", 
                           outsider.methods = "depth.Mahalanobis")
-classes2 <- ddalpha.classify(data$test[,propertyVars], ddalpha2, 
+classes2 <- ddalpha.classify(ddalpha2, data$test[,propertyVars], 
                                outsider.method = "depth.Mahalanobis")
 cat("2. Classification error rate (depth.Mahalanobis): ", 
     sum(unlist(classes2) != data$test[,classVar])/200, ".\n", sep = "")
@@ -280,15 +285,24 @@ treatments <- list(list(name = "mahd1", method = "depth.Mahalanobis",
                    list(name = "rand1", method = "RandEqual"))
 ddalpha3 <- ddalpha.train(data$train, outsider.settings = treatments, 
                           num.direction = 100)
-classes31 <- ddalpha.classify(data$test[,propertyVars], ddalpha3, 
+classes31 <- ddalpha.classify(ddalpha3, data$test[,propertyVars], 
                               outsider.method = "mahd1")
-classes32 <- ddalpha.classify(data$test[,propertyVars], ddalpha3, 
+classes32 <- ddalpha.classify(ddalpha3, data$test[,propertyVars], 
                               outsider.method = "rand1")
 cat("3. Classification error rate (by treatments):\n")
 cat("   Error (mahd1): ", 
     sum(unlist(classes31) != data$test[,classVar])/200, ".\n", sep = "")
 cat("   Error (rand1): ", 
     sum(unlist(classes32) != data$test[,classVar])/200, ".\n", sep = "")
+    
+# Train using some weird formula
+ddalpha = ddalpha.train(
+    I(mpg >= 19.2) ~ log(disp) + I(disp^2) + disp + I(disp * drat),
+    data = mtcars, subset = (carb!=1), 
+    depth = "Mahalanobis", separator = "alpha")
+print(ddalpha) # make sure that the resulting table is what you wanted
+CC = ddalpha.classify(ddalpha, mtcars)
+sum((mtcars$mpg>=19.2)!= unlist(CC))/nrow(mtcars) # error rate
     
 #Use the pre-calculated DD-plot
 data = cbind(rbind(mvrnorm(n = 50, mu = c(0,0), Sigma = diag(2)),
@@ -300,12 +314,12 @@ plot(data[,1:2], col = (data[,3]+1))
 ddplot = depth.space.Mahalanobis(data = data[,1:2], cardinalities = c(50,50,50))
 ddplot = cbind(ddplot, data[,3])
 ddalphaD = ddalpha.train(data = ddplot, depth = "ddplot", separator = "alpha")
-c = ddalpha.classify(ddplot[,1:3], ddalphaD)
+c = ddalpha.classify(ddalphaD, ddplot[,1:3])
 errors = sum(unlist(c) != data[,3])/nrow(data)
 print(paste("Error rate: ",errors))
 
 ddalpha = ddalpha.train(data = data, depth = "Mahalanobis", separator = "alpha")
-c = ddalpha.classify(data[,1:2], ddalpha)
+c = ddalpha.classify(ddalpha, data[,1:2])
 errors = sum(unlist(c) != data[,3])/nrow(data)
 print(paste("Error rate: ",errors))
 }

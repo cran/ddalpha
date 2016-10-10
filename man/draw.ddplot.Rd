@@ -5,11 +5,13 @@ Draw \emph{DD}-plot
 }
 \description{
 The function draws the \emph{DD}-plot either of the existing DD\eqn{\alpha}-classifier of the depth space.
+Also accessible from \code{\link{plot.ddalpha}}.
 }
 \usage{
 draw.ddplot(ddalpha, depth.space, cardinalities, 
             main = "DD plot", xlab = "C1", ylab = "C2", 
             classes = c(1, 2), colors = c("red", "blue", "green"), drawsep = T)
+
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,7 +19,7 @@ draw.ddplot(ddalpha, depth.space, cardinalities,
 DD\eqn{\alpha}-classifier (obtained by \code{\link{ddalpha.train}}).
 }
   \item{depth.space}{
-The ready depth space obtained by \code{\link{depth.space.*}}}
+The ready depth space obtained by \code{\link{depth.space.}}}
   \item{cardinalities}{
 Numerical vector of cardinalities of each class in \code{data}, each entry corresponds to one class.
 }
@@ -41,7 +43,7 @@ draws the separation on the DD-plot (currently for 2 classes and not for knn)
 \seealso{
 \code{\link{ddalpha.train}}
 
-\code{\link{depth.space.*}}
+\code{\link{depth.space.}}
 
 }
 \examples{
@@ -51,7 +53,7 @@ draws the separation on the DD-plot (currently for 2 classes and not for knn)
   ddalpha = ddalpha.train(data, depth = "spatial")
   draw.ddplot(ddalpha, main = "DD-plot")
   
-  #2. using depth.space.*
+  #2. using depth.space.
   # Sort the data w.r.t. classes
   data = rbind(data[data$C == 1,], data[data$C == 2,])
   cardinalities = c(sum(data$C == 1), sum(data$C == 2))

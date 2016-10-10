@@ -38,20 +38,15 @@ The depth representation is calculated in the same way as in \code{\link{depth.p
 Matrix of objects, each object (row) is represented via its depths (columns) w.r.t. each of the classes of the training sample; order of the classes in columns corresponds to the one in the argument \code{cardinalities}.
 }
 \references{
+Donoho, D.L. (1982). \emph{Breakdown properties of multivariate location estimators}. Ph.D. qualifying paper. Department of Statistics, Harvard University.
 
-Donoho, D.L. (1982). Breakdown properties of multivariate location estimators. Ph.D. qualifying paper. Department of Statistics, Harvard University.
+Liu, R.Y. (1992). Data depth and multivariate rank tests. In: Dodge, Y. (ed.), L1-Statistics and Related Methods, North-Holland (Amsterdam), 279--294.
 
-Liu, R.Y. (1992). Data depth and multivariate rank tests. In: Dodge, Y. (ed.), L1-Statistics and Related Methods, North-Holland, Amsterdam, 279--294.
+Liu, X. and Zuo, Y. (2014). Computing projection depth and its associated estimators. \emph{Statistics and Computing} \bold{24} 51--63.
 
-Liu, X. and Zuo, Y. (2014b). Computing projection depth and its associated estimators.
-\emph{Statistics and Computing}  \bold{24} 51--63.
+Stahel, W.A. (1981). \emph{Robust estimation: infinitesimal optimality and covariance matrix estimators}. Ph.D. thesis (in German). Eidgenossische Technische Hochschule Zurich.
 
-Stahel, W.A. (1981). Robust estimation: infinitesimal optimality and covariance matrix
-estimators. Ph.D. thesis (in German). Eidgenossische Technische Hochschule Zurich.
-
-Zuo, Y.J. and Lai, S.Y. (2011). Exact computation of bivariate projection depth and the
-Stahel-Donoho estimator. \emph{Computational Statistics and Data Analysis}  \bold{55} 1173--1179.
-
+Zuo, Y.J. and Lai, S.Y. (2011). Exact computation of bivariate projection depth and the Stahel-Donoho estimator. \emph{Computational Statistics and Data Analysis} \bold{55} 1173--1179.
 }
 \seealso{
 \code{\link{ddalpha.train}} and \code{\link{ddalpha.classify}} for application, \code{\link{depth.projection}} for calculation of projection depth.

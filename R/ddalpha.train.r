@@ -13,7 +13,7 @@
 #     data with the DDalpha-procedure. Mimeo.
 ################################################################################
 
-ddalpha.train <- function(data, 
+ddalpha.train <- function(formula, data, subset,
                           depth = "halfspace", 
                           separator = "alpha", 
                           outsider.methods = "LDA", 
@@ -40,26 +40,35 @@ ddalpha.train <- function(data,
                           #                           mah.priors = NULL
                           
 ){
-  # Check for data consistency #1
-  if (!(is.matrix(data) && is.numeric(data)
-      || is.data.frame(data) && prod(sapply(data[,-ncol(data)], is.numeric)))){
-    stop("Argument data has unacceptable format. Classifier can not be trained!!!")
-  }
   
-  if(separator == "Dknn")
-    return(dknn.train(data, depth = depth, seed = seed, ...))
-
+ 
   # Raw data processing
-  ddalpha <- .ddalpha.create.structure(data)
+  ddalpha <- .ddalpha.create.structure(formula, data, subset, ...) 
+
+  # Check for data consistency #1 (moved to .ddalpha.create.structure)
+  #if (!(is.matrix(data) && is.numeric(data)
+  #    || is.data.frame(data) && prod(sapply(data[,-ncol(data)], is.numeric)))){
+  #  stop("Argument data has unacceptable format. Classifier can not be trained!!!")
+  #}
   
   # Check for data consistency #2
   if (ddalpha$numPatterns < 2){
     stop("Number of patterns is < 2. Classifier can not be trained!!!")
   }
+  
   # TODO ddalpha$numPatterns should be restricted from above as well
   if (ddalpha$dimension < 2){
     stop("Data dimension is < 2. Classifier can not be trained!!!")
   }
+  
+  if(separator == "Dknn"){
+    dknn = dknn.train(ddalpha$raw, depth = depth, seed = seed, ...)
+    dknn$call = ddalpha$call
+    dknn$colnames = ddalpha$colnames
+    dknn$classif.formula = ddalpha$classif.formula
+    return(dknn)
+  }
+  
   for (i in 1:ddalpha$numPatterns){
     if (ddalpha$patterns[[i]]$cardinality < ddalpha$dimension + 1){
       stop("At least in one patern number of the points < (dimension + 1). Classifier can not be trained!!!")
@@ -73,7 +82,7 @@ ddalpha.train <- function(data,
   ## Validating the properties
   depthsThatNeedNoScaling = c("zonoid", "halfspace", "Mahalanobis", "projection", "spatial", "spatialLocal", "simplicial", "simplicialVolume", "ddplot") # note: "spatialLocal" thansforms the data inside, by itself
   supportedDepths = c(depthsThatNeedNoScaling, "potential")
-  if (is.null(depth) || toupper(depth) %in% c("NULL", "NONE")){
+  if (is.null(depth) || toupper(depth) %in% c("", "NULL", "NONE")){
       ddalpha$methodDepth <- NULL
       warning("Argument \"depth\" specified as NULL.")    
   } else
@@ -225,6 +234,8 @@ ddalpha.train <- function(data,
     #   ddalpha <- .ddalpha.learn.knnlm(ddalpha)
     # } else
     #   stop("Define custom classifier")
+  } else {
+    ddalpha$numClassifiers = 0
   }
   
   # Learn outsider treatments if needed

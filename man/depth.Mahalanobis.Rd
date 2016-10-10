@@ -34,20 +34,16 @@ Rousseeuw (1991).
 Numerical vector of depths, one for each row in \code{x}; or one depth value if \code{x} is a numerical vector.
 }
 \references{
-
 Mahalanobis, P. (1936). On the generalized distance in statistics. \emph{Proceedings of the National
-Academy India} \bold{12} 49--55
+Academy India} \bold{12} 49--55.
 
-Liu, R.Y. (1992). Data depth and multivariate rank tests. In: Dodge, Y. (ed.), L1-Statistics and Related Methods, North-Holland, Amsterdam, 279--294.
+Liu, R.Y. (1992). Data depth and multivariate rank tests. In: Dodge, Y. (ed.), \emph{L1-Statistics and Related Methods}, North-Holland (Amsterdam), 279--294.
 
 Lopuhaa, H.P. and Rousseeuw, P.J. (1991). Breakdown points of affine equivariant estimators of multivariate location and covariance matrices. \emph{The Annals of Statistics} \bold{19} 229--248.
 
-Rousseeuw, P.J. and Leroy, A.M. (1987). Robust Regression and Outlier Detection. John
-Wiley & Sons, New York.
+Rousseeuw, P.J. and Leroy, A.M. (1987). Robust Regression and Outlier Detection. John Wiley & Sons (New York).
 
-Zuo, Y.J. and Serfling, R. (2000). General notions of statistical depth function. \emph{The
-Annals of Statistics} \bold{28} 461--482.
-
+Zuo, Y.J. and Serfling, R. (2000). General notions of statistical depth function. \emph{The Annals of Statistics} \bold{28} 461--482.
 }
 \seealso{
 \code{\link{depth.halfspace}} for calculation of the Tukey depth.

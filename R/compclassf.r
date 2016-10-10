@@ -73,7 +73,7 @@ compclassf.train <- function(dataf, labels,
   return (compclassf)
 }
 
-compclassf.classify <- function(objectsf, compclassf, ...){
+compclassf.classify <- function(compclassf, objectsf, ...){
   # Classifies functions
   # Args:
   #   objectsf: sample to classify, a list containing lists (functions) of 
@@ -117,7 +117,7 @@ compclassf.classify <- function(objectsf, compclassf, ...){
   input <- input[,compclassf$the.args]
   # Classify and assign class labels
   if (compclassf$classifier.type == "ddalpha" || compclassf$classifier.type == "maxdepth"){
-    output <- ddalpha.classify(objects = input, compclassf$classifier, ...)
+    output <- ddalpha.classify(objects = input, ddalpha = compclassf$classifier, ...)
   }
   if (compclassf$classifier.type == "knnaff"){
     output <- knnaff.classify(objects = input, compclassf$classifier, ...)
@@ -138,6 +138,10 @@ compclassf.classify <- function(objectsf, compclassf, ...){
   }
 
   return (classes)
+}
+
+predict.compclassf <- function(object, objectsf, ...){
+  compclassf.classify(object, objectsf, ...)
 }
 
 print.compclassf <- function(x, ...){
@@ -237,11 +241,11 @@ getBestSpaceDHB12 <- function(data,
           # Apply chosen classifier
           if (classifier.type == "ddalpha"){
             classifier <- ddalpha.train(data[-take.off,c(combinations[,i], indices.num + 1)], separator = "alpha", ...)
-            results <- ddalpha.classify(data[take.off,combinations[,i]], classifier)
+            results <- ddalpha.classify(objects = data[take.off,combinations[,i]], ddalpha = classifier)
           }
           if (classifier.type == "maxdepth"){
             classifier <- ddalpha.train(data[-take.off,c(combinations[,i], indices.num + 1)], separator = "maxD", ...)
-            results <- ddalpha.classify(data[take.off,combinations[,i]], classifier)
+            results <- ddalpha.classify(objects = data[take.off,combinations[,i]], ddalpha = classifier)
           }
           if (classifier.type == "knnaff"){
             classifier <- knnaff.train(data[-take.off,c(combinations[,i], indices.num + 1)], i = i, ...)
@@ -286,11 +290,11 @@ getBestSpaceDHB12 <- function(data,
           # Apply chosen classifier
           if (classifier.type == "ddalpha"){
             classifier <- ddalpha.train(data[-take.off,c(indices.cur, indices.num + 1)], separator = "alpha", ...)
-            results <- ddalpha.classify(data[take.off,indices.cur], classifier)
+            results <- ddalpha.classify(objects = data[take.off,indices.cur], ddalpha = classifier)
           }
           if (classifier.type == "maxdepth"){
             classifier <- ddalpha.train(data[-take.off,c(indices.cur, indices.num + 1)], separator = "maxD", ...)
-            results <- ddalpha.classify(data[take.off,indices.cur], classifier)
+            results <- ddalpha.classify(objects = data[take.off,indices.cur], ddalpha = classifier)
           }
           if (classifier.type == "knnaff"){
             classifier <- knnaff.train(data[-take.off,c(indices.cur, indices.num + 1)], i = i, ...)
@@ -346,11 +350,11 @@ getBestSpaceDHB12 <- function(data,
           # Apply chosen classifier
           if (classifier.type == "ddalpha"){
             classifier <- ddalpha.train(data[-take.off,c(combinations[,i], indices.num + 1)], separator = "alpha", ...)
-            results <- ddalpha.classify(data[take.off,combinations[,i]], classifier)
+            results <- ddalpha.classify(objects = data[take.off,combinations[,i]], ddalpha = classifier)
           }
           if (classifier.type == "maxdepth"){
             classifier <- ddalpha.train(data[-take.off,c(combinations[,i], indices.num + 1)], separator = "maxD", ...)
-            results <- ddalpha.classify(data[take.off,combinations[,i]], classifier)
+            results <- ddalpha.classify(objects = data[take.off,combinations[,i]], ddalpha = classifier)
           }
           if (classifier.type == "knnaff"){
             classifier <- knnaff.train(data[-take.off,c(combinations[,i], indices.num + 1)], i = i, ...)

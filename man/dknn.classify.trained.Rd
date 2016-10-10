@@ -26,7 +26,7 @@ Dknn-classifier (obtained by \code{\link{dknn.train}}).
 List containing class labels, or character string "Ignored" for the outsiders if "Ignore" was specified as the outsider treating method.
 }
 \references{
-Paindaveine, D. and Van Bever, G. (2015). Nonparametrically consistent depth-based classifiers, \emph{Bernoulli} 21: 62-82.
+Paindaveine, D. and Van Bever, G. (2015). Nonparametrically consistent depth-based classifiers. \emph{Bernoulli} \bold{21} 62--82.
 }
 %\note{
 %%  ~~further notes~~

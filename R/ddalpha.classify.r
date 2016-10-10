@@ -13,8 +13,8 @@
 #     data with the DDalpha-procedure. Mimeo.
 ################################################################################
 
-ddalpha.classify <- function(objects, 
-                             ddalpha, 
+ddalpha.classify <- function(ddalpha, 
+                             objects,
                              outsider.method = NULL, 
                              use.convex = NULL){
   # Checks
@@ -26,11 +26,16 @@ ddalpha.classify <- function(objects,
     warning("Argument \"objects\" has unacceptable format. Classification can not be performed!!!")
     return (NULL)
   } 
+  
+  # convert using formula
+  if(!is.null(ddalpha$classif.formula)){
+    objects = model.frame(ddalpha$classif.formula, data = objects)
+  }
+  
   if (ncol(objects) != ddalpha$dimension){
     warning("Dimension of the objects to be classified does not correspond to the dimension of the trained classifier. Classification can not be performed!!!")
     return (NULL)
   }
-  
   
   if (ddalpha$methodSeparator == "Dknn")
     return(dknn.classify.trained(objects, ddalpha))
@@ -171,4 +176,11 @@ ddalpha.classify <- function(objects,
 
   if (length(results) == 1) return(results[[1]])
                        else return (results)
+}
+
+predict.ddalpha <- function(object, 
+                            objects, 
+                            outsider.method = NULL, 
+                            use.convex = NULL, ...){
+  return(ddalpha.classify(object, objects, outsider.method, use.convex))
 }

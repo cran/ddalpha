@@ -52,9 +52,9 @@ For details see Pokotylo and Mosler (2015).
 Numerical vector of potentials, one for each row in \code{x}; or one potential value if \code{x} is a numerical vector.
 }
 \references{
-Aizerman, M. A., Braverman, E. M. and Rozonoer, L. I. (1970). \emph{The Method of Potential Functions in the Theory of Machine Learning}, Nauka, Moscow
+Aizerman, M.A., Braverman, E.M., and Rozonoer, L.I. (1970). \emph{The Method of Potential Functions in the Theory of Machine Learning}. Nauka (Moscow).
 
-Pokotylo, O. and Mosler, K. (2015). Classification with the pot-pot plot. 
+Pokotylo, O. and Mosler, K. (2015). Classification with the pot-pot plot. \emph{Mimeo}.
 }
 \seealso{
 \code{\link{depth.halfspace}} for calculation of the Tukey depth.

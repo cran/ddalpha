@@ -941,5 +941,5 @@ dataf.growth <- function() return(structure(list(
     "boy", "boy", "boy", "boy", "boy", "boy", "boy", "boy", "boy", 
     "boy", "boy", "boy", "boy", "boy", "boy", "boy", "boy", "boy", 
     "boy", "boy", "boy", "boy", "boy", "boy", "boy", "boy", "boy", 
-    "boy", "boy", "boy")))
+    "boy", "boy", "boy")), class = "functional")
 )

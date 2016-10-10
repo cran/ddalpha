@@ -39,13 +39,13 @@ The depth representation is calculated in the same way as in \code{\link{depth.h
 Matrix of objects, each object (row) is represented via its depths (columns) w.r.t. each of the classes of the training sample; order of the classes in columns corresponds to the one in the argument \code{cardinalities}.
 }
 \references{
-Cuesta-Albertos, J.A. and Nieto-Reyes, A. (2008), The randomTukey depth, \emph{Computational Statistics and Data Analysis}, \bold{52}, 4979--4988.
+Cuesta-Albertos, J.A. and Nieto-Reyes, A. (2008). The random Tukey depth. \emph{Computational Statistics and Data Analysis} \bold{52} 4979--4988.
 
-Lange, T., Mosler, K. and Mozharovskyi, P. (2014), DD\eqn{\alpha}-classification of asymmetric and fat-tailed data, In: Spiliopoulou, M., Schmidt-Thieme, L., Janning, R. (eds), \emph{Data Analysis, Machine Learning and Knowledge Discovery}, Springer (Berlin), 71--78.
+Dyckerhoff, R. and Mozharovskyi, P. (2016). Exact computation of the halfspace depth. \emph{Computational Statistics and Data Analysis} \bold{98} 19--30.
 
-Mozharovskyi. P., Mosler, K. and Lange, T. (2014), Classifying real-world data with the \eqn{DD\alpha}-procedure, \emph{Advances in Data Analysis and Classification}, to appear.
+Rousseeuw, P.J. and Ruts, I. (1996). Algorithm AS 307: Bivariate location depth. \emph{Journal of the Royal Statistical Society. Seriec C (Applied Statistics)} \bold{45} 516--526.
 
-Tukey, J.W. (1974), Mathematics and the picturing of data, In: \emph{Proceeding of the International Congress of Mathematicians}, Vancouver, 523--531.
+Tukey, J.W. (1974). Mathematics and the picturing of data. In: \emph{Proceeding of the International Congress of Mathematicians}, Vancouver, 523--531.
 }
 \seealso{
 \code{\link{ddalpha.train}} and \code{\link{ddalpha.classify}} for application, \code{\link{depth.halfspace}} for calculation of the Tukey depth.

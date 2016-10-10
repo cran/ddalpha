@@ -36,11 +36,9 @@ Zuo and Serfling (2000) proposed Oja depth based on the Oja outlyingness functio
 Numerical vector of depths, one for each row in \code{x}; or one depth value if \code{x} is a numerical vector.
 }
 \references{
-
-Oja, H. (1983). Descriptive statistics for multivariate distributions. \emph{Statistics & Probability Letters}, \bold{1(6)}, 327--332. 
+Oja, H. (1983). Descriptive statistics for multivariate distributions. \emph{Statistics & Probability Letters} \bold{1} 327--332.
 
 Zuo, Y.J. and Serfling, R. (2000). General notions of statistical depth function. \emph{The Annals of Statistics} \bold{28} 461--482.
-
 }
 \seealso{
 \code{\link{depth.halfspace}} for calculation of the Tukey depth.

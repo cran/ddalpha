@@ -10,7 +10,7 @@
 
 gcolors = c("red", "blue", "green", "orange", "violet")
 
-depth.contours.ddalpha <- function(ddalpha, main = "", xlab="", ylab = "", drawplot = T, frequency=100, levels = 10, ...){
+depth.contours.ddalpha <- function(ddalpha, main = "", xlab="", ylab = "", drawplot = T, frequency=100, levels = 10, drawsep = T, ...){
   
   if(class(ddalpha)!="ddalpha")
     stop("Not a 'ddalpha' classifier")
@@ -36,12 +36,11 @@ depth.contours.ddalpha <- function(ddalpha, main = "", xlab="", ylab = "", drawp
   margins = c(min(data[,1]), max(data[,1]), min(data[,2]), max(data[,2]));  margins = margins + c(-0.1*(margins[2]-margins[1]), 0.1*(margins[2]-margins[1]), -0.1*(margins[4]-margins[3]), 0.1*(margins[4]-margins[3]))
   C = ncol(data)
   
+  cr = 0
   
   if (drawplot)
     plot(data, col = classes, main = main, xlab=xlab, ylab = ylab, ...)
-  if (is.null(ddalpha$methodDepth))
-    invisible(0)
-  
+  if (!is.null(ddalpha$methodDepth))
   if (ddalpha$methodDepth == "Mahalanobis" && ddalpha$mahEstimate == "moment"){
     # Mahalanobis depth
     for (i in seq(length(ddalpha$patterns))){
@@ -71,10 +70,21 @@ depth.contours.ddalpha <- function(ddalpha, main = "", xlab="", ylab = "", drawp
 #         }  else
           # no formal depth regions
         {
-          return (contourRegions(ddalpha, margins = margins, depths = levels, frequency=frequency))
+          cr = (contourRegions(ddalpha, margins = margins, depths = levels, frequency=frequency))
         }   
   
-  return (0)
+  lwd = 2
+  if(drawsep){
+    gx <- seq(min(ddalpha$raw[, 1]), max(ddalpha$raw[, 1]), length = frequency)
+    gy <- seq(min(ddalpha$raw[, 2]), max(ddalpha$raw[, 2]), length = frequency)
+    y <- as.matrix(expand.grid(gx, gy))   
+    
+    depthcontours = ddalpha.classify(ddalpha = ddalpha, objects = y)
+    depthcontours = as.numeric(unlist(depthcontours))
+    contour(gx, gy, matrix(depthcontours, nrow=length(gx), ncol = length(gy)), add = TRUE, levels = unique(depthcontours)+0.5, drawlabels = FALSE, col = "black", lwd = lwd)
+  }
+  
+  invisible(cr)
 }
 
 
@@ -85,12 +95,18 @@ depth.contours <- function(data, depth, main = "", xlab="", ylab = "", drawplot 
   
   if (ncol(data) != 2)
   {
-    warning ("The contours may be drawn only for 2 dimensional datasets")
-    return
+    stop("The contours may be drawn only for 2 dimensional datasets")
   }
   
-  if (drawplot)
-    plot(data, col = col, main = main, xlab=xlab, ylab = ylab, ...)
+  if (drawplot){
+    #cc = tryCatchCapture(
+      plot(data, col = col, main = main, xlab=xlab, ylab = ylab, ...)
+    #, err = F) # catch all warnings about unused params
+    #wrns = sort(unique(cc$warnings))
+    #values = gsub("\"(.+)\".+", "\\1", wrns)
+    #if(lenght(values)>0)
+    #  warning("Unused by 'plot' arguments: ", paste(unused, collapse = ', '))
+  }
   margins = c(min(data[,1]), max(data[,1]), min(data[,2]), max(data[,2]));  margins = margins + c(-0.1*(margins[2]-margins[1]), 0.1*(margins[2]-margins[1]), -0.1*(margins[4]-margins[3]), 0.1*(margins[4]-margins[3]))
   
   if (depth == "Mahalanobis"){
@@ -219,15 +235,17 @@ contourRegionsData <- function(data, depth, margins = NULL, depths = c(0.1, 0.2,
   if (is.null(depth) || depth == "none"){
     invisible (0);}
   else{
-  df = switch(depth,
-              "zonoid" = depth.zonoid,
-              "halfspace" = depth.halfspace,
-              "simplicialVolume" = depth.simplicialVolume,
-              "simplicial" = depth.simplicial,
-              "Mahalanobis" = function(x, X) (.Mahalanobis_depth(x, colMeans(X), solve(cov(X)))),
-              "projection" = depth.projection,
-              "spatial" = depth.spatial
-  )
+  # df = switch(depth,
+  #             "zonoid" = function(x, data, ...) depth.zonoid(x, data) ,
+  #             "halfspace" = depth.halfspace,
+  #             "simplicialVolume" = depth.simplicialVolume,
+  #             "simplicial" = depth.simplicial,
+  #             "Mahalanobis" = function(x, X) (.Mahalanobis_depth(x, colMeans(X), solve(cov(X)))),
+  #             "projection" = depth.projection,
+  #             "spatial" = depth.spatial
+  # )
+  df = function(x, data, ...) 
+        ddalpha::depth.(x, data, notion = depth, ...)
   
   if (is.null(margins)){
     margins = c(min(data[,1]), max(data[,1]), min(data[,2]), max(data[,2]));  margins = margins + c(-0.1*(margins[2]-margins[1]), 0.1*(margins[2]-margins[1]), -0.1*(margins[4]-margins[3]), 0.1*(margins[4]-margins[3]))

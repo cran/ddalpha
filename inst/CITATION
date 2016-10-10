@@ -1,32 +1,15 @@
 citHeader("To cite ddalpha in publications use:")
 
 citEntry(entry = "Article",
-  title        = "Fast nonparametric classification based on data depth",
-  author       = personList(as.person("Tatjana Lange"),
-                            as.person("Karl Mosler"),
-                            as.person("Pavlo Mozharovskyi")),
-  journal      = "Statistical Papers",  
-  year         = "2014",
-  volume       = "55",
-  number       = "1",
-  pages        = "49-69",
+  title        = "Depth and depth-based classification with R-package ddalpha",
+  author       = personList(as.person("Oleksii Pokotylo"),
+                            as.person("Pavlo Mozharovskyi"),
+                            as.person("Rainer Dyckerhoff")),
+  journal      = "arXiv:1608.04109",
+  year         = "2016",
   
   textVersion  = 
-  paste("Lange, T., Mosler, K. and Mozharovskyi, P. (2014).",
-        "Fast nonparametric classification based on data depth.",
-        "Statistical Papers, 55, 49-69")
+  paste("Pokotylo, O., Mozharovskyi, P., and Dyckerhoff, R. (2016).",
+        "Depth and depth-based classification with R-package ddalpha",
+        "arXiv:1608.04109")
 )
-
-citEntry(entry = "phdthesis",
-  title        = "Contributions to Depth-based Classification and Computation of the Tukey Depth",
-  author       = as.person("Pavlo Mozharovskyi"),
-  publisher    = "Verlag Dr. Kovac, Hamburg",
-  year         = "2015",
-  school       = "Universitaet zu Koeln",
-
-  textVersion  = 
-  paste("Mozharovskyi, P. (2013),",
-        "Contributions to Depth-based Classification and Computation of the Tukey Depth.", 
-        "Verlag Dr. Kovac, Hamburg")
-)
-
