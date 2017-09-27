@@ -1,7 +1,7 @@
 \name{depth.simplicialVolume}
 \alias{depth.simplicialVolume}
 \title{
-Calculate the simplicial volume depth
+Calculate Simplicial Volume Depth
 }
 \description{
 Calculates the simpicial volume depth of points w.r.t. a multivariate data set.
@@ -23,12 +23,12 @@ Matrix of data where each row contains a \eqn{d}-variate point, w.r.t. which the
 Number (\eqn{k>1}) or portion (if \eqn{0<k<1}) of simplices that are considered if \code{exact=F}. If \eqn{k>1}, then the algorithmic complexity is polynomial in \eqn{d} but is independent of the number of observations in \code{data}, given \eqn{k}. If \eqn{0<k<1}, then the algorithmic complexity is exponential in the number of observations in \code{data}, but the calculation precision stays approximately the same.
 }
   \item{seed}{
-The random seed. The dafault value \code{seed=0} makes no changes.
+The random seed. The default value \code{seed=0} makes no changes.
 }
 }
 \details{
 Calculates Oja depth (also: Simplicial volume depth). 
-At first the Oja outlyingness function \code{O(x,data)} is calculated as the avarage of the volumes of simplices built on \eqn{d} data points and the measurement point \code{x} (Oja, 1983).
+At first the Oja outlyingness function \code{O(x,data)} is calculated as the average of the volumes of simplices built on \eqn{d} data points and the measurement point \code{x} (Oja, 1983).
 
 Zuo and Serfling (2000) proposed Oja depth based on the Oja outlyingness function as \code{1/(1 + O(x,data)/S)}, where S is a square root of the determinant of \code{cov(data)}, which makes the depth function affine-invariant.
 }

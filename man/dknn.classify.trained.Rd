@@ -2,10 +2,10 @@
 \alias{dknn.classify.trained}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Depth-based kNN
+Depth-Based kNN
 }
 \description{
-The implementation of the affine-invariant depht-based kNN of Paindaveine and Van Bever (2015). 
+The implementation of the affine-invariant depth-based kNN of Paindaveine and Van Bever (2015). 
 }
 \usage{
 dknn.classify.trained(objects, dknn)

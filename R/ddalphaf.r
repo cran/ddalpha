@@ -1,4 +1,4 @@
-ddalphaf.train <- function(dataf, labels, 
+ddalphaf.train <- function(dataf, labels, subset,
                            adc.args = list(instance = "avr", 
                                            numFcn = -1, 
                                            numDer = -1), 
@@ -28,6 +28,11 @@ ddalphaf.train <- function(dataf, labels,
             length(df$args) == length(df$vals) &&
             sort(df$args) == df$args))
       stop("Argument 'dataf' must be a list containing lists (functions) of two vectors of equal length, named 'args' and 'vals': arguments sorted in ascending order and corresponding them values respectively")
+  
+  if(!missing(subset)) {
+    dataf = dataf[subset]
+    labels = labels[subset]
+  }
   
   # Check "labels"
   if (!(length(dataf)==length(labels) && length(unique(labels))>=2))
@@ -114,7 +119,7 @@ ddalphaf.train <- function(dataf, labels,
   return (ddalphaf)
 }
 
-ddalphaf.classify <- function(ddalphaf, objectsf, ...){
+ddalphaf.classify <- function(ddalphaf, objectsf, subset, ...){
   # Classifies functions
   # Args:
   #   objectsf: sample to classify, a list containing lists (functions) of 
@@ -131,6 +136,11 @@ ddalphaf.classify <- function(ddalphaf, objectsf, ...){
   if (!is.null(objectsf$args)){
     objectsf = list(objectsf) # there was a single element 
   }
+  
+  if(!missing(subset)) {
+    objectsf = objectsf[subset]
+  }
+  
   for (df in objectsf)
     if (!(is.list(df) && length(df) == 2 &&
             !is.null(df$args) && !is.null(df$vals) &&
@@ -180,8 +190,8 @@ ddalphaf.classify <- function(ddalphaf, objectsf, ...){
   return (classes)
 }
 
-predict.ddalphaf <- function(object, objectsf, ...){
-  return(ddalphaf.classify(object, objectsf, ...))
+predict.ddalphaf <- function(object, objectsf, subset, ...){
+  return(ddalphaf.classify(object, objectsf, subset, ...))
 }
 
 is.in.convexf <- function(objectsf, dataf, cardinalities, 

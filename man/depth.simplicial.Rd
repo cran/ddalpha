@@ -1,7 +1,7 @@
 \name{depth.simplicial}
 \alias{depth.simplicial}
 \title{
-Calculate the simplicial depth
+Calculate Simplicial Depth
 }
 \description{
 Calculates the simplicial depth of points w.r.t. a multivariate data set.
@@ -23,7 +23,7 @@ Matrix of data where each row contains a \eqn{d}-variate point, w.r.t. which the
 Number (\eqn{k>1}) or portion (if \eqn{0<k<1}) of simplices that are considered if \code{exact=F}. If \eqn{k>1}, then the algorithmic complexity is polynomial in \eqn{d} but is independent of the number of observations in \code{data}, given \eqn{k}. If \eqn{0<k<1}, then the algorithmic complexity is exponential in the number of observations in \code{data}, but the calculation precision stays approximately the same.
 }
   \item{seed}{
-the random seed. The dafault value \code{seed=0} makes no changes.
+the random seed. The default value \code{seed=0} makes no changes.
 }
 }
 \details{
@@ -33,9 +33,9 @@ Calculates simplicial depth. Simplicial depth is counted as a probability that a
 Numerical vector of depths, one for each row in \code{x}; or one depth value if \code{x} is a numerical vector.
 }
 \references{
-Chaudhuri, P. (1996). On a geometric notion of quantiles for multivariate data. \emph{Journal of the Americal Statistical Association} \bold{91} 862--872.
+Chaudhuri, P. (1996). On a geometric notion of quantiles for multivariate data. \emph{Journal of the American Statistical Association} \bold{91} 862--872.
 
-Liu, R. Y. (1990). On a Notion of Data Depth Based on Random Simplices. \emph{The Annals of Statistics} \bold{18} 405--414.
+Liu, R. Y. (1990). On a notion of data depth based on random simplices. \emph{The Annals of Statistics} \bold{18} 405--414.
 
 Rousseeuw, P.J. and Ruts, I. (1996). Algorithm AS 307: Bivariate location depth. \emph{Journal of the Royal Statistical Society. Seriec C (Applied Statistics)} \bold{45} 516--526.
 }

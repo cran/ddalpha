@@ -10,7 +10,8 @@ draw.ddplot <- function(ddalpha, depth.space, cardinalities,
     col = c(col, rep(colors[c], ddalpha$patterns[[c]]$cardinality))
     }
     
-    if (xlab == "C1" && ylab == "C2"){
+    if (class(xlab) != "expression" && class(ylab) != "expression" &&
+        xlab == "C1" && ylab == "C2"){
       xlab = ddalpha$patterns[[1]]$name
       ylab = ddalpha$patterns[[2]]$name
     }

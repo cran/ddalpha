@@ -2,7 +2,7 @@
 \alias{dataf.tecator}
 \docType{data}
 \title{
-Functional data set spectrometric data (Tecator)
+Functional Data Set Spectrometric Data (Tecator)
 }
 \description{
 This dataset is a part of the original one which can be found at

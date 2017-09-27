@@ -2,10 +2,10 @@
 \alias{dknn.classify}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Depth-based kNN
+Depth-Based kNN
 }
 \description{
-The implementation of the affine-invariant depht-based kNN of Paindaveine and Van Bever (2015). 
+The implementation of the affine-invariant depth-based kNN of Paindaveine and Van Bever (2015). 
 }
 \usage{
 dknn.classify(objects, data, k, depth = "halfspace", seed = 0)
@@ -26,7 +26,7 @@ Character string determining which depth notion to use; the default value is \co
 Currently the method supports the following depths: "halfspace", "Mahalanobis", "simplicial".
 }
   \item{seed}{
-the random seed. The dafault value \code{seed=0} makes no changes.
+the random seed. The default value \code{seed=0} makes no changes.
 }
 }
 %\details{

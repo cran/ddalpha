@@ -1,7 +1,7 @@
 \name{draw.ddplot}
 \alias{draw.ddplot}
 \title{
-Draw \emph{DD}-plot
+Draw \emph{DD}-Plot
 }
 \description{
 The function draws the \emph{DD}-plot either of the existing DD\eqn{\alpha}-classifier of the depth space.

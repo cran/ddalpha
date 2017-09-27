@@ -1,10 +1,10 @@
 \name{depth.halfspace}
 \alias{depth.halfspace}
 \title{
-Calculate the halfspace Depth
+Calculate Halfspace Depth
 }
 \description{
-Calculates the random or exact Tukey (=halfspace, location) depth  (Tukey, 1975) of points w.r.t. a multivariate data set.
+Calculates the exact or random Tukey (=halfspace, location) depth  (Tukey, 1975) of points w.r.t. a multivariate data set.
 }
 \usage{
 depth.halfspace(x, data, exact, method, num.directions = 1000, seed = 0)
@@ -29,13 +29,13 @@ The name of the method may be given as well as just parameter \code{exact}, in w
 Number of random directions to be generated (for \code{method="Sunif.1D"}). The algorithmic complexity is linear in the number of observations in \code{data}, given the number of directions.
 }
   \item{seed}{
-The random seed. The dafault value \code{seed=0} makes no changes (for \code{method="Sunif.1D"}).
+The random seed. The default value \code{seed=0} makes no changes (for \code{method="Sunif.1D"}).
 }
 }
 \details{
 For \code{exact=F}, if \code{method="Sunif.1D"}, the Tukey depth is computed approximately using the random Tukey depth method proposed by Cuesta-Albertos and Nieto-Reyes (2008). Here the depth is determined as the minimum univariate Tukey depth of the - on lines in several directions - projected data. The directions are distributed uniformly on the \eqn{(d-1)}-sphere; the same direction set is used for all points.
 
-For \code{exact=T}, the Tukey depth is computed exactly as the minimum of the sum of the depths in two orthogonal complementary affine subspaces, which dimensions add to \eqn{d}: one of the subspaces (combinatorial) is the \eqn{k}-dimensional hyperplane through (a point from) \code{x} and \eqn{k} points from \code{data}, another one is its orthogonal complement (see Dyckerhoff and Mozharovskyi, 2014 for the detailed description of the algorithmic framework). The algorithm then minimizes the depth over all combinations of \eqn{k} points, in which the depth in the orthogonal complements is computed using an exact algorithm. In this case, parameter \code{method} specifies the dimensionality \eqn{k} of the combinatorial space. The implemented (reasonable) algorithms (and corresponding names) are: \eqn{k=1} (or \code{method="recursive"}), \eqn{k=d-2} (or \code{method="plane"}), and \eqn{k=d-1} (or \code{method="line"}).
+For \code{exact=T}, the Tukey depth is computed exactly as the minimum of the sum of the depths in two orthogonal complementary affine subspaces, which dimensions add to \eqn{d}: one of the subspaces (combinatorial) is the \eqn{k}-dimensional hyperplane through (a point from) \code{x} and \eqn{k} points from \code{data}, another one is its orthogonal complement (see Dyckerhoff and Mozharovskyi, 2016 for the detailed description of the algorithmic framework). The algorithm then minimizes the depth over all combinations of \eqn{k} points, in which the depth in the orthogonal complements is computed using an exact algorithm. In this case, parameter \code{method} specifies the dimensionality \eqn{k} of the combinatorial space. The implemented (reasonable) algorithms (and corresponding names) are: \eqn{k=1} (or \code{method="recursive"}), \eqn{k=d-2} (or \code{method="plane"}), and \eqn{k=d-1} (or \code{method="line"}).
 }
 \value{
 Numerical vector of depths, one for each row in \code{x}; or one depth value if \code{x} is a numerical vector.

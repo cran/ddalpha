@@ -1,7 +1,7 @@
 \name{depth.projection}
 \alias{depth.projection}
 \title{
-  Calculate the Projection Depth
+  Calculate Projection Depth
 }
 \description{
   Calculates the projection depth of points w.r.t. a multivariate data set.
@@ -27,7 +27,7 @@
 Number of random directions to be generated for \code{method = "random"}. With the growth of n the complexity grows linearly for the same number of directions. 
 }
   \item{seed}{
-the random seed. The dafault value \code{seed=0} makes no changes.
+the random seed. The default value \code{seed=0} makes no changes.
 }
 }
 \details{
@@ -35,7 +35,7 @@ the random seed. The dafault value \code{seed=0} makes no changes.
 used by Stahel (1981) and Donoho (1982), and has been first formulated by Liu (1992). The
 worst case outlyingness is obtained by maximizing an outlyingness measure over all univariate
 projections. In practice most
-often \emph{median}, and \emph{median absolute deviation from the mediam }(MAD), are used as they are robust measures.
+often \emph{median}, and \emph{median absolute deviation from the median }(MAD), are used as they are robust measures.
 }
 \value{
   Numerical vector of depths, one for each row in \code{x}; or one depth value if \code{x} is a numerical vector.

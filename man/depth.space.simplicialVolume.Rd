@@ -1,7 +1,7 @@
 \name{depth.space.simplicialVolume}
 \alias{depth.space.simplicialVolume}
 \title{
-Calculate Depth Space using simplicial volume Depth
+Calculate Depth Space using Simplicial Volume Depth
 }
 \description{
 Calculates the representation of the training classes in depth space using simplicial volume depth.
@@ -23,7 +23,7 @@ Numerical vector of cardinalities of each class in \code{data}, each entry corre
 Number (\eqn{k>1}) or portion (if \eqn{0<k<1}) of simplices that are considered if \code{exact=F}. If \eqn{k>1}, then the algorithmic complexity is polynomial in \eqn{d} but is independent of the number of observations in \code{data}, given \eqn{k}. If \eqn{0<k<1}, then the algorithmic complexity is exponential in the number of observations in \code{data}, but the calculation precision stays approximately the same.
 }
   \item{seed}{
-The random seed. The dafault value \code{seed=0} makes no changes.
+The random seed. The default value \code{seed=0} makes no changes.
 }
 }
 \details{

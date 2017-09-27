@@ -1,11 +1,11 @@
 \name{ddalphaf.getErrorRateCV}
 \alias{ddalphaf.getErrorRateCV}
 \title{
-Test functional DDalpha-classifier
+Test Functional DD-Classifier
 }
 \description{
 Performs a cross-validation procedure over the given data. 
-On each step every \code{numchunks} observation is removed from the data, the functional DDalpha-classifier is trained on these data and tested on the removed observations.
+On each step every \code{numchunks} observation is removed from the data, the functional DD-classifier is trained on these data and tested on the removed observations.
 }
 \usage{
 ddalphaf.getErrorRateCV (dataf, labels, numchunks = 10, disc.type = c("LS", "comp"),  ...)
@@ -15,7 +15,7 @@ ddalphaf.getErrorRateCV (dataf, labels, numchunks = 10, disc.type = c("LS", "com
 list containing lists (functions) of two vectors of equal length, named "args" and "vals": arguments sorted in ascending order and corresponding them values respectively
 }
   \item{labels}{
-list of output labels of the functinal observations
+list of output labels of the functional observations
 }
   \item{numchunks}{
 number of subsets of testing data. Equals to the number of times the classifier is trained.

@@ -1,7 +1,7 @@
 \name{depth.graph}
 \alias{depth.graph}
 \title{
-Depth graph
+Depth Graph
 }
 \description{
 Builds the data depth graphs for 2-dimensional data. The graph is built using \code{\link{persp}}.

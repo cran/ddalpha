@@ -2,15 +2,15 @@
 \alias{ddalpha.classify}
 \alias{predict.ddalpha}
 \title{
-Classify using DD\eqn{\alpha}-Classifier
+Classify using DD-Classifier
 }
 \description{
-Classifies data using the DD\eqn{\alpha}-classifier and a specified outsider treatment.
+Classifies data using the DD-classifier and a specified outsider treatment.
 }
 \usage{
-ddalpha.classify(ddalpha, objects, outsider.method = NULL, use.convex = NULL)
+ddalpha.classify(ddalpha, objects, subset, outsider.method = NULL, use.convex = NULL)
 
-\method{predict}{ddalpha}(object, objects, outsider.method = NULL, use.convex = NULL, ...)
+\method{predict}{ddalpha}(object, objects, subset, outsider.method = NULL, use.convex = NULL, ...)
 }
 \arguments{
   \item{ddalpha, object}{
@@ -18,6 +18,9 @@ DD\eqn{\alpha}-classifier (obtained by \code{\link{ddalpha.train}}).
 }
   \item{objects}{
 Matrix containing objects to be classified; each row is one \eqn{d}-dimensional object.
+}
+  \item{subset}{
+an optional vector specifying a subset of observations to be classified.
 }
   \item{outsider.method}{
 Character string, name of a treatment to be used for outsiders; one of those trained by \code{\link{ddalpha.train}}. If the treatment was specified using the argument \code{outsider.methods} then use the name of the method.
@@ -51,7 +54,7 @@ Mozharovskyi, P., Mosler, K., and Lange, T. (2015). Classifying real-world data 
 Vasil'ev, V.I. (2003). The reduction principle in problems of revealing regularities I. \emph{Cybernetics and Systems Analysis} \bold{39} 686--694.
 }
 \seealso{
-\code{\link{ddalpha.train}} to train the DD\eqn{\alpha}-classifier.
+\code{\link{ddalpha.train}} to train the DD-classifier.
 }
 \examples{
 # Generate a bivariate normal location-shift classification task

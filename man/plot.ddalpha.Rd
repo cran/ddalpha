@@ -1,7 +1,7 @@
 \name{plot.ddalpha}
 \alias{plot.ddalpha}
 \title{
-Plots for the "ddalpha" class
+Plots for the "ddalpha" Class
 }
 \description{
 \code{\link{depth.contours.ddalpha}} -- builds the data depth contours for multiclass 2-dimensional data using the trained classifier.

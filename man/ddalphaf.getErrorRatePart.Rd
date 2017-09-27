@@ -1,11 +1,11 @@
 \name{ddalphaf.getErrorRatePart}
 \alias{ddalphaf.getErrorRatePart}
 \title{
-Test functional DDalpha-classifier
+Test Functional DD-Classifier
 }
 \description{
 Performs a benchmark procedure by partitioning the given data. 
-On each of \code{times} steps \code{size} observations are removed from the data, the functional DDalpha-classifier is trained on these data and tested on the removed observations.
+On each of \code{times} steps \code{size} observations are removed from the data, the functional DD-classifier is trained on these data and tested on the removed observations.
 }
 \usage{
 ddalphaf.getErrorRatePart(dataf, labels, size = 0.3, times = 10, 
@@ -16,7 +16,7 @@ ddalphaf.getErrorRatePart(dataf, labels, size = 0.3, times = 10,
 list containing lists (functions) of two vectors of equal length, named "args" and "vals": arguments sorted in ascending order and corresponding them values respectively
 }
   \item{labels}{
-list of output labels of the functinal observations
+list of output labels of the functional observations
 }
   \item{size}{
   the excluded sequences size. Either an integer between \eqn{1} and \eqn{n}, or a fraction of data between \eqn{0} and \eqn{1}.

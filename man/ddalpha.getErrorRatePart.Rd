@@ -5,7 +5,7 @@ Test DD-Classifier
 }
 \description{
 Performs a benchmark procedure by partitioning the given data. 
-On each of \code{times} steps \code{size} observations are removed from the data, the DD-Classifier is trained on these data and tested on the removed observations.
+On each of \code{times} steps \code{size} observations are removed from the data, the DD-classifier is trained on these data and tested on the removed observations.
 }
 \usage{
 ddalpha.getErrorRatePart(data, size = 0.3, times = 10,  ...)

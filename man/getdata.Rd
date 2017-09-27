@@ -54,10 +54,10 @@
 \alias{wine_2vs3}
 
 \title{
-Data for classification
+Data for Classification
 }
 \description{
-50 multivariate data sets for binnary classification. For more details refer {\url{http://www.wisostat.uni-koeln.de/de/forschung/software-und-daten/data-for-classification/}}
+50 multivariate data sets for binary classification. For more details refer {\url{http://www.wisostat.uni-koeln.de/de/forschung/software-und-daten/data-for-classification/}}
 
 The \code{getdata} function gets the data set from the package, and returns it. The dataset itself does not appear in the global environment and the existing variables with the same name remain unchanged.
 }

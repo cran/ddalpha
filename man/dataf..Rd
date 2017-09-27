@@ -2,7 +2,7 @@
 \alias{dataf.*}
 \docType{data}
 \title{
-Functional data sets
+Functional Data Sets
 }
 \description{
 The functions generate data sets of functional two-dimensional data of two or more classes.
@@ -31,6 +31,12 @@ More details about the datasets in the topics:
 \code{\link{dataf.growth}}
 
 \code{\link{dataf.medflies}}
+
+\code{\link{dataf.population}}
+
+\code{\link{dataf.population2010}}
+
+\code{\link{dataf.tecator}}
 
 \code{\link{dataf.tecator}}
 

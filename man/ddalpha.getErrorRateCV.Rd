@@ -5,7 +5,7 @@ Test DD-Classifier
 }
 \description{
 Performs a cross-validation procedure over the given data. 
-On each step every \code{numchunks} observation is removed from the data, the DD-Classifier is trained on these data and tested on the removed observations.
+On each step every \code{numchunks} observation is removed from the data, the DD-classifier is trained on these data and tested on the removed observations.
 }
 \usage{
 ddalpha.getErrorRateCV (data, numchunks = 10,  ...)

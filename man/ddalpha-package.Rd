@@ -15,14 +15,14 @@ The package implements the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharov
 \tabular{ll}{
 Package: \tab ddalpha\cr
 Type: \tab Package\cr
-Version: \tab 1.2.1\cr
-Date: \tab 2016-10-09\cr
+Version: \tab 1.3.1\cr
+Date: \tab 2017-09-27\cr
 License: \tab GPL-2\cr
 }
 Use \code{\link{ddalpha.train}} to train the DD-classifier and \code{\link{ddalpha.classify}} to classify with it. 
 Load sample classification problems using \code{\link{getdata}}. The package contains 50 classification problems built of 33 sets of real data.
 
-The list of the implemented depths is found in topic \code{\link{depth.}}. Corresponding to them depth representations of the data are obtained with \code{\link{depth.space.}}. Functions \code{\link{depth.contours}} and \code{\link{depth.contours.ddalpha}} build depth contours, and \code{\link{depth.graph}} builds depth graphs for two-dimensional data. Function \code{\link{draw.ddplot}} draws DD-plot for the existing DD-classifier, or for pre-calculated depth space.
+The list of the implemented multivariate depths is found in topic \code{\link{depth.}}, for functional depths see \code{\link{depthf.}}. The depth representations of the multivariate data are obtained with \code{\link{depth.space.}}. Functions \code{\link{depth.contours}} and \code{\link{depth.contours.ddalpha}} build depth contours, and \code{\link{depth.graph}} builds depth graphs for two-dimensional data. Function \code{\link{draw.ddplot}} draws DD-plot for the existing DD-classifier, or for pre-calculated depth space.
 
 The package supports user-defined depths and classifiers, see topic \code{\link{Custom Methods}}. A pre-calculated DD-plot may also be used as \code{data}, see topic \code{\link{ddalpha.train}}.
 
@@ -37,9 +37,11 @@ Use \code{\link{compclassf.train}} and \code{\link{ddalphaf.train}} to train the
 \author{
 Oleksii Pokotylo, <alexey.pokotylo at gmail.com>
 
-Pavlo Mozharovskyi, <pavlo.mozharovskyi at univ-rennes1.fr>
+Pavlo Mozharovskyi, <pavlo.mozharovskyi at ensai.fr>
 
 Rainer Dyckerhoff, <rainer.dyckerhoff at statistik.uni-koeln.de>
+
+Stanislav Nagy, <nagy at karlin.mff.cuni.cz>
 }
 \references{
 Pokotylo, O., Mozharovskyi, P., Dyckerhoff, R. (2016). Depth and depth-based classification with R-package ddalpha. \emph{arXiv:1608.04109}
@@ -53,10 +55,13 @@ Mosler, K. and Mozharovskyi, P. (2015). Fast DD-classification of functional dat
 Mozharovskyi, P. (2015). \emph{Contributions to Depth-based Classification and Computation of the Tukey Depth}. Verlag Dr. Kovac (Hamburg).
 
 Mozharovskyi, P., Mosler, K., and Lange, T. (2015). Classifying real-world data with the DD\eqn{\alpha}-procedure. \emph{Advances in Data Analysis and Classification} \bold{9} 287--314.
+
+Nagy, S., Gijbels, I. and Hlubinka, D.  (2017). Depth-based recognition of shape outlying functions. \emph{Journal of Computational and Graphical Statistics}. To appear.
 }
 \keyword{ package }
 \keyword{ robust }
 \keyword{ multivariate }
+\keyword{ functional }
 \keyword{ nonparametric }
 \keyword{ classif }
 \seealso{
@@ -64,7 +69,7 @@ Mozharovskyi, P., Mosler, K., and Lange, T. (2015). Classifying real-world data 
 
 \code{\link{ddalphaf.train}}, \code{\link{ddalphaf.classify}}, \code{\link{compclassf.train}}, \code{\link{compclassf.classify}}
 
-\code{\link{depth.}}, \code{\link{depth.space.}}, 
+\code{\link{depth.}}, \code{\link{depthf.}}, \code{\link{depth.space.}}, 
 
 \code{\link{is.in.convex}},
 

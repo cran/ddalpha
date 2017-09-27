@@ -46,7 +46,7 @@ You may use traditional moments or Minimum Covariance Determinant (MCD) estimate
 }
   \item{kernel.bandwidth}{
   the bandwidth parameter of the kernel. If \code{NULL} - the Scott's rule of thumb is used.
-  May be a single balue for all classes, or a vector of values for each of the classes.
+  May be a single value for all classes, or a vector of values for each of the classes.
 }
   \item{mah.parMcd}{
 is the value of the argument \code{alpha} for the function \code{\link{covMcd}}; is used when \code{pretransform = "*MCD"}.

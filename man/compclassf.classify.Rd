@@ -2,21 +2,24 @@
 \alias{compclassf.classify}
 \alias{predict.compclassf}
 \title{
-Classify using Functional componentwise classifier
+Classify using Functional Componentwise Classifier
 }
 \description{
 Classifies data using the functional componentwise classifier.
 }
 \usage{
-compclassf.classify(compclassf, objectsf, ...)
+compclassf.classify(compclassf, objectsf, subset, ...)
 
-\method{predict}{compclassf}(object, objectsf, ...)
+\method{predict}{compclassf}(object, objectsf, subset, ...)
 }
 \arguments{
   \item{compclassf, object}{
 Functional componentwise classifier (obtained by \code{\link{compclassf.train}}).
 }
   \item{objectsf}{list containing lists (functions) of two vectors of equal length, named "args" and "vals": arguments sorted in ascending order and corresponding them values respectively
+}
+  \item{subset}{
+an optional vector specifying a subset of observations to be classified.
 }
   \item{\dots}{
 additional parameters, passed to the classifier, selected with parameter \code{classifier.type} in \code{\link{compclassf.train}}.

@@ -1,7 +1,7 @@
 \name{plot.ddalphaf}
 \alias{plot.ddalphaf}
 \title{
-Plots for the "ddalphaf" class
+Plots for the "ddalphaf" Class
 }
 \description{
 

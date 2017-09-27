@@ -2,7 +2,7 @@
 \alias{depth.space.}
 
 \title{
-Calculate Depth Space using the given Depth
+Calculate Depth Space using the Given Depth
 }
 \description{
 Calculates the representation of the training classes in depth space.

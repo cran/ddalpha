@@ -15,6 +15,7 @@
 
 ddalpha.classify <- function(ddalpha, 
                              objects,
+                             subset,
                              outsider.method = NULL, 
                              use.convex = NULL){
   # Checks
@@ -31,6 +32,9 @@ ddalpha.classify <- function(ddalpha,
   if(!is.null(ddalpha$classif.formula)){
     objects = model.frame(ddalpha$classif.formula, data = objects)
   }
+  
+  if(!missing(subset))
+    objects = objects[subset,]
   
   if (ncol(objects) != ddalpha$dimension){
     warning("Dimension of the objects to be classified does not correspond to the dimension of the trained classifier. Classification can not be performed!!!")
@@ -91,11 +95,12 @@ ddalpha.classify <- function(ddalpha,
       depths <- matrix(nrow=0, ncol=ddalpha$numPatterns)
       freePoints <- objects
     }else{
-      depths <- suppressWarnings( matrix(depths[classifiableIndices,], 
+      depths <- suppressWarnings( as.matrix(depths[classifiableIndices,,drop=F], 
                        nrow=length(classifiableIndices), ncol=ddalpha$numPatterns))
-      freePoints <- objects[-classifiableIndices,,drop=F]# suppressWarnings( matrix(objects[-classifiableIndices,], 
-                           #nrow=nrow(objects)-length(classifiableIndices), 
-                           #ncol=ncol(objects)))
+      freePoints <- # objects[-classifiableIndices,,drop=F]# 
+                suppressWarnings( as.matrix(objects[-classifiableIndices,,drop=F], 
+                           nrow=nrow(objects)-length(classifiableIndices), 
+                           ncol=ncol(objects)))
     }
   }
   
@@ -143,6 +148,7 @@ ddalpha.classify <- function(ddalpha,
   
   # Classify Outsiders
   resultsOutsiders <- as.list(rep("Ignored", nrow(freePoints)))
+  freePoints
   if (is.null(outsider.method) && length(ddalpha$methodsOutsider) == 1)
     outsider.method = ddalpha$methodsOutsider[[1]]$name
   if (length(resultsOutsiders) > 0 && !is.null(outsider.method)){
@@ -180,7 +186,8 @@ ddalpha.classify <- function(ddalpha,
 
 predict.ddalpha <- function(object, 
                             objects, 
+                            subset,
                             outsider.method = NULL, 
                             use.convex = NULL, ...){
-  return(ddalpha.classify(object, objects, outsider.method, use.convex))
+  return(ddalpha.classify(object, objects, subset, outsider.method, use.convex))
 }

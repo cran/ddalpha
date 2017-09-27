@@ -1,7 +1,7 @@
 \name{depth.spatial}
 \alias{depth.spatial}
 \title{
-Calculate the Spatial Depth
+Calculate Spatial Depth
 }
 \description{
 Calculates the spatial depth of points w.r.t. a multivariate data set.

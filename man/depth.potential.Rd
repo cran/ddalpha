@@ -1,10 +1,10 @@
 \name{depth.potential}
 \alias{depth.potential}
 \title{
-Calculate the potential of the data
+Calculate Potential of the Data
 }
 \description{
-Calculate the potential of the points w.r.t. a multivariate data set. The potential is the kernel-estimated dencity multiplied by the prior probability of a class. Different from the data depths, a density estimate measures at a given point how much mass is located around it.
+Calculate the potential of the points w.r.t. a multivariate data set. The potential is the kernel-estimated density multiplied by the prior probability of a class. Different from the data depths, a density estimate measures at a given point how much mass is located around it.
 }
 \usage{
 depth.potential (x, data, pretransform = "1Mom", 
@@ -44,7 +44,7 @@ is the value of the argument \code{alpha} for the function \code{\link{covMcd}};
 }
 }
 \details{
-The potential is the kernel-estimated dencity multiplied by the prior probability of a class.
+The potential is the kernel-estimated density multiplied by the prior probability of a class.
 The kernel bandwidth matrix is decomposed into two parts, one of which describes the form of the data, and the other the width of the kernel. Then the first part is used to transform the data using the moments, while the second is employed as a parameter of the kernel and tuned to achieve the best separation.
 For details see Pokotylo and Mosler (2015).
 }
@@ -70,7 +70,6 @@ Pokotylo, O. and Mosler, K. (2015). Classification with the pot-pot plot. \emph{
 \code{\link{depth.spatial}} for calculation of spatial depth.
 
 \code{\link{depth.zonoid}} for calculation of zonoid depth.
-
 }
 \examples{
 # 3-dimensional normal distribution

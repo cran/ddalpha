@@ -1,7 +1,7 @@
 \name{depth.Mahalanobis}
 \alias{depth.Mahalanobis}
 \title{
-Calculate the Mahalanobis Depth
+Calculate Mahalanobis Depth
 }
 \description{
 Calculates the Mahalanobis depth of points w.r.t. a multivariate data set.

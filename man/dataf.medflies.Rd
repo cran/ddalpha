@@ -2,7 +2,7 @@
 \alias{dataf.medflies}
 \docType{data}
 \title{
-Relationship of age patterns of fecundity to mortality for female Medflies.
+Relationship of Age Patterns of Fecundity to Mortality for Female Medflies.
 }
 \description{
 The data set consists of number of eggs laid daily for each of 1000 medflies (Mediterranean fruit flies, Ceratitis capitata) until time of death. Data were obtained in Dr. Carey's laboratory. The main questions are to explore the relationship of age patterns of fecundity to mortality, longevity and lifetime reproduction.

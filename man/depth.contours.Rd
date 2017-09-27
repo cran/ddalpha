@@ -1,7 +1,7 @@
 \name{depth.contours}
 \alias{depth.contours}
 \title{
-Depth contours
+Depth Contours
 }
 \description{
 Builds the data depth contours for 2-dimensional data.
@@ -31,7 +31,7 @@ labels of the axes
 if set to false, the contours are built on the existing plot. 
 }
   \item{frequency}{
-number of points on each direction, x and y. Impacts the smoothness of the contures. 
+number of points on each direction, x and y. Impacts the smoothness of the contours.
 }
   \item{levels}{
 numeric vector of levels at which to draw contour lines. 
@@ -46,11 +46,9 @@ additional parameters passed to the depth functions and to \code{\link{plot}}
 }
 
 \seealso{
-\code{\link{depth.}}
-
-\code{\link{depth.contours.ddalpha}}
-
-\code{\link{depth.graph}}
+ \code{\link{depth.}}, 
+ \code{\link{depth.contours.ddalpha}}, 
+ \code{\link{depth.graph}}.
 }
 \examples{
 

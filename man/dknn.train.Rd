@@ -1,7 +1,7 @@
 \name{dknn.train}
 \alias{dknn.train}
 \title{
-Depth-based kNN
+Depth-Based kNN
 }
 \description{
 The implementation of the affine-invariant depht-based kNN of Paindaveine and Van Bever (2015). 
@@ -22,7 +22,7 @@ Character string determining which depth notion to use; the default value is \co
 Currently the method supports the following depths: "halfspace", "Mahalanobis", "simplicial".
 }
   \item{seed}{
-the random seed. The dafault value \code{seed=0} makes no changes.
+the random seed. The default value \code{seed=0} makes no changes.
 }
 }
 %\details{

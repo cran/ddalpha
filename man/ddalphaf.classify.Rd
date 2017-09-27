@@ -2,21 +2,24 @@
 \alias{ddalphaf.classify}
 \alias{predict.ddalphaf}
 \title{
-Classify using Functional DD\eqn{\alpha}-Classifier
+Classify using Functional DD-Classifier
 }
 \description{
-Classifies data using the functional DD\eqn{\alpha}-classifier.
+Classifies data using the functional DD-classifier.
 }
 \usage{
-ddalphaf.classify(ddalphaf, objectsf, ...)
+ddalphaf.classify(ddalphaf, objectsf, subset, ...)
 
-\method{predict}{ddalphaf}(object, objectsf, ...)
+\method{predict}{ddalphaf}(object, objectsf, subset, ...)
 }
 \arguments{
   \item{ddalphaf, object}{
-Functional DD\eqn{\alpha}-classifier (obtained by \code{\link{ddalphaf.train}}).
+Functional DD-classifier (obtained by \code{\link{ddalphaf.train}}).
 }
   \item{objectsf}{list containing lists (functions) of two vectors of equal length, named "args" and "vals": arguments sorted in ascending order and corresponding them values respectively
+}
+  \item{subset}{
+an optional vector specifying a subset of observations to be classified.
 }
   \item{\dots}{
 additional parameters, passed to the classifier, selected with parameter \code{classifier.type} in \code{\link{ddalphaf.train}}.

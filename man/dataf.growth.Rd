@@ -2,7 +2,7 @@
 \alias{dataf.growth}
 \docType{data}
 \title{
-Berkeley Growth Study data
+Berkeley Growth Study Data
 }
 \description{
 The data set contains the heights of 39 boys and 54 girls from age 1 to 18 and the ages at which they were collected.

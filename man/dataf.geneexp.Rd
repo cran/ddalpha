@@ -2,7 +2,7 @@
 \alias{dataf.geneexp}
 \docType{data}
 \title{
-Gene expression profile data
+Gene Expression Profile Data
 }
 \description{
 A subet of the Drosophila life cycle gene expression data of Arbeitman et al. (2002). The original data set contains 77 gene expression profiles during 58 sequential time points from the embryonic, larval, and pupal periods of the life cycle. The gene expression levels were obtained by a cDNA microarray experiment. 

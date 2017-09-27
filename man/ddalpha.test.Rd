@@ -4,7 +4,7 @@
 Test DD-Classifier
 }
 \description{
-Trains DD-Classifier on the learning sequence of the data and tests it on the testing sequence.
+Trains DD-classifier on the learning sequence of the data and tests it on the testing sequence.
 }
 \usage{
 ddalpha.test(learn, test, ...)
@@ -39,7 +39,7 @@ additional parameters passed to \code{\link{ddalpha.train}}
   the number of ignored objects (outside the convex hull of the learning data)
   }
   \item{n}{
-  the nunber of objects in the testing sequence
+  the number of objects in the testing sequence
   }
   \item{time}{
   training time
@@ -49,8 +49,8 @@ additional parameters passed to \code{\link{ddalpha.train}}
 
 
 \seealso{
-\code{\link{ddalpha.train}} to train the DD\eqn{\alpha}-classifier, 
-\code{\link{ddalpha.classify}} for classification using DD\eqn{\alpha}-classifier, 
+\code{\link{ddalpha.train}} to train the DD-classifier, 
+\code{\link{ddalpha.classify}} for classification using DD-classifier, 
 \code{\link{ddalpha.getErrorRateCV}} and \code{\link{ddalpha.getErrorRatePart}} to get error rate of the DD-classifier on particular data.
 }
 \examples{

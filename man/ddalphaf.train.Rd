@@ -1,13 +1,13 @@
 \name{ddalphaf.train}
 \alias{ddalphaf.train}
 \title{
-Functional DDalpha-classifier
+Functional DD-Classifier
 }
 \description{
-Trains the functional DDalpha-classifier
+Trains the functional DD-classifier
 }
 \usage{
-ddalphaf.train(dataf, labels,  
+ddalphaf.train(dataf, labels, subset, 
                 adc.args = list(instance = "avr", 
                                numFcn = -1, 
                                numDer = -1), 
@@ -25,6 +25,9 @@ list containing lists (functions) of two vectors of equal length, named "args" a
   \item{labels}{
 list of output labels of the functional observations
 }
+  \item{subset}{
+an optional vector specifying a subset of observations to be used in training the classifier.
+}
   \item{adc.args}{
 Represents a function sample as a multidimensional (dimension=\code{"numFcn"+"numDer"}) 
 one averaging (\code{instance = "avr"}) or evaluating (\code{instance = "val"}) for that each function and it derivative on \code{"numFcn"} 
@@ -37,7 +40,7 @@ corresponding them values respectively
   \describe{
     \item{instance}{
 type of discretizing the functions: \cr
-"avr" - by avaraging over intervals of the same length \cr
+"avr" - by averaging over intervals of the same length \cr
 "val" - by taking values on equally-spaced grid
     }
     \item{numFcn}{
@@ -62,14 +65,14 @@ F: restrict cross-validation by Vapnik-Chervonenkis bound
 maximal number of intervals for cross-validation ( max(numFcn + numDer) = maxNumIntervals )
 }
   \item{seed}{
-the random seed. The dafault value \code{seed=0} makes no changes.
+the random seed. The default value \code{seed=0} makes no changes.
 }
   \item{\dots}{
 additional parameters, passed to the classifier, selected with parameter \code{classifier.type}.
 }
 }
 \details{
-The functional DDalpha-classifier is fast nonparametric procedure for classifying functional data. It consists of
+The functional DD-classifier is fast nonparametric procedure for classifying functional data. It consists of
 a two-step transformation of the original data plus a classifier operating on a low-dimensional
 hypercube. The functional data are first mapped into a finite-dimensional location-slope space
 and then transformed by a multivariate depth function into the DD-plot, which is a subset of
@@ -81,7 +84,7 @@ smoothing techniques, is completely nonparametric and allows to achieve Bayes op
 standard distributional settings. It is robust and efficiently computable.
 }
 \value{
-Trained functional DDalpha-classifier
+Trained functional DD-classifier
 %%  If it is a LIST, use
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
@@ -94,12 +97,9 @@ Mozharovskyi, P. (2015). \emph{Contributions to Depth-based Classification and C
 }
 
 \seealso{
- \code{\link{ddalphaf.classify}} for classification using functional DDalpha-classifier,
- 
+ \code{\link{ddalphaf.classify}} for classification using functional DD\eqn{\alpha}-classifier,
  \code{\link{compclassf.train}} to train the functional componentwise classifier,
- 
  \code{\link{dataf.*}} for functional data sets included in the package.
- 
 }
 \examples{
 
@@ -115,7 +115,7 @@ test  = tail(head(dataf$dataf, 59), 10)    # elements 50:59. 5 girls, 5 boys
 #cross-validate over the whole variants up to dimension 3
 c1 = ddalphaf.train (learn, labels, classifier.type = "ddalpha", maxNumIntervals = 3)
 
-classified1 = ddalphaf.classify(test, c1)
+classified1 = ddalphaf.classify(c1, test)
 
 print(unlist(classified1))
 print(c1$adc.args) 
@@ -130,7 +130,7 @@ c2 = ddalphaf.train (learn, labels, classifier.type = "ddalpha",
                             numFcn = 0, 
                             numDer = 2)))
 
-classified2 = ddalphaf.classify(test, c2)
+classified2 = ddalphaf.classify(c2, test)
 
 print(unlist(classified2))
 print(c2$adc.args) 

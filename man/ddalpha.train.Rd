@@ -44,13 +44,13 @@ Matrix or data.frame containing training sample where each of \eqn{n} rows is on
 A pre-calculated DD-plot may be used as \code{data} with \code{depth="ddplot"}.
 }
   \item{subset}{
-an optional vector specifying a subset of observations to be used in traineng the classifier.
+an optional vector specifying a subset of observations to be used in training the classifier.
 }
   \item{depth}{
 Character string determining which depth notion to use; the default value is \code{"halfspace"}. The list of the supported depths is given in section \emph{\bold{\code{Depths}}}. To use a custom depth, see topic \code{\link{Custom Methods}}. To use an outsider treatment only set \code{depth = NULL}.
 }
   \item{separator}{
-The method used for separation on the DD-plot; can be \code{"alpha"} (the default), \code{"polynomial"}, \code{"knnlm"} or \code{"maxD"}. See section \emph{\bold{\code{Separators}}} for the description of the sparators and additional parameters. To use a custom separator, see topic \code{\link{Custom Methods}}.
+The method used for separation on the DD-plot; can be \code{"alpha"} (the default), \code{"polynomial"}, \code{"knnlm"} or \code{"maxD"}. See section \emph{\bold{\code{Separators}}} for the description of the separators and additional parameters. To use a custom separator, see topic \code{\link{Custom Methods}}.
 }
   \item{outsider.methods}{
 Vector of character strings each being a name of a basic outsider method for eventual classification; possible names are: \code{"LDA"} (the default), \code{"LDA"}, \code{"kNN"}, \code{"kNNAff"}, \code{"depth.Mahalanobis"}, \code{"RandProp"}, \code{"RandEqual"} and \code{"Ignore"}. Each method can be specified only once, replications are ignored. By specifying treatments in such a way only a basic treatment method can be chosen (by the name), and the default settings for each of the methods are applied, see 'Details'.
@@ -70,12 +70,12 @@ If the used depth method is affine-invariant and pretransform doesn't influence 
 applies no transformation to the data
   }
   \item{"1Mom", "1MCD"}{
-the data is transformed with the common covariance martix of the whole data
+the data is transformed with the common covariance matrix of the whole data
   }
   \item{"NMom", "NMCD"}{
 the data is transformed w.r.t. each class using its covariance martix. The depths w.r.t. each class are calculated using the transformed data.
   }
-  for the values \code{"1MCD", "NMCD"} \code{\link{covMcd}} is used to calculate the covariance martix, and the parameter \code{mah.parMcd} is used.
+  for the values \code{"1MCD", "NMCD"} \code{\link{covMcd}} is used to calculate the covariance matrix, and the parameter \code{mah.parMcd} is used.
   }
   
 }
@@ -86,7 +86,7 @@ the data is transformed w.r.t. each class using its covariance martix. The depth
 Logical variable indicating whether outsiders should be determined exactly, i.e. as the points not contained in any of the convex hulls of the classes from the training sample (\code{TRUE}), or those having zero depth w.r.t. each class from the training sample (\code{FALSE}). For \code{depth =} \code{"zonoid"} both values give the same result.
 }
   \item{seed}{
-the random seed. The dafault value \code{seed=0} makes no changes.
+the random seed. The default value \code{seed=0} makes no changes.
 }
   \item{...}{
 The parameters for the depth calculating and separation methods.
@@ -131,7 +131,7 @@ To use a custom separator, see topic \code{\link{Custom Methods}}.
 
 \subsection{alpha}{
 
-Trains the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharovskyi, 2014; Mozharovskyi, Mosler and Lange, 2013). The DD\eqn{\alpha}-classifier constructs a linear separating rule in the polynomial extension of the depth space with the \eqn{\alpha}-procedure (Vasil'ev, 2003); maximum degree of the polynomial products is determined via cross-validation (in the depth space).
+Trains the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharovskyi, 2014; Mozharovskyi, Mosler and Lange, 2015). The DD\eqn{\alpha}-classifier constructs a linear separating rule in the polynomial extension of the depth space with the \eqn{\alpha}-procedure (Vasil'ev, 2003); maximum degree of the polynomial products is determined via cross-validation (in the depth space).
 
 The additional parameters:
 \describe{
@@ -237,7 +237,7 @@ Mozharovskyi, P., Mosler, K., and Lange, T. (2015). Classifying real-world data 
 Vasil'ev, V.I. (2003). The reduction principle in problems of revealing regularities I. \emph{Cybernetics and Systems Analysis} \bold{39} 686--694.
 }
 \seealso{
-\code{\link{ddalpha.classify}} for classification using DD\eqn{\alpha}-classifier, 
+\code{\link{ddalpha.classify}} for classification using DD-classifier, 
 \code{\link{depth.}} for calculation of depths, 
 \code{\link{depth.space.}} for calculation of depth spaces, 
 \code{\link{is.in.convex}} to check whether a point is not an outsider.

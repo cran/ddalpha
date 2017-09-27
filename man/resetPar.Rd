@@ -1,7 +1,7 @@
 \name{resetPar}
 \alias{resetPar}
 \title{
-Reset graphical parameters
+Reset Graphical Parameters
 }
 \description{
 The function returns the default graphical parameters for \code{\link{par}}.
@@ -13,7 +13,7 @@ resetPar()
 The returned parameters are used as input parameters for \code{\link{par}}.
 }
 \value{
-The list of graphical parameters descriped in the 'Graphical Parameters' section of \code{\link{par}}.
+The list of graphical parameters described in the 'Graphical Parameters' section of \code{\link{par}}.
 }
 \examples{
 

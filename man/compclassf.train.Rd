@@ -1,13 +1,13 @@
 \name{compclassf.train}
 \alias{compclassf.train}
 \title{
-Functional componentwise classifier
+Functional Componentwise Classifier
 }
 \description{
 Trains the functional componentwise classifier
 }
 \usage{
-compclassf.train (dataf, labels, 
+compclassf.train (dataf, labels, subset,
                   to.equalize = TRUE, 
                   to.reduce = TRUE, 
                   classifier.type = c("ddalpha", "maxdepth", "knnaff", "lda", "qda"), 
@@ -20,6 +20,9 @@ list containing lists (functions) of two vectors of equal length, named "args" a
 }
   \item{labels}{
 list of output labels of the functional observations
+}
+  \item{subset}{
+an optional vector specifying a subset of observations to be used in training the classifier.
 }
   \item{to.equalize}{
 Adjust the data to have equal (the largest) argument interval.
@@ -55,7 +58,7 @@ Delaigle, A., Hall, P., and Bathia, N. (2012). Componentwise classification and 
 \seealso{
  \code{\link{compclassf.classify}} for classification using functional componentwise classifier,
  
- \code{\link{ddalphaf.train}} to train the functional DDalpha-classifier,
+ \code{\link{ddalphaf.train}} to train the functional DD-classifier,
  
  \code{\link{dataf.*}} for functional data sets included in the package.
  

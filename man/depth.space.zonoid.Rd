@@ -17,7 +17,7 @@ Matrix containing training sample where each row is a \eqn{d}-dimensional object
 Numerical vector of cardinalities of each class in \code{data}, each entry corresponds to one class.
 }
   \item{seed}{
-the random seed. The dafault value \code{seed=0} makes no changes.
+the random seed. The default value \code{seed=0} makes no changes.
 }
 }
 \details{

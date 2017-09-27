@@ -1,4 +1,4 @@
-compclassf.train <- function(dataf, labels, 
+compclassf.train <- function(dataf, labels, subset,
                             to.equalize = TRUE, 
                             to.reduce = TRUE, 
                             classifier.type = c("ddalpha", "maxdepth", "knnaff", "lda", "qda"), 
@@ -24,6 +24,11 @@ compclassf.train <- function(dataf, labels,
           length(df$args) == length(df$vals) &&
           sort(df$args) == df$args))
       stop("Argument 'dataf' must be a list containing lists (functions) of two vectors of equal length, named 'args' and 'vals': arguments sorted in ascending order and corresponding them values respectively")
+  
+  if(!missing(subset)) {
+    dataf = dataf[subset]
+    labels = labels[subset]
+  }
   
   # Check "labels"
   if (!(length(dataf)==length(labels) && length(unique(labels)>=2)))
@@ -73,7 +78,7 @@ compclassf.train <- function(dataf, labels,
   return (compclassf)
 }
 
-compclassf.classify <- function(compclassf, objectsf, ...){
+compclassf.classify <- function(compclassf, objectsf, subset, ...){
   # Classifies functions
   # Args:
   #   objectsf: sample to classify, a list containing lists (functions) of 
@@ -90,6 +95,11 @@ compclassf.classify <- function(compclassf, objectsf, ...){
   if (!is.null(objectsf$args)){
     objectsf = list(objectsf) # there was a single element 
   }
+  
+  if(!missing(subset)) {
+    objectsf = objectsf[subset]
+  }
+  
   for (df in objectsf)
     if (!(is.list(df) && length(df) == 2 &&
             !is.null(df$args) && !is.null(df$vals) &&
@@ -140,8 +150,8 @@ compclassf.classify <- function(compclassf, objectsf, ...){
   return (classes)
 }
 
-predict.compclassf <- function(object, objectsf, ...){
-  compclassf.classify(object, objectsf, ...)
+predict.compclassf <- function(object, objectsf, subset, ...){
+  compclassf.classify(object, objectsf, subset, ...)
 }
 
 print.compclassf <- function(x, ...){

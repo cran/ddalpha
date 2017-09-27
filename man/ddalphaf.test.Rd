@@ -1,10 +1,10 @@
 \name{ddalphaf.test}
 \alias{ddalphaf.test}
 \title{
-Test functional DDalpha-classifier
+Test Functional DD-Classifier
 }
 \description{
-Trains functional DDalpha-classifier on the learning sequence of the data and tests it on the testing sequence.
+Trains functional DD-classifier on the learning sequence of the data and tests it on the testing sequence.
 }
 \usage{
 ddalphaf.test(learn, learnlabels, test, testlabels, disc.type = c("LS", "comp"), ...)
@@ -14,7 +14,7 @@ ddalphaf.test(learn, learnlabels, test, testlabels, disc.type = c("LS", "comp"),
 list containing lists (functions) of two vectors of equal length, named "args" and "vals": arguments sorted in ascending order and corresponding them values respectively
 }
   \item{learnlabels}{
-list of output labels of the functinal observations
+list of output labels of the functional observations
 }
   \item{test}{
 the testing sequence. Has the same format as \code{learn}
@@ -48,7 +48,7 @@ additional parameters passed to \code{\link{ddalphaf.train}}
   the number of ignored objects (outside the convex hull of the learning data)
   }
   \item{n}{
-  the nunber of objects in the testing sequence
+  the number of objects in the testing sequence
   }
   \item{time}{
   training time

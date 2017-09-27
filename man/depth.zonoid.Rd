@@ -17,7 +17,7 @@ Matrix of objects (numerical vector as one object) whose depth is to be calculat
 Matrix of data where each row contains a \eqn{d}-variate point, w.r.t. which the depth is to be calculated.
 }
   \item{seed}{
-the random seed. The dafault value \code{seed=0} makes no changes.
+the random seed. The default value \code{seed=0} makes no changes.
 }
 }
 \details{
