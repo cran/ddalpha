@@ -1,4 +1,4 @@
-ecc8879c1b825f0b7ef4be0ca0958efc *DESCRIPTION
+e804d17cb4116294502e27502d95f948 *DESCRIPTION
 96f51bc094ba4e33578e2cfd7acc440b *NAMESPACE
 008c993dd46205f9eb1107dceb0d1dde *R/compclassf.r
 9fb15a82b70daf70ac9ab2b44b44b479 *R/dataf.geneexp.r
@@ -8,7 +8,7 @@ aad0191b048cdad0cc180220d958bd78 *R/dataf.growth.r
 7e21c38db2ecb572c9f813b35af81a0f *R/dataf.population2010.r
 46e95ccbd59054017d1af41d97ef5811 *R/dataf.sim.r
 2292382199a756abdbbfc2ee50ceaaf3 *R/dataf.tecator.r
-ddd3cd482768bf955054cb19a2b9a047 *R/ddalpha-internal.r
+5fc2d67d7cadec19305e9a3ac828084d *R/ddalpha-internal.r
 8287d32bb6c470b743e99de669783aa5 *R/ddalpha.classify.r
 da8e0f853b7b11cbc19e81a0075708eb *R/ddalpha.test.r
 78c879d3170c163c3c76925a355abca8 *R/ddalpha.train.r
@@ -24,7 +24,7 @@ faccca44d8906fda6e17b12cb53148c0 *R/depth.projection.r
 27a3a8babba7fb393d4ee958be77cd2b *R/depth.simplicial.r
 79479df7ba68d46e17d3fc086d3bc5d1 *R/depth.simplicialVolume.r
 3c2792fd16a5818678019c35006d3572 *R/depth.space.zonoid.r
-aa8c0b2e1ca127e5aaeb44027a8b696a *R/depth.spatial.r
+170efabed7b85f473d21715d6c774f6e *R/depth.spatial.r
 d44fa5d8796d6ef25624c151861eae60 *R/depth.zonoid.r
 dcea368950ddbd6069915149b9058c27 *R/depthf.r
 c8b3ba2f38ee525805ab489cd56258a6 *R/dknn.R
@@ -105,7 +105,7 @@ fac8c007b22b93b09f508b584c7a365c *man/dataf.population2010.Rd
 805f3f0a524ba6f4388e43b6ba4f7a76 *man/dataf.sim.2.CFF07.Rd
 13c1661b075697aff667fa1f6f71b6f4 *man/dataf.tecator.Rd
 dbc923645aebf7e6be2a6c3fba124d99 *man/dataf2rawfd.Rd
-a4ee2b544f90e91ac71f5c4adeee0dcb *man/ddalpha-package.Rd
+10e2a2405ad8e9a2aa9d33eec40296fe *man/ddalpha-package.Rd
 0696730fe876b622bd70549f3b39131b *man/ddalpha.classify.Rd
 2b1b7cc4433374af973733782c45e225 *man/ddalpha.getErrorRateCV.Rd
 5acb9396ca92a50d5fa54ed68895e23f *man/ddalpha.getErrorRatePart.Rd

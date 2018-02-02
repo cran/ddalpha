@@ -61,9 +61,13 @@ depth.spatial <- function(x, data, mah.estimate = "moment", mah.parMcd = 0.75){
     } else if(mah.estimate == "MCD"){
       cov <- covMcd(data, mah.parMcd)$cov
     } else {stop("Wrong parameter 'mah.estimate'")}
-    cov.eig <- eigen(cov)
-    B <- cov.eig$vectors %*% diag(sqrt(cov.eig$values))
-    lambda <- solve(B)
+    if(sum(is.na(cov)) == 0){
+      cov.eig <- eigen(cov)
+      B <- cov.eig$vectors %*% diag(sqrt(cov.eig$values))
+      lambda <- solve(B)
+    } else{
+      lambda = diag(ncol(data))
+    }
   }
   
   depths <- rep(-1, nrow(x))

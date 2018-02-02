@@ -894,14 +894,14 @@
     pattern <- ddalpha$patterns[[i]]$points
     mean <- ddalpha$patterns[[i]]$center
     cov <- ddalpha$patterns[[i]]$cov
-    suppressWarnings(
-    if(!is.na(cov)){
+    #suppressWarnings(
+    if(sum(is.na(cov)) == 0){
       cov.eig <- eigen(cov)
       B <- cov.eig$vectors %*% diag(sqrt(cov.eig$values))
       lambda <- solve(B)
     } else{
       lambda = diag(ncol(pattern))
-    })
+    }#)
     ds <- rep(-1, nrow(objects))
     for (i in 1:nrow(objects)){
       tmp1 <- t(lambda %*% (objects[i,] - t(pattern)))

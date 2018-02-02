@@ -15,8 +15,8 @@ The package implements the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharov
 \tabular{ll}{
 Package: \tab ddalpha\cr
 Type: \tab Package\cr
-Version: \tab 1.3.1\cr
-Date: \tab 2017-09-27\cr
+Version: \tab 1.3.1.1\cr
+Date: \tab 2018-02-02\cr
 License: \tab GPL-2\cr
 }
 Use \code{\link{ddalpha.train}} to train the DD-classifier and \code{\link{ddalpha.classify}} to classify with it. 
