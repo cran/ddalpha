@@ -548,6 +548,17 @@ void PotentialDepthsCount(double *points, int *numPoints, int *dimension, int *c
 	}
 }
 
+void BetaSkeletonDepth(double *points, double *objects, int *numPoints, int *numObjects, int *dimension, double* beta, int* distCode, double* p, double* sigma, double *depths){
+  TDMatrix X = asMatrix(points, *numPoints, *dimension);
+  TDMatrix x = asMatrix(objects, *numObjects, *dimension);
+  TDMatrix s = asMatrix(sigma, *dimension, *dimension);
+
+  LensDepth(X, x, *dimension, *numPoints, *numObjects, *beta, *distCode, *p, s, depths);
+  
+  delete[] X;
+  delete[] x;
+  delete[] s;
+}
 
 #ifdef __cplusplus
 }

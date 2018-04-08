@@ -60,7 +60,7 @@ static void MakeCanonical(vector<TPoint>& x, TPoint& z)
   RowInverted.resize(d);
 
   for (j = 0; j < d; j++)
-    if ( RowInverted[j] = z[j] < 0 ) {
+    if ( (RowInverted[j] = z[j]) < 0 ) {
       for (i = 0; i < n; i++) x[i][j] = -x[i][j];
       z[j] = -z[j];
     }

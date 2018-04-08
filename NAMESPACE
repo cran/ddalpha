@@ -4,7 +4,7 @@ export(ddalpha.train, ddalpha.classify,
        ddalphaf.test, ddalphaf.getErrorRateCV, ddalphaf.getErrorRatePart,
        compclassf.train, compclassf.classify,
        depth., depth.space.,
-       depth.zonoid, depth.halfspace, depth.Mahalanobis, depth.projection, depth.spatial, depth.simplicial, depth.simplicialVolume, depth.potential,
+       depth.zonoid, depth.halfspace, depth.Mahalanobis, depth.projection, depth.spatial, depth.simplicial, depth.simplicialVolume, depth.potential, depth.qhpeeling, depth.L2, depth.betaSkeleton,
        depth.space.zonoid, depth.space.halfspace, depth.space.Mahalanobis, depth.space.projection, depth.space.spatial, depth.space.simplicial, depth.space.simplicialVolume, depth.space.potential,
        is.in.convex, 
        dknn.train, dknn.classify, dknn.classify.trained,
@@ -46,5 +46,6 @@ import(MASS)
 import(class)
 import(robustbase)
 import(Rcpp)
+import(geometry)
 
 import(sfsmisc)

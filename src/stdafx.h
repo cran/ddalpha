@@ -44,7 +44,7 @@ using namespace std;
 #include "PotentialDepth.h"
 #include "ProjectionDepth.h"
 #include "DKnn.h"
-
+#include "LensDepth.h"
 
 static boost::random::rand48 rEngine;
 static boost::random::normal_distribution<double> normDist;
