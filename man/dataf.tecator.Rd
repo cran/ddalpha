@@ -1,5 +1,6 @@
 \name{dataf.tecator}
 \alias{dataf.tecator}
+\alias{tecator}
 \docType{data}
 \title{
 Functional Data Set Spectrometric Data (Tecator)

@@ -1,5 +1,6 @@
 \name{dataf.growth}
 \alias{dataf.growth}
+\alias{growth}
 \docType{data}
 \title{
 Berkeley Growth Study Data

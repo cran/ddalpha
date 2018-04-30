@@ -167,7 +167,17 @@ veteran_lung_cancer\cr
 vowel_MvsF\cr
 wine_1vs2\cr
 wine_1vs3\cr
-wine_2vs3
+wine_2vs3\cr
+
+
+Also functional data sets can be loaded:
+
+geneexp\cr
+growth\cr
+medflies\cr
+population\cr
+population2010\cr
+tecator
 
 }
 

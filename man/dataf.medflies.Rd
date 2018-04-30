@@ -1,5 +1,6 @@
 \name{dataf.medflies}
 \alias{dataf.medflies}
+\alias{medflies}
 \docType{data}
 \title{
 Relationship of Age Patterns of Fecundity to Mortality for Female Medflies.

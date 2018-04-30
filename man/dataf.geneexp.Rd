@@ -1,5 +1,6 @@
 \name{dataf.geneexp}
 \alias{dataf.geneexp}
+\alias{geneexp}
 \docType{data}
 \title{
 Gene Expression Profile Data

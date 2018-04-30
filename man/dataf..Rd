@@ -9,6 +9,12 @@ The functions generate data sets of functional two-dimensional data of two or mo
 }
 \usage{
 # dataf.[name]()
+
+# load the data set by name
+# data(list = "name")
+
+# load the data set by name to a variable
+# getdata("name")
 }
 \format{
   The functional data as a data structure.

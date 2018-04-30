@@ -1,6 +1,7 @@
 \docType{data}
 \name{dataf.population2010}
 \alias{dataf.population2010}
+\alias{population2010}
 \title{World Historical Population-by-Country Dataset (2010 Revision)}
 \format{
   The functional data as a data structure.
