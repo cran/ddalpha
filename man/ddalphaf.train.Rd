@@ -91,7 +91,7 @@ Trained functional DD-classifier
 %% ...
 }
 \references{
-Mosler, K. and Mozharovskyi, P. (2015). Fast DD-classification of functional data, \emph{Statistical Papers}, in press.
+Mosler, K. and Mozharovskyi, P. (2017). Fast DD-classification of functional data. \emph{Statistical Papers} \bold{58} 1055--1089.
 
 Mozharovskyi, P. (2015). \emph{Contributions to Depth-based Classification and Computation of the Tukey Depth}. Verlag Dr. Kovac (Hamburg).
 }

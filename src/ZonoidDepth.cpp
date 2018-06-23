@@ -9,7 +9,7 @@
   Dyckerhoff, R., Koshevoy, G., and Mosler, K. (1996)
   Zonoid Data Depth: Theory and Computation,
   in: A. Compstat - Proceedings in Computational Statistics
-      (Albert Prat, ed.), Physica-Verlag, Heidelberg, p. 235--240.
+      (Albert Prat, ed.), Physica-Verlag, Heidelberg, pp. 235--240.
 */
 
 #include "stdafx.h"
@@ -60,10 +60,13 @@ static void MakeCanonical(vector<TPoint>& x, TPoint& z)
   RowInverted.resize(d);
 
   for (j = 0; j < d; j++)
-    if ( (RowInverted[j] = z[j]) < 0 ) {
+  {
+    RowInverted[j] = z[j] < 0; // PM(2018-06-22)
+    if (RowInverted[j]) {
       for (i = 0; i < n; i++) x[i][j] = -x[i][j];
       z[j] = -z[j];
     }
+  }
 }
 
 static void MakeOriginal(vector<TPoint>& x, TPoint& z)

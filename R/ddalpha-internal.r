@@ -2,14 +2,14 @@
 # File:             ddalpha-internal.r
 # Created by:       Pavlo Mozharovskyi
 # First published:  28.02.2013
-# Last revised:     13.11.2015
+# Last revised:     22.06.2018
 # 
 # Contains the internal functions of the DDalpha-classifier.
 # 
 # For a description of the algorithm, see:
-#   Lange, T., Mosler, K. and Mozharovskyi, P. (2012). Fast nonparametric 
+#   Lange, T., Mosler, K. and Mozharovskyi, P. (2014). Fast nonparametric 
 #     classification based on data depth. Statistical Papers.
-#   Mozharovskyi, P., Mosler, K. and Lange, T. (2013). Classifying real-world 
+#   Mozharovskyi, P., Mosler, K. and Lange, T. (2015). Classifying real-world 
 #     data with the DDalpha-procedure. Mimeo.
 ################################################################################
 
@@ -26,7 +26,7 @@
   # formula is present
   if(!missing(formula) && !is.null(formula)){
     
-    needed.frame <- sys.nframe() - 1
+    needed.frame <- 1 # PM(2018-06-22)
 
     cl <- match.call(call = sys.call(sys.parent(n = needed.frame)))
     mf <- match.call(expand.dots = FALSE, call = sys.call(sys.parent(n = needed.frame)))

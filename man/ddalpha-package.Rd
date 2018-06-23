@@ -15,8 +15,8 @@ The package implements the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharov
 \tabular{ll}{
 Package: \tab ddalpha\cr
 Type: \tab Package\cr
-Version: \tab 1.3.3\cr
-Date: \tab 2018-04-30\cr
+Version: \tab 1.3.4\cr
+Date: \tab 2018-06-22\cr
 License: \tab GPL-2\cr
 }
 Use \code{\link{ddalpha.train}} to train the DD-classifier and \code{\link{ddalpha.classify}} to classify with it. 
@@ -50,7 +50,7 @@ Lange, T., Mosler, K., and Mozharovskyi, P. (2014). Fast nonparametric classific
 
 Lange, T., Mosler, K., and Mozharovskyi, P. (2014). DD\eqn{\alpha}-classification of asymmetric and fat-tailed data. In: Spiliopoulou, M., Schmidt-Thieme, L., Janning, R. (eds), \emph{Data Analysis, Machine Learning and Knowledge Discovery}, Springer (Berlin), 71--78.
 
-Mosler, K. and Mozharovskyi, P. (2015). Fast DD-classification of functional data. \emph{Statistical Papers}, in press.
+Mosler, K. and Mozharovskyi, P. (2017). Fast DD-classification of functional data. \emph{Statistical Papers} \bold{58} 1055--1089.
 
 Mozharovskyi, P. (2015). \emph{Contributions to Depth-based Classification and Computation of the Tukey Depth}. Verlag Dr. Kovac (Hamburg).
 
