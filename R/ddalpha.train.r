@@ -20,7 +20,6 @@ ddalpha.train <- function(formula, data, subset,
                           outsider.settings = NULL, 
                           aggregation.method = "majority",
                           pretransform = NULL,
-                          mah.parMcd = 0.75,
                           use.convex = FALSE,
                           seed = 0,
                           
@@ -91,18 +90,7 @@ ddalpha.train <- function(formula, data, subset,
     stop("Argument \"depth\" not specified correctly.")
   } else
   if(!(depth %in% supportedDepths)){
-    fname = paste0(".", depth, "_validate")
-    f <- try(match.fun(fname), silent = T)
-    if (!is.function(f))
-      warning(paste0("No validator function: ", fname))
-    fname = paste0(".", depth, "_learn")
-    f <- (match.fun(fname))
-    if (!is.function(f))
-      stop(paste0("No function: ", fname))
-    fname = paste0(".", depth, "_depths")
-    f <- (match.fun(fname))
-    if (!is.function(f))
-      stop(paste0("No function: ", fname))
+    .check.depth.exists(depth)
     ddalpha$methodDepth <- depth
   }else{
     ddalpha$methodDepth <- depth
@@ -149,7 +137,7 @@ ddalpha.train <- function(formula, data, subset,
       if (pretransform == "1Mom")
         mm <- mah.moment(data[,-ncol(data)])
       else   # "1MCD"
-        mm <- mah.mcd(data[,-ncol(data)], mah.parMcd)              
+        mm <- mah.mcd(data[,-ncol(data)], .mah.parMcd.fromDots(...))              
       
       for (i in 1:ddalpha$numPatterns){
         ddalpha$patterns[[i]]$transformer <- MahMomentTransformer(mm$mu, mm$b)
@@ -162,7 +150,7 @@ ddalpha.train <- function(formula, data, subset,
         if (pretransform == "NMom")
           mm <- mah.moment(ddalpha$patterns[[i]]$points)
         else   # "NMCD"
-          mm <- mah.mcd(ddalpha$patterns[[i]]$points, mah.parMcd)
+          mm <- mah.mcd(ddalpha$patterns[[i]]$points, .mah.parMcd.fromDots(...))
         
         ddalpha$patterns[[i]]$transformer <- MahMomentTransformer(mm$mu, mm$b)
       }
@@ -253,6 +241,10 @@ ddalpha.train <- function(formula, data, subset,
 ################################################################################
 # Validation functions
 ################################################################################
+
+.mah.parMcd.fromDots <- function(mah.parMcd = 0.75, ...) {
+  return(mah.parMcd)
+}
 
 .alpha_validate  <- function(ddalpha, num.chunks = 10, max.degree = 3, debug = F,...){
   

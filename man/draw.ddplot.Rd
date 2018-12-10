@@ -9,7 +9,7 @@ Also accessible from \code{\link{plot.ddalpha}}.
 }
 \usage{
 draw.ddplot(ddalpha, depth.space, cardinalities, 
-            main = "DD plot", xlab = "C1", ylab = "C2", 
+            main = "DD plot", xlab = "C1", ylab = "C2", xlim, ylim,
             classes = c(1, 2), colors = c("red", "blue", "green"), drawsep = T)
 
 }
@@ -28,6 +28,9 @@ an overall title for the plot: see \code{\link{title}}
 }
   \item{xlab, ylab}{
 class labels
+}
+  \item{xlim, ylim}{
+range of axis
 }
   \item{classes}{
 vector of numbers of two classes used for depth calculation

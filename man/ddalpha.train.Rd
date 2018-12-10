@@ -28,7 +28,6 @@ ddalpha.train(formula, data, subset,
               outsider.settings = NULL, 
               aggregation.method = "majority",
               pretransform = NULL,
-              mah.parMcd = 0.75,
               use.convex = FALSE,     
               seed = 0,
               ...)
@@ -53,7 +52,7 @@ Character string determining which depth notion to use; the default value is \co
 The method used for separation on the DD-plot; can be \code{"alpha"} (the default), \code{"polynomial"}, \code{"knnlm"} or \code{"maxD"}. See section \emph{\bold{\code{Separators}}} for the description of the separators and additional parameters. To use a custom separator, see topic \code{\link{Custom Methods}}.
 }
   \item{outsider.methods}{
-Vector of character strings each being a name of a basic outsider method for eventual classification; possible names are: \code{"LDA"} (the default), \code{"LDA"}, \code{"kNN"}, \code{"kNNAff"}, \code{"depth.Mahalanobis"}, \code{"RandProp"}, \code{"RandEqual"} and \code{"Ignore"}. Each method can be specified only once, replications are ignored. By specifying treatments in such a way only a basic treatment method can be chosen (by the name), and the default settings for each of the methods are applied, see 'Details'.
+Vector of character strings each being a name of a basic outsider method for eventual classification; possible names are: \code{"LDA"} (the default), \code{"QDA"}, \code{"kNN"}, \code{"kNNAff"}, \code{"depth.Mahalanobis"}, \code{"RandProp"}, \code{"RandEqual"} and \code{"Ignore"}. Each method can be specified only once, replications are ignored. By specifying treatments in such a way only a basic treatment method can be chosen (by the name), and the default settings for each of the methods are applied, see 'Details'.
 }
   \item{outsider.settings}{
 List containing outsider treatments each described by a list of parameters including a name, see 'Details' and 'Examples'. Each method can be used multiply with (not necessarily) different parameters, just the name should be unique, entries with the repeating names are ignored.
@@ -78,9 +77,6 @@ the data is transformed w.r.t. each class using its covariance martix. The depth
   for the values \code{"1MCD", "NMCD"} \code{\link{covMcd}} is used to calculate the covariance matrix, and the parameter \code{mah.parMcd} is used.
   }
   
-}
-  \item{mah.parMcd}{
-  is the value of the argument \code{alpha} for the function \code{\link{covMcd}}; is used if \code{depth = "Mahalanobis"} when \code{mah.estimate = "MCD"} and in pretransforming the data if \code{pretransform in ("1MCD", "NMCD")}.
 }
   \item{use.convex}{
 Logical variable indicating whether outsiders should be determined exactly, i.e. as the points not contained in any of the convex hulls of the classes from the training sample (\code{TRUE}), or those having zero depth w.r.t. each class from the training sample (\code{FALSE}). For \code{depth =} \code{"zonoid"} both values give the same result.

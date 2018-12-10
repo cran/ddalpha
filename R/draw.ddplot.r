@@ -1,5 +1,6 @@
 draw.ddplot <- function(ddalpha, depth.space, cardinalities,
-                        main = "DD plot", xlab = "C1", ylab = "C2", classes = c(1,2), colors = c("red", "blue", "green"), drawsep = T){
+                        main = "DD plot", xlab = "C1", ylab = "C2", xlim, ylim, 
+                        classes = c(1,2), colors = c("red", "blue", "green"), drawsep = T){
   
   if(!missing(ddalpha)){
     
@@ -16,7 +17,10 @@ draw.ddplot <- function(ddalpha, depth.space, cardinalities,
       ylab = ddalpha$patterns[[2]]$name
     }
     
-    plot(points, col = col, main = main, xlab = xlab, ylab = ylab, asp = T, xlim = c(0, max(points[,])), ylim = c(0, max(points[,])))
+    if (missing(xlim)) xlim = c(0, max(points[,]))
+    if (missing(ylim)) ylim = c(0, max(points[,]))
+    
+    plot(points, col = col, main = main, xlab = xlab, ylab = ylab, asp = T, xlim = xlim, ylim = ylim)
     
     if(drawsep && ddalpha$methodSeparator %in% c("alpha", "polynomial"))
     {
@@ -59,7 +63,10 @@ draw.ddplot <- function(ddalpha, depth.space, cardinalities,
       col = c(col, rep(colors[c], cardinalities[c]))
     }
     
-    plot(depth.space[,classes], col = col, main = main, xlab = xlab, ylab = ylab)
+    if (missing(xlim)) xlim = c(0, max(depth.space[,classes]))
+    if (missing(ylim)) ylim = c(0, max(depth.space[,classes]))
+    
+    plot(depth.space[,classes], col = col, main = main, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim)
     
   } else stop("Both 'ddalpha' and 'depth.space' area missing")
   

@@ -99,19 +99,19 @@ depth.contours <- function(data, depth, main = "", xlab="", ylab = "", drawplot 
   }
   
   if (drawplot){
-    #cc = tryCatchCapture(
+    cc = tryCatchCapture(
       plot(data, col = col, main = main, xlab=xlab, ylab = ylab, ...)
-    #, err = F) # catch all warnings about unused params
-    #wrns = sort(unique(cc$warnings))
-    #values = gsub("\"(.+)\".+", "\\1", wrns)
-    #if(lenght(values)>0)
-    #  warning("Unused by 'plot' arguments: ", paste(unused, collapse = ', '))
+      , err = F) # catch all warnings about unused params
+    wrns = sort(unique(cc$warnings))
+    unused = gsub("\"(.+)\".+", "\\1", wrns)
+    if(length(unused)>0)
+      warning("Unused by 'plot' arguments: ", paste(unused, collapse = ', '))
   }
   margins = c(min(data[,1]), max(data[,1]), min(data[,2]), max(data[,2]));  margins = margins + c(-0.1*(margins[2]-margins[1]), 0.1*(margins[2]-margins[1]), -0.1*(margins[4]-margins[3]), 0.1*(margins[4]-margins[3]))
   
   if (depth == "Mahalanobis"){
     # Mahalanobis depth
-    mahalanobisRegions(data, levels, col = col)
+    mahalanobisRegions(data, levels, col = col, ...)
   } else 
 #     if (depth == "zonoid"){
 #       if (require(WMTregions))
@@ -167,19 +167,33 @@ depth.contours <- function(data, depth, main = "", xlab="", ylab = "", drawplot 
 #   }
 # }
 
-mahalanobisRegions <- function(x, depths = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1), col = "black"){
-  
+mahalanobisRegions <- function(x, depths = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1), col = "black", ...){
   if(is.na(depths) || is.null(depths))
     depths = 10
   if(length(depths) == 1 && depths > 1)
     depths = seq(0.0001, 1, length.out = depths)
   
-  c <- c(0,0)
-  for (i in 1:nrow(x)){
-    c <- c + x[i,]
+  # PM (2018-06-22)
+  if (("mah.estimate" %in% names(list(...))) && 
+      toupper(list(...)[["mah.estimate"]]) == "MCD"){
+    if (("mah.parMcd" %in% toupper(names(list(...)))) &&
+        (list(...)[["mah.parMcd"]] >= 0.5) &&
+        (list(...)[["mah.parMcd"]] <= 1)){
+      parMcd <- list(...)[["mah.parMcd"]]
+    }else{
+      parMcd <- 0.75
+    }
+    est <- covMcd(x, alpha = parMcd)
+    mu <- est$center
+    sigma.inv <- solve(est$cov)
+  }else{
+    c <- c(0,0)
+    for (i in 1:nrow(x)){
+      c <- c + x[i,]
+    }
+    mu <- c / nrow(x)
+    sigma.inv <- solve(cov(x))
   }
-  mu <- c / nrow(x)
-  sigma.inv <- solve(cov(x))
   for (i in 1:length(depths)){
     ellipsem(mu = mu, amat = sigma.inv, c2 = 1/depths[i] - 1, showcentre = F, col = col)
   }

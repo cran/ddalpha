@@ -11,8 +11,15 @@ The detailed descriptions are found in the corresponding topics.
 \usage{
 depth.(x, data, notion, ...)
 
+## beta-skeleton depth
+# depth.betaSkeleton(x, data, beta = 2, distance = "Lp", Lp.p = 2, 
+#                   mah.estimate = "moment", mah.parMcd = 0.75)
+
 ## Tukey depth
 # depth.halfspace(x, data, exact, method, num.directions = 1000, seed = 0)
+
+## L2-depth
+# depth.L2(x, data, mah.estimate = "moment", mah.parMcd = 0.75)
 
 ## Mahalanobis depth
 # depth.Mahalanobis(x, data, mah.estimate = "moment", mah.parMcd = 0.75)
@@ -32,9 +39,13 @@ depth.(x, data, notion, ...)
 ## zonoid depth
 # depth.zonoid(x, data)
 
-# Potential
+## potential
 # depth.potential (x, data, pretransform = "1Mom", 
 #            kernel = "GKernel", kernel.bandwidth = NULL, mah.parMcd = 0.75)
+
+## convex hull peeling depth
+# depth.qhpeeling(x, data)
+
 }
 \arguments{
   \item{x}{
@@ -53,7 +64,11 @@ Additional parameters passed to the depth functions.
 
 \seealso{
 
+\code{\link{depth.betaSkeleton}}
+
 \code{\link{depth.halfspace}}
+
+\code{\link{depth.L2}}
 
 \code{\link{depth.Mahalanobis}}
 
@@ -68,6 +83,8 @@ Additional parameters passed to the depth functions.
 \code{\link{depth.zonoid}}
 
 \code{\link{depth.potential}}
+
+\code{\link{depth.qhpeeling}}
 
 \code{\link{depth.graph}} for building the depth surfaces of the two dimensional data.
 

@@ -19,6 +19,9 @@ resetPar <- function() {
   op
 }
 
+is.sorted <- function(x)  {
+  return(!is.unsorted(x))
+}
 
 tryCatchCapture <- function(expr, warn = T, err = T) {
   val <- NULL

@@ -13,7 +13,6 @@
 #     data with the DDalpha-procedure. Mimeo.
 ################################################################################
 
-
 .ddalpha.create.structure <- function(formula, data, subset, ...){
   
   # if the user calls ddalpha(data, <other named parameters>, ...)
@@ -148,6 +147,22 @@
   return (ddalpha)
 }
 
+.check.depth.exists <- function(depth) {
+  fname = paste0(".", depth, "_validate")
+  f <- try(match.fun(fname), silent = T)
+  if (!is.function(f))
+    warning(paste0("No validator function: ", fname))
+  fname = paste0(".", depth, "_learn")
+  
+  f <- (match.fun(fname))
+  if (!is.function(f))
+    stop(paste0("No function: ", fname))
+  fname = paste0(".", depth, "_depths")
+  f <- (match.fun(fname))
+  if (!is.function(f))
+    stop(paste0("No function: ", fname))
+}
+
 .ddalpha.learn.depth <- function(ddalpha){
   
   # try to find a custom depth
@@ -194,23 +209,24 @@
     } else
     if (ddalpha$methodDepth == "Mahalanobis"){
       ddalpha$patterns[[i]]$depths <- .Mahalanobis_depths(ddalpha, ddalpha$patterns[[i]]$points)
-    }
+    } else
     if (ddalpha$methodDepth == "spatial"){
       # Calculate depths for the class w.r.t all classes, saying to which of the classes the chunk belongs
       ddalpha$patterns[[i]]$depths <- .spatial_depths(ddalpha, ddalpha$patterns[[i]]$points)
-    }
+    } else
     if (ddalpha$methodDepth == "spatialLocal"){
       # Calculate depths for the class w.r.t all classes, saying to which of the classes the chunk belongs
       ddalpha$patterns[[i]]$depths <- .spatialLocal_depths(ddalpha, ddalpha$patterns[[i]]$points)
-    }
+    } else
     if (ddalpha$methodDepth == "simplicial"){
       # Calculate depths for the class w.r.t all classes, saying to which of the classes the chunk belongs
       ddalpha$patterns[[i]]$depths <- .simplicial_depths(ddalpha, ddalpha$patterns[[i]]$points)
-    }
+    } else
     if (ddalpha$methodDepth == "simplicialVolume"){
       # Calculate depths for the class w.r.t all classes, saying to which of the classes the chunk belongs
       ddalpha$patterns[[i]]$depths <- .simplicialVolume_depths(ddalpha, ddalpha$patterns[[i]]$points)
-    }
+    } else
+      stop("Unknown depth ", ddalpha$methodDepth)
   }
 
   return (ddalpha)
@@ -344,6 +360,7 @@
 }
 
 .polynomial_classify <- function(ddalpha, classifier, depths){
+
   x = ifelse(classifier$axis == 0, classifier$index1, classifier$index2)
   y = ifelse(classifier$axis == 0, classifier$index2, classifier$index1)
   
@@ -353,8 +370,6 @@
     for(j in 1:classifier$degree){
       result[obj] <- result[obj] + classifier$polynomial[j]*val^j
     }
-    if(classifier$axis != 0)
-      result[obj] <- (- result[obj])
   }
   return(result)
 }

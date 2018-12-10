@@ -26,7 +26,7 @@ ddalphaf.train <- function(dataf, labels, subset,
             is.vector(df$args) && is.vector(df$vals) &&
             is.numeric(df$args) && is.numeric(df$vals) &&
             length(df$args) == length(df$vals) &&
-            sort(df$args) == df$args))
+            is.sorted(df$args)))
       stop("Argument 'dataf' must be a list containing lists (functions) of two vectors of equal length, named 'args' and 'vals': arguments sorted in ascending order and corresponding them values respectively")
   
   if(!missing(subset)) {
@@ -147,7 +147,7 @@ ddalphaf.classify <- function(ddalphaf, objectsf, subset, ...){
             is.vector(df$args) && is.vector(df$vals) &&
             is.numeric(df$args) && is.numeric(df$vals) &&
             length(df$args) == length(df$vals) &&
-            sort(df$args) == df$args))
+            is.sorted(df$args)))
       stop("Argument 'objectsf' must be a list containing lists (functions) of two vectors of equal length, named 'args' and 'vals': arguments sorted in ascending order and corresponding them values respectively")
 
   # Prepare to multivariate classification

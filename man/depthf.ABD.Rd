@@ -67,7 +67,7 @@ Weak convergence of discretely observed functional data with applications.
 
 Nagy, S., Gijbels, I. and Hlubinka, D.  (2017).
 Depth-based recognition of shape outlying functions. 
-\emph{Journal of Computational and Graphical Statistics}. To appear.
+\emph{Journal of Computational and Graphical Statistics}, \bold{26} (4), 883--893.
 }
 \seealso{
 \code{\link{depthf.BD}}
