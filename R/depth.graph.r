@@ -47,8 +47,19 @@ depth.graph <- function (data, depth_f = c("halfspace", "Mahalanobis", "projecti
                as.integer((data[,1]-x1[1])/x1.step+0) + as.integer((data[,2]-x2[1])/x2.step+1)*(xnum-1),
                as.integer((data[,1]-x1[1])/x1.step+1) + as.integer((data[,2]-x2[1])/x2.step+0)*(xnum-1)
                )
-  z.black <- ifelse (is.null(apoint) || !is.numeric(apoint) || length(apoint) != 2, NA,
-                     as.integer((apoint[1]-x1[1])/x1.step+1) + as.integer((apoint[1]-x2[1])/x2.step+1)*(xnum-1))
+			   if (!is.null(apoint) && is.numeric(apoint) && length(apoint) == 2){
+			       z.black <- as.integer((apoint[1]-x1[1])/x1.step+1) + as.integer((apoint[2]-x2[1])/x2.step+1)*(xnum-1)
+			       if (bold){
+			         z.black <- c(z.black, 
+			                    as.integer((apoint[1]-x1[1])/x1.step+2) + as.integer((apoint[2]-x2[1])/x2.step+1)*(xnum-1),
+			                    as.integer((apoint[1]-x1[1])/x1.step+1) + as.integer((apoint[2]-x2[1])/x2.step+2)*(xnum-1),
+			                    as.integer((apoint[1]-x1[1])/x1.step+0) + as.integer((apoint[2]-x2[1])/x2.step+1)*(xnum-1),
+			                    as.integer((apoint[1]-x1[1])/x1.step+1) + as.integer((apoint[2]-x2[1])/x2.step+0)*(xnum-1)
+								)
+			       }
+			     }else{
+			       z.black <- NA
+			     }
   
   zfacet <- z[-1, -1] + z[-1, -ynum] + z[-xnum, -1] + z[-xnum, -ynum]
   z.indices.zero <- which(zfacet == 0)

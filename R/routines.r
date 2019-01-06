@@ -12,6 +12,8 @@ is.numeric <- function(x){
   return (F)
 }
 
+as.numeric.factor <- function(x) {as.numeric(levels(x))[x]}
+
 resetPar <- function() {
   dev.new()
   op <- par(no.readonly = TRUE)

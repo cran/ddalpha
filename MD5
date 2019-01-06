@@ -1,4 +1,4 @@
-572f738c98af1c31d6d7f8d42447a2c6 *DESCRIPTION
+57fbc71e7febbb69dcb94ab92a95b040 *DESCRIPTION
 00c10f4b625a9d4b4e8059aacc929230 *NAMESPACE
 81e86fdb9d96737404836ed611799ae2 *R/compclassf.r
 2b1dc04c31bdba56a97812aa584fe5ab *R/dataf.geneexp.r
@@ -8,7 +8,7 @@ c9bd3312e98a68a0e8e79136f728c5f8 *R/dataf.population.r
 cbcccec8a110abb83ea38bfb9ed45e21 *R/dataf.population2010.r
 46e95ccbd59054017d1af41d97ef5811 *R/dataf.sim.r
 c0a66cf08d28675c7245bb358a8cf9db *R/dataf.tecator.r
-d58e1ccefa9f51c33c4232cb98bb6f4c *R/ddalpha-internal.r
+27bab4c57599daf3715948967b824ae8 *R/ddalpha-internal.r
 8287d32bb6c470b743e99de669783aa5 *R/ddalpha.classify.r
 da8e0f853b7b11cbc19e81a0075708eb *R/ddalpha.test.r
 8a6e112c4a7a2c443b3748c3765ed024 *R/ddalpha.train.r
@@ -18,7 +18,7 @@ db47b45e2f7b9dd55ff303b1c124de07 *R/depth.L2.r
 7eef619fc64c5a9012697f49f21223d4 *R/depth.betaSkeleton.r
 226e00cda755a1a791ad23aa201c26b8 *R/depth.contours.r
 338cb55c8fa4adb4095bc28a96e6c13b *R/depth.fd.R
-91767c731df04920c2cf1589516b55ad *R/depth.graph.r
+d3642dc15508c3e5b8d609143d44280e *R/depth.graph.r
 a266a2fd08f235018a01214b982cedc4 *R/depth.halfspace.r
 56aa887d9dfaa73def26f94a8e6acfb9 *R/depth.potential.r
 faccca44d8906fda6e17b12cb53148c0 *R/depth.projection.r
@@ -39,7 +39,7 @@ f52e72f811f9fdc6a292499501ab8fba *R/knnaff.r
 7313a981d378f0a972f2edfcd3754380 *R/mahalanobis.scaling.r
 836cc2095f092877501f85a55693c627 *R/plot.functional.r
 6429f1288f6ae2ee1c87840587fa6124 *R/qda.r
-b581addf157ac8a56b19fee8de0dcd42 *R/routines.r
+3a13bb8b071fa301f816096b5e5b53ab *R/routines.r
 0f31c8fcc4540f3b1a1f0fa1741291f0 *R/separator.polynomial.r
 420701b3922eaa282b7cd8c26c01b789 *data/baby.txt.gz
 ccfe61945a3f683276ce92a6e8d4dc47 *data/banknoten.txt.gz
@@ -114,7 +114,7 @@ b7b8dc7ba0dab649ae93b6f7ec9e56f0 *man/dataf.population2010.Rd
 805f3f0a524ba6f4388e43b6ba4f7a76 *man/dataf.sim.2.CFF07.Rd
 b6a1265c76b8030e08244ddd728482cb *man/dataf.tecator.Rd
 dbc923645aebf7e6be2a6c3fba124d99 *man/dataf2rawfd.Rd
-801dcc6612a4a4477a9a3f2434f77cef *man/ddalpha-package.Rd
+9cc63f829e2456f43b0a7eae247846eb *man/ddalpha-package.Rd
 0696730fe876b622bd70549f3b39131b *man/ddalpha.classify.Rd
 2b1b7cc4433374af973733782c45e225 *man/ddalpha.getErrorRateCV.Rd
 5acb9396ca92a50d5fa54ed68895e23f *man/ddalpha.getErrorRatePart.Rd

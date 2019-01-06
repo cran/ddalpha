@@ -517,7 +517,11 @@
 
   .treatment = treatments[[settings$method]]
   if(is.null(.treatment)) stop("Unknown outsiders treatment method ", settings$method)
-  return(.treatment(objects, ddalpha, settings))
+  classified = .treatment(objects, ddalpha, settings)
+  if(is.factor(classified[[1]]))
+    return(lapply(classified, as.numeric.factor))
+  else
+    return(classified)
 }
 
 ################################################################################
