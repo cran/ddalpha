@@ -1,8 +1,8 @@
 ################################################################################
 # File:             depth.simplicialVolume.r
-# Created by:       Oleksii Pokotylo
+# Created by:       Oleksii Pokotylo, Pavlo Mozharovskyi
 # First published:  15.06.2015
-# Last revised:     15.06.2015
+# Last revised:     20.02.2019
 # 
 # Computation of the simplicial volume data depth.
 ################################################################################
@@ -14,7 +14,7 @@
   return(c(k1, k2))
 }
 
-depth.simplicialVolume <- function(x, data, exact = F, k = 0.05, seed = 0){
+depth.simplicialVolume <- function(x, data, exact = F, k = 0.05, mah.estimate = "moment", mah.parMcd = 0.75, seed = 0){
   if (seed!=0) set.seed(seed)
   if (!is.matrix(x) 
       && is.vector(x)){
@@ -28,16 +28,24 @@ depth.simplicialVolume <- function(x, data, exact = F, k = 0.05, seed = 0){
   if (!is.numeric(x)){
     stop("Argument \"x\" should be numeric")
   }
-  
   if (ncol(x) != ncol(data)){
     stop("Dimensions of the arguments \"x\" and \"data\" should coincide")
   }
   if (ncol(data) + 1 > nrow(data)){ #?
     stop("To few data points")
   }
-  
   if (!exact) if (k <= 0) stop("k must be positive")
       else if (k < 1) k = choose(nrow(data), ncol(data))*k
+  if(toupper(mah.estimate) == "NONE"){
+    useCov <- 0
+    covEst <- diag(ncol(data))
+  } else if(toupper(mah.estimate) == "MOMENT"){
+    useCov <- 1
+    covEst <- cov(data)
+  } else if(toupper(mah.estimate) == "MCD"){
+    useCov <- 2
+    covEst <- covMcd(data, mah.parMcd)$cov
+  } else {stop("Wrong argument \"mah.estimate\", should be one of \"moment\", \"MCD\", \"none\"")}
       
   points <- as.vector(t(data))
   objects <- as.vector(t(x))
@@ -50,6 +58,8 @@ depth.simplicialVolume <- function(x, data, exact = F, k = 0.05, seed = 0){
            as.integer(seed),
            as.integer(exact),
            as.integer(.longtoint(k)),
+           as.integer(useCov),
+           as.double(as.vector(t(covEst))),
            depths=double(nrow(x)))$depths
   
   return (ds)
@@ -57,7 +67,7 @@ depth.simplicialVolume <- function(x, data, exact = F, k = 0.05, seed = 0){
 
 
 
-depth.space.simplicialVolume <- function(data, cardinalities, exact = F, k = 0.05, seed = 0){
+depth.space.simplicialVolume <- function(data, cardinalities, exact = F, k = 0.05, mah.estimate = "moment", mah.parMcd = 0.75, seed = 0){
   if (!(is.matrix(data) && is.numeric(data)
         || is.data.frame(data) && prod(sapply(data, is.numeric))) 
       || ncol(data) < 2){
@@ -73,11 +83,18 @@ depth.space.simplicialVolume <- function(data, cardinalities, exact = F, k = 0.0
   if (sum(cardinalities < ncol(data) + 1) != 0){
     stop("Not in all classes sufficiently enough objetcs")
   }
+  if (toupper(mah.estimate) == "NONE"){
+    useCov <- 0
+  } else if (toupper(mah.estimate) == "MOMENT"){
+    useCov <- 1
+  } else if (toupper(mah.estimate) == "MCD"){
+    useCov <- 2
+  } else {stop("Wrong argument \"mah.estimate\", should be one of \"moment\", \"MCD\", \"none\"")}
   
   depth.space <- NULL
   for (i in 1:length(cardinalities)){
     pattern <- data[(1 + sum(cardinalities[0:(i - 1)])):sum(cardinalities[1:i]),]
-    pattern.depths <- depth.simplicialVolume(data, pattern, exact, k, seed)
+    pattern.depths <- depth.simplicialVolume(data, pattern, exact, k, mah.estimate, mah.parMcd, seed)
     depth.space <- cbind(depth.space, pattern.depths, deparse.level = 0)
   }
   

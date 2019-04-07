@@ -46,30 +46,9 @@ using namespace std;
 #include "DKnn.h"
 #include "LensDepth.h"
 
-static boost::random::rand48 rEngine;
-static boost::random::normal_distribution<double> normDist;
-
+// global rEngine is defined in ddalpha.cpp, extern rEngine defined in stdafx.h
 #define ran(x) rEngine()%x
 #define setseed(x) rEngine.seed(x)
-
-//#include <Rmath.h> 
-//
-////#include <Rcpp/stats/random/runif.h>
-////static Rcpp::stats::UnifGenerator rndm;
-//#define ran(x) ((int)runif(0,x))
-//
-//
-//#define setseed(x) set_seed(x,x)
-//
-//#include <Rcpp.h> 
-//using namespace Rcpp;
-//
-//#else
-//#define ran(x) rand()%x
-//
-//#define setseed(x) srand(x)
-//
-//#endif
 
 int random(int x);
 

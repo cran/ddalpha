@@ -22,7 +22,7 @@ extern void KnnAffInvLearnJK(void *, void *, void *, void *, void *);
 extern void KnnClassify(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void KnnLearnJK(void *, void *, void *, void *, void *, void *, void *);
 extern void MahalanobisDepth(void *, void *, void *, void *, void *, void *, void *);
-extern void OjaDepth(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void OjaDepth(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void PolynomialLearnCV(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void PotentialDepthsCount(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void ProjectionDepth(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
@@ -63,7 +63,7 @@ static const R_CMethodDef CEntries[] = {
     {"KnnClassify",          (DL_FUNC) &KnnClassify,           9},
     {"KnnLearnJK",           (DL_FUNC) &KnnLearnJK,            7},
     {"MahalanobisDepth",     (DL_FUNC) &MahalanobisDepth,      7},
-    {"OjaDepth",             (DL_FUNC) &OjaDepth,              9},
+    {"OjaDepth",             (DL_FUNC) &OjaDepth,             11},
     {"PolynomialLearnCV",    (DL_FUNC) &PolynomialLearnCV,    10},
     {"PotentialDepthsCount", (DL_FUNC) &PotentialDepthsCount, 11},
     {"ProjectionDepth",      (DL_FUNC) &ProjectionDepth,      12},

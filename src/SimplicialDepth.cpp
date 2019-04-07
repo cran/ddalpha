@@ -135,7 +135,7 @@ unsigned long long intSD2(double** x, int n) {
 			nt++;
 		else {
 			alpha[i - nt] = atan2(x[i][1], x[i][0]);  // alpha in (-pi,pi]
-			if (alpha[i - nt] < -M_PI + eps) alpha[i - nt] = M_PI; //  Korrektur für Zahlen wie (-1, -1e-16)
+			if (alpha[i - nt] < -M_PI + eps) alpha[i - nt] = M_PI; //  Korrektur f?r Zahlen wie (-1, -1e-16)
 			if (alpha[i - nt] <= eps) nh++;
 		}
 	}
@@ -144,7 +144,7 @@ unsigned long long intSD2(double** x, int n) {
 	sort(alpha, alpha + nn);
 	// Simpliziale Tiefe berechnen
 	unsigned long long result = nn * (nn - 1) * (nn - 2) / 6;
-	int j = nh;
+	unsigned long long j = nh;
 	for (int i = 0; i < nh; i++) {
 		while ((j <= nn - 1) && (alpha[j] - M_PI <= alpha[i] - eps)) j++;
 		result -= (j - i - 1) * (j - i - 2) / 2;

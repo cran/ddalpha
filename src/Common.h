@@ -38,5 +38,5 @@ double determinant(bMatrix& m);
 double* means(TDMatrix X, int n, int d);
 TDMatrix cov(TDMatrix X, int n, int d);
 
-void GetDirections(TDMatrix directions, unsigned int k, unsigned int d);
+void GetDirections(TDMatrix directions, int k, int d);
 void GetProjections(TDMatrix points, int n, int d, TDMatrix directions, int k, TDMatrix projections);

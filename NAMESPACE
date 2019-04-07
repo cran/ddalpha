@@ -12,7 +12,9 @@ export(ddalpha.train, ddalpha.classify,
        getdata,
        dataf.geneexp, dataf.growth, dataf.medflies, dataf.tecator,
        dataf.sim.1.CFF07, dataf.sim.2.CFF07,
-       plot.functional, lines.functional, points.functional)
+       plot.functional, lines.functional, points.functional,
+       dataf
+       )
 export(FKS, shape.fd.analysis, shape.fd.outliers, 
        depthf.,
        depthf.BD, depthf.ABD, depthf.fd1, depthf.fd2,

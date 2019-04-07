@@ -1,19 +1,22 @@
 #include "stdafx.h"
 
-void OjaDepthsEx(TDMatrix X, TDMatrix x, int d, int n, int nx,
-	double *depths){
+void OjaDepthsEx(TDMatrix X, TDMatrix x, int d, int n, int nx, int useCov, 
+                 TDMatrix covEst, double *depths){
 
 	int* counters = new int[d + 1];
 	bMatrix A (d + 1, d + 1);
 	unsigned long long div0 = choose(n, d);
 
-	TDMatrix covXtemp = cov(X,n,d);
-	bMatrix covX(d, d); 
-	for (unsigned k = 0; k < d; k++)
-	for (unsigned j = 0; j < d; j++)
-		covX(k,j) = covXtemp[k][j];
-	deleteM(covXtemp);
-	double S = pow(abs(determinant(covX)),-0.5);
+	double S = 1;
+	if (useCov > 0){
+	  // TDMatrix covXtemp = cov(X, n, d); // no need to compute anymore
+	  bMatrix covX(d, d); 
+	  for (int k = 0; k < d; k++)
+	    for (int j = 0; j < d; j++)
+	      covX(k,j) = covEst[k][j];
+	  // deleteM(covXtemp); // no need to compute anymore
+	  S = pow(abs(determinant(covX)),-0.5);
+	}
 
 	for (int obs = 0; obs < nx; obs++){
 		long double sumVolume = 0;
@@ -41,7 +44,6 @@ void OjaDepthsEx(TDMatrix X, TDMatrix x, int d, int n, int nx,
 			sumVolume += volume;
 			numSimplicesChecked ++;
 		}
-		bool sc = numSimplicesChecked == div0;
 		double O = sumVolume / fact(d) / div0;
 
 		double depth = 1/(1+O*S);
@@ -52,17 +54,21 @@ void OjaDepthsEx(TDMatrix X, TDMatrix x, int d, int n, int nx,
 }
 
 void OjaDepthsApx(TDMatrix X, TDMatrix x, int d, int n, int nx,
-	unsigned long long k, double *depths){
+	unsigned long long k, int useCov, TDMatrix covEst, double *depths){
 
 	int* counters = new int[d + 1];
 	bMatrix A(d + 1, d + 1);
-	TDMatrix covXtemp = cov(X, n, d);
-	bMatrix covX(d, d);
-	for (unsigned k = 0; k < d; k++)
-	for (unsigned j = 0; j < d; j++)
-		covX(k, j) = covXtemp[k][j];
-	deleteM(covXtemp);
-	double S = pow(abs(determinant(covX)), -0.5);
+	
+	double S = 1;
+	if (useCov > 0){
+	  // TDMatrix covXtemp = cov(X, n, d); // no need to compute anymore
+	  bMatrix covX(d, d);
+	  for (int l = 0; l < d; l++)
+	    for (int j = 0; j < d; j++)
+	      covX(l, j) = covEst[l][j];
+	  // deleteM(covXtemp); // no need to compute anymore
+	  S = pow(abs(determinant(covX)), -0.5);
+	}
 
 	for (int obs = 0; obs < nx; obs++){
 
@@ -85,15 +91,15 @@ void OjaDepthsApx(TDMatrix X, TDMatrix x, int d, int n, int nx,
 			}
 			// Construct the simplex out of it
 			for (int j = 0; j < d; j++){
-				for (int k = 0; k < d; k++){
-					A(j + 1, k) = X[counters[k]][j];
+				for (int l = 0; l < d; l++){
+					A(j + 1, l) = X[counters[l]][j];
 				}
 			}
 			for (int j = 0; j < d; j++){
 				A(j + 1, d) = x[obs][j];
 			}
-			for (int k = 0; k < d + 1; k++){
-				A(0, k) = 1;
+			for (int l = 0; l < d + 1; l++){
+				A(0, l) = 1;
 			}
 			double volume = abs(determinant(A));
 			sumVolume += volume;

@@ -14,7 +14,7 @@ plot.functional <- function(x, main = "Functional data", xlab = "args", ylab = "
   grid()
   
   if (!is.null(x$labels))
-    labs = sort(unlist(unique(x$labels)))
+    labs = sort(unlist(unique(unlist(x$labels)))) # second unlist removes factors, other
   else 
     labs = NULL
   

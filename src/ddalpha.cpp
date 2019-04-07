@@ -1,8 +1,8 @@
 /*
   File:             ddalpha.cpp
-  Created by:       Pavlo Mozharovskyi
+  Created by:       Pavlo Mozharovskyi, Oleksii Pokotylo
   First published:  28.02.2013
-  Last revised:     13.11.2015
+  Last revised:     20.02.2019
 
   Defines the exported functions for the 'ddalpha'-package.
 
@@ -19,11 +19,14 @@
 extern "C" {
 #endif
 
+boost::random::rand48 rEngine;
+boost::random::normal_distribution<double> normDist;
+
 void Sum(double *a, double *b, double *res){
 	res[0] = a[0] + b[0];
 }
 
-void setSeed(unsigned int random_seed){
+void setSeed(int random_seed){
 	if (random_seed != 0) {
 		setseed(random_seed);
 		rEngine.seed(random_seed);
@@ -236,19 +239,21 @@ void MahalanobisDepth(double *points, double *objects, int *numPoints, int *numO
 	delete[] x;
 }
 
-void OjaDepth(double *points, double *objects, int *numPoints, int *numObjects, int *dimension, int *seed, int* exact, int *k, double *depths){
+void OjaDepth(double *points, double *objects, int *numPoints, int *numObjects, int *dimension, int *seed, int* exact, int *k, int *useCov, double *covEst, double *depths){
 	setSeed(*seed);
 	TDMatrix X = asMatrix(points, *numPoints, *dimension);
 	TDMatrix x = asMatrix(objects, *numObjects, *dimension);
+	TDMatrix cov = asMatrix(covEst, *dimension, *dimension);
 
 	if (*exact)
-		OjaDepthsEx(X, x, *dimension, *numPoints, *numObjects, depths);
+		OjaDepthsEx(X, x, *dimension, *numPoints, *numObjects, *useCov, cov, depths);
 	else{
 		long long K = ((long long)2000000000)*k[0] + k[1];
-		OjaDepthsApx(X, x, *dimension, *numPoints, *numObjects, K, depths);
+		OjaDepthsApx(X, x, *dimension, *numPoints, *numObjects, K, *useCov, cov, depths);
 	}
 	delete[] X;
 	delete[] x;
+	delete[] cov;
 }
 
 void SimplicialDepth(double *points, double *objects, int *numPoints, int *numObjects, int *dimension, int *seed, int* exact, int *k, double *depths){
@@ -287,7 +292,7 @@ void AlphaLearn(double *points, int *numPoints, int *dimension, int *cardinaliti
 	OUT_ALPHA = true;
 	Learn(_x, y, minFeatures[0], &direction);
 	ray[0] = degree[0];
-	for (unsigned i = 0; i < direction.size(); i++){
+	for (int i = 0; i < direction.size(); i++){
 		ray[i + 1] = direction[i];
 	}
 }
@@ -306,7 +311,7 @@ void AlphaLearnCV(double *points, int *numPoints, int *dimension, int *cardinali
 	OUT_ALPHA = (debug[0])!=0;
 	LearnCV(x, y, minFeatures[0], upToPower[0], numFolds[0], &direction, &power);
 	ray[0] = power;
-	for (unsigned i = 0; i < direction.size(); i++){
+	for (int i = 0; i < direction.size(); i++){
 		ray[i + 1] = direction[i];
 	}
 }
@@ -322,7 +327,7 @@ void AlphaClassify(double *points, int *numPoints, int *dimension, int *degree, 
 	TMatrix _x;
 	ExtendWithProducts(x, degree[0], &_x);
 	TPoint direction(_x[0].size());
-	for (unsigned i = 0; i < _x[0].size(); i++){
+	for (int i = 0; i < _x[0].size(); i++){
 		direction[i] = ray[i + 1];
 	}
 	TVariables y;

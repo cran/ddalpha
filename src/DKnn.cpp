@@ -120,11 +120,11 @@ void knnGetClasses(TDMatrix learnpoints, int* learnlabels, int nlearn, int d,
 	delete[] arr;
 }
 
-int DKnnCv(TDMatrix points, int n, int d, int* labels, unsigned int kMax, int depthType, unsigned int chunkNumber){
+int DKnnCv(TDMatrix points, int n, int d, int* labels, int kMax, int depthType, int chunkNumber){
 	set<int> unique_labels; unique_labels.insert(labels, labels + n - 1);
 	int nClasses = unique_labels.size();
 
-	unsigned chunkSize = ceil((double)n / chunkNumber);
+	int chunkSize = ceil((double)n / chunkNumber);
 
 	TDMatrix learnpoints = new double*[n - chunkSize + 1];
 	TDMatrix checkpoints = new double*[chunkSize];
@@ -134,7 +134,7 @@ int DKnnCv(TDMatrix points, int n, int d, int* labels, unsigned int kMax, int de
 	int* classes = new int[n*kMax];
 
 	int chunk = 0;
-	for (unsigned j = 0, l = 0, c = 0; j < n; j++){
+	for (int j = 0, l = 0, c = 0; j < n; j++){
 		if (j%chunkNumber){
 			learnpoints[l] = points[j];
 			learnlabels[l++] = labels[j];
@@ -194,7 +194,7 @@ int DKnnCv(TDMatrix points, int n, int d, int* labels, unsigned int kMax, int de
 	return kopt;
 }
 
-void DKnnClassify(TDMatrix points, int n, int d, int* labels, TDMatrix objects, int nobjects, unsigned int k, int depthType, int* classes){
+void DKnnClassify(TDMatrix points, int n, int d, int* labels, TDMatrix objects, int nobjects, int k, int depthType, int* classes){
 	set<int> unique_lasbels; unique_lasbels.insert(labels, labels + n - 1);
 	int nClasses = unique_lasbels.size();
 

@@ -2,8 +2,7 @@
 \alias{derivatives.est}
 \title{Estimation of the First Two Derivatives for Functional Data}
 \usage{
-derivatives.est(dataf, range = NULL, d = 101, spar = NULL, deriv = c(0,
-  1))
+derivatives.est(dataf, range = NULL, d = 101, spar = NULL, deriv = c(0,1))
 }
 \arguments{
 \item{dataf}{Functional dataset, represented by a \code{dataf} object of their arguments
@@ -51,9 +50,9 @@ dataf = dataf.population()$dataf
 derivatives.est(dataf,deriv=c(0,1,2))
 }
 \seealso{
-\code{\link[sfsmisc]{D1ss}} in package sfsmisc
+\code{\link[sfsmisc:D2ss]{D1ss}} in package \pkg{sfsmisc}
 
-\code{\link[sfsmisc]{D2ss}} in package sfsmisc
+\code{\link[sfsmisc:D2ss]{D2ss}} in package \pkg{sfsmisc}
 }
 \author{
 Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}

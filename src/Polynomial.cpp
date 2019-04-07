@@ -106,13 +106,13 @@ Chooses the best in classification sense polynomial among
 
 @return polynomial as a vector of coefficients starting with the first degree (a0 = 0 always)
 */
-TPoint GetRandomMinPolynomial(TDMatrix points, unsigned numClass1, unsigned numClass2, unsigned degree, unsigned n_polynomials){
-	unsigned n = numClass1 + numClass2;
+TPoint GetRandomMinPolynomial(TDMatrix points, int numClass1, int numClass2, int degree, int n_polynomials){
+  int n = numClass1 + numClass2;
 	vector<int> usedIndexesX(n);
 	vector<int> usedIndexesY(n);
 	int nx = 0, ny = 0;
 
-	for (unsigned i = 0; i<n; i++){
+	for (int i = 0; i<n; i++){
 		if (points[i][0] != 0){
 			usedIndexesX[nx++] = i;
 			if (points[i][1] != 0)
@@ -133,12 +133,12 @@ TPoint GetRandomMinPolynomial(TDMatrix points, unsigned numClass1, unsigned numC
 		// generate sample
 		set<int> smp;
 		smp.insert(usedIndexesY[random(ny)]);
-		while (smp.size() < degree){
+		while ((int)smp.size() < degree){
 			smp.insert(usedIndexesX[random(nx)]);
 		}
 
 		set <int>::const_iterator s = smp.begin();
-		for (unsigned j = 0; j < degree; j++, s++) {
+		for (int j = 0; j < degree; j++, s++) {
 			sample[j] = points[*s];
 		}
 
@@ -161,8 +161,8 @@ TPoint GetRandomMinPolynomial(TDMatrix points, unsigned numClass1, unsigned numC
 
 static int _degree;
 static TDMatrix _points;
-static unsigned _numClass1;
-static unsigned _numClass2;
+static int _numClass1;
+static int _numClass2;
 
 /**
 Calculates the empirical risk for two classes on the basis of given depths
@@ -179,13 +179,13 @@ double GetEmpiricalRiskSmoothed(double polynomial[]){
 	
 	double risk = 0;
 	int sign = 1;
-	for (unsigned i = 0; i < _numClass1 + _numClass2; i++){
+	for (int i = 0; i < _numClass1 + _numClass2; i++){
 		if (i >= _numClass1)
 			sign = -1;
 
 		double val = (_points)[i][0];
 		double res = 0;
-		for (unsigned j = 0; j < _degree; j++){
+		for (int j = 0; j < _degree; j++){
 			res += polynomial[j] * std::pow(val, j+1);
 		}
 		risk += 1 / (1 + exp(-smoothingConstant*((_points)[i][1] - res)*sign));
@@ -336,17 +336,17 @@ Calculates classification error of "degree" - degree polynomial using cross - va
 
 @return Number of errors
 */
-double GetCvError(TDMatrix points, unsigned numClass1, unsigned numClass2, unsigned degree, unsigned chunkNumber){
+double GetCvError(TDMatrix points, int numClass1, int numClass2, int degree, int chunkNumber){
 
-	unsigned n = numClass1 + numClass2;
-	unsigned chunkSize = ceil((double)n / chunkNumber);
+	int n = numClass1 + numClass2;
+	int chunkSize = ceil((double)n / chunkNumber);
 
 	TDMatrix learnpoints = new double*[n - chunkSize+1]; 
 	TDMatrix checkpoints = new double*[chunkSize];
 
 	int chunk = 0;
 	int n1 = 0; // number of Class1 points in checkpoints
-	for (unsigned j = 0, l = 0, c = 0; j < n; j++){
+	for (int j = 0, l = 0, c = 0; j < n; j++){
 		if (j%chunkNumber)
 			learnpoints[l++] = points[j];
 		else
@@ -385,12 +385,12 @@ double GetCvError(TDMatrix points, unsigned numClass1, unsigned numClass2, unsig
 	return err/n;
 }
 
-TPoint PolynomialLearnCV(TDMatrix input, unsigned numClass1, unsigned numClass2, unsigned int maxDegree, unsigned int chunkNumber, int *degree, int *axis){
-	unsigned numPoints = numClass1 + numClass2;
+TPoint PolynomialLearnCV(TDMatrix input, int numClass1, int numClass2, int maxDegree, int chunkNumber, int *degree, int *axis){
+  int numPoints = numClass1 + numClass2;
 
-	unsigned polOptDegree = 0;
+  int polOptDegree = 0;
 	double polOptError = numPoints;
-	unsigned polOptAxis = 0;
+	int polOptAxis = 0;
 
 	TDMatrix input2 = newM(numPoints, 2); // copy
 	for (int i = 0, tmp; i < numPoints; i++){ input2[i][0] = input[i][1]; input2[i][1] = input[i][0]; } // swap columns

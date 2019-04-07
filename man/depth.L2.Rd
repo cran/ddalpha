@@ -23,7 +23,7 @@ is the value of the argument \code{alpha} for the function \code{\link{covMcd}};
 }
 }
 \details{
-Calculates L2-depth (Mosler, 2013). L2-depth is a based on the oultyingness distance calculated as the average L2-distance from (a row of) \code{x} to each point in \code{data}.
+Calculates L2-depth (Mosler, 2013). L2-depth is based on the oultyingness distance calculated as the average L2-distance from (a row of) \code{x} to each point in \code{data}.
 }
 \value{
 Numerical vector of depths, one for each row in \code{x}; or one depth value if \code{x} is a numerical vector.

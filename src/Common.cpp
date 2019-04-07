@@ -9,6 +9,9 @@
 
 #include "stdafx.h"
 
+extern boost::random::rand48 rEngine;
+extern boost::random::normal_distribution<double> normDist;
+
 // by rows
 TDMatrix asMatrix(double* arr, int n, int d){
 	TDMatrix mat = new double*[n];
@@ -65,6 +68,7 @@ bool solveUnique(TDMatrix A, double* b, double* x, int d){
 	double amax;
 	for (int k = 0; k < d - 1; k++) {
 		imax = k;
+	  jmax = k;
 		amax = abs(A[k][k]);
 		colp[k] = k;
 		// Spaltenmaximum finden
@@ -144,7 +148,7 @@ double determinant(bMatrix& m)
 		return 0;
 
 	double det = 1;
-	for (size_t i = 0; i < pivots.size(); ++i)
+	for (int i = 0; i < pivots.size(); ++i)
 	{
 		if (pivots(i) != i)
 			det *= -1;
@@ -155,9 +159,9 @@ double determinant(bMatrix& m)
 
 double* means(TDMatrix X, int n, int d) {
 	double* ms = new double[d];
-	for (unsigned i = 0; i < d; i++) {
+	for (int i = 0; i < d; i++) {
 		ms[i] = 0.0;
-		for (unsigned j = 0; j < n; j++)
+		for (int j = 0; j < n; j++)
 			ms[i] += X[j][i];
 		ms[i] /= n;
 	}
@@ -169,31 +173,31 @@ TDMatrix cov(TDMatrix X, int n, int d) {
 	double* dev = new double[d];
 	// zeroing TDMatrix
 	TDMatrix covX = newM(d, d);
-	for (unsigned k = 0; k < d; k++)
-		for (unsigned j = 0; j < d; j++)
+	for (int k = 0; k < d; k++)
+		for (int j = 0; j < d; j++)
 			covX[k][j] = 0;
 	// means
-	for (unsigned i = 0; i < d; i++) {
+	for (int i = 0; i < d; i++) {
 		means[i] = 0.0;
-		for (unsigned j = 0; j < n; j++)
+		for (int j = 0; j < n; j++)
 			means[i] += X[j][i];
 		means[i] /= n;
 	}
-	for (unsigned i = 0; i < n; i++) {
+	for (int i = 0; i < n; i++) {
 		// deviations
-		for (unsigned k = 0; k < d; k++) {
+		for (int k = 0; k < d; k++) {
 			dev[k] = X[i][k] - means[k];
 		}
 		// add to cov
-		for (unsigned k = 0; k < d; k++) {
-			for (unsigned j = 0; j < d; j++) {
+		for (int k = 0; k < d; k++) {
+			for (int j = 0; j < d; j++) {
 				covX[k][j] += dev[k] * dev[j];
 			}
 		}
 	}
 	//scale
-	for (unsigned i = 0; i < d; i++) {
-		for (unsigned j = 0; j < d; j++) {
+	for (int i = 0; i < d; i++) {
+		for (int j = 0; j < d; j++) {
 			covX[i][j] /= n - 1;
 		}
 	}
@@ -202,16 +206,16 @@ TDMatrix cov(TDMatrix X, int n, int d) {
 	return covX;
 }
 
-void GetDirections(TDMatrix directions, unsigned int k, unsigned int d){
-	for (unsigned int i = 0; i < k; i++){
+void GetDirections(TDMatrix directions, int k, int d){
+	for (int i = 0; i < k; i++){
 		double* direction = directions[i];
 		double sqrSum = 0;
-		for (unsigned int j = 0; j < d; j++){
+		for (int j = 0; j < d; j++){
 			direction[j] = normDist(rEngine);
 			sqrSum += direction[j]*direction[j];
 		}
 		sqrSum = sqrt(sqrSum);
-		for (unsigned int j = 0; j < d; j++){
+		for (int j = 0; j < d; j++){
 			direction[j] = direction[j]/sqrSum;
 		}
 	}

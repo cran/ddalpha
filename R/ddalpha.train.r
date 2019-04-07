@@ -1,8 +1,8 @@
 ################################################################################
 # File:             ddalpha.train.r
-# Created by:       Pavlo Mozharovskyi
+# Created by:       Pavlo Mozharovskyi, Oleksii Pokotylo
 # First published:  28.02.2013
-# Last revised:     28.02.2013
+# Last revised:     20.02.2019
 # 
 # Contains the training function of the DDalpha-classifier.
 # 
@@ -348,7 +348,27 @@ ddalpha.train <- function(formula, data, subset,
   
   return(list(d_exact = exact, d_k = k))
 }
-.simplicialVolume_validate <- .simplicial_validate
+
+.simplicialVolume_validate <- function(ddalpha, exact = F, k = 0.05, mah.estimate = "moment", mah.parMcd = 0.75, ...){
+  if (toupper(mah.estimate) == "NONE"){
+    useCov <- 0
+  } else if (toupper(mah.estimate) == "MOMENT"){
+    useCov <- 1
+  } else if (toupper(mah.estimate) == "MCD"){
+    useCov <- 2
+  } else {stop("Wrong argument \"mah.estimate\", should be one of \"moment\", \"MCD\", \"none\"")}
+  
+  if (exact){
+    return(list(d_exact = exact, d_k = k, d_useCov = useCov, 
+                d_parMcd = mah.parMcd))
+  }
+  
+  if (k <= 0) stop("k must be positive")
+  else if (k < 1) k = choose(ddalpha$numPoints, ddalpha$dimension)*k
+  
+  return(list(d_exact = exact, d_k = k, d_useCov = useCov, 
+              d_parMcd = mah.parMcd))
+}
 
 .Mahalanobis_validate  <- function(ddalpha, mah.estimate = "moment", mah.priors = NULL, mah.parMcd = 0.75, ...){ 
   if (!is.character(mah.estimate) 

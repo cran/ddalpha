@@ -2,7 +2,7 @@
 
 double EuclidianDistance(TPoint& x, TPoint& y){
 	double accu = 0;
-	for (int i = 0; i< x.size(); i++){
+	for (int i = 0; i < x.size(); i++){
 		accu += pow(x[i] - y[i], 2);
 	}
 	return sqrt(accu);
@@ -73,7 +73,7 @@ void PotentialDepths(TMatrix& points, TVariables& cardinalities, TMatrix& testpo
 		}
 
 		// loop all the points, find their potential relatively to class i
-		for (int p = 0; p< testpoints.size(); p++){
+		for (int p = 0; p < testpoints.size(); p++){
 			double pointDepth = 0;
 
 			// loop the points of i-th class, find the point's potential

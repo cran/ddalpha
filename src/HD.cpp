@@ -62,7 +62,7 @@ int intHD1(double** x, int n) {
 /* This is an implemetation of the algorithm of                             */
 /* Rousseeuw, P.J.and Ruts, I. (1996). Algorithm AS 307: bivariate          */
 /* location depth. Journal of the Royal Statistical Society. Series C:      */
-/* Applied Statistics 45, 516–526.                                          */
+/* Applied Statistics 45, 516?526.                                          */
 /*                                                                          */
 /****************************************************************************/
 
@@ -317,7 +317,8 @@ bool getNormal(double** A, int d, double* normal) {
 	int* colp = new int[d];
 	double amax;
 	for (int k = 0; k < d - 1; k++) {
-		imax = k;
+	  imax = k;
+		jmax = k;
 		amax = fabs(A[k][k]);
 		colp[k] = k;
 		// find maximum element in column
@@ -541,6 +542,7 @@ bool getBasisComplement(double** A, int d, double** basis) {
 	double amax;
 	for (int k = 0; k < d - 2; k++) {
 		imax = k;
+	  jmax = k;
 		amax = fabs(A[k][k]);
 		colp[k] = k;
 		// find maximum element in column

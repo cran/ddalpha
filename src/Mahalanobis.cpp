@@ -6,8 +6,8 @@ void MahalanobisDepth(TDMatrix X, TDMatrix x, int d, int n, int nx, double MCD, 
 	bMatrix A(d, d);
 	if (MCD == 1){
 		TDMatrix covXtemp = cov(X, n, d);
-		for (unsigned k = 0; k < d; k++)
-		for (unsigned j = 0; j < d; j++)
+		for (int k = 0; k < d; k++)
+		for (int j = 0; j < d; j++)
 			A(k, j) = covXtemp[k][j];
 		deleteM(covXtemp);
 	}
@@ -21,8 +21,8 @@ void MahalanobisDepth(TDMatrix X, TDMatrix x, int d, int n, int nx, double MCD, 
 			X2(i, j) = X[i][j]; 
 		List ret = covMcd(X2, false, false, MCD);
 		NumericMatrix covXtemp = ret["cov"];
-		for (unsigned k = 0; k < d; k++)
-		for (unsigned j = 0; j < d; j++)
+		for (int k = 0; k < d; k++)
+		for (int j = 0; j < d; j++)
 			A(k, j) = covXtemp(k, j);
 #endif
 	}

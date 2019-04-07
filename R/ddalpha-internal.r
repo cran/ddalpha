@@ -1,8 +1,8 @@
 ################################################################################
 # File:             ddalpha-internal.r
-# Created by:       Pavlo Mozharovskyi
+# Created by:       Pavlo Mozharovskyi, Oleksii Pokotylo
 # First published:  28.02.2013
-# Last revised:     22.06.2018
+# Last revised:     20.02.2019
 # 
 # Contains the internal functions of the DDalpha-classifier.
 # 
@@ -836,6 +836,13 @@
     
     points <- as.vector(t(pattern))
     x <- as.vector(t(objects))
+    if (ddalpha$d_useCov == 0){
+      covEst <- diag(ncol(pattern))
+    } else if (ddalpha$d_useCov == 1){
+      covEst <- cov(pattern)
+    } else if (ddalpha$d_useCov == 2){
+      covEst <- covMcd(pattern, ddalpha$d_parMcd)$cov
+    }
     ds <- .C("OjaDepth", 
              as.double(points), 
              as.double(x), 
@@ -845,6 +852,8 @@
              as.integer(ddalpha$seed),
              as.integer(ddalpha$d_exact),
              as.integer(.longtoint(ddalpha$d_k)),
+             as.integer(ddalpha$d_useCov),
+             as.double(as.vector(t(covEst))),
              depths=double(nrow(objects)))$depths
     depths <- cbind(depths, ds, deparse.level = 0)
   }  
