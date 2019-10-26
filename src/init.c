@@ -29,6 +29,7 @@ extern void ProjectionDepth(void *, void *, void *, void *, void *, void *, void
 extern void SimplicialDepth(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void ZDepth(void *, void *, void *, void *, void *, void *, void *);
 extern void BetaSkeletonDepth(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void SimplicialBandDepthF(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 
 /* .Fortran calls */
 extern void F77_NAME(adjc)(void *, void *, void *, void *, void *, void *, void *, void *);
@@ -70,6 +71,7 @@ static const R_CMethodDef CEntries[] = {
     {"SimplicialDepth",      (DL_FUNC) &SimplicialDepth,       9},
     {"ZDepth",               (DL_FUNC) &ZDepth,                7},
     {"BetaSkeletonDepth",    (DL_FUNC) &BetaSkeletonDepth,    10},
+    {"SimplicialBandDepthF", (DL_FUNC) &SimplicialBandDepthF, 10},
     {NULL, NULL, 0}
 };
 

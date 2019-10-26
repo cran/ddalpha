@@ -565,6 +565,27 @@ void BetaSkeletonDepth(double *points, double *objects, int *numPoints, int *num
   delete[] s;
 }
 
+void SimplicialBandDepthF(double *objectsf, double *dataf, double *args, 
+                          int *numObjects, int *numPoints, int *numArgs, 
+                          int *dimension, int *modified, int *J, 
+                          double *depths){
+  // Structure the input data
+  T3DMatrix x = as3DMatrix(objectsf, *numObjects, *numArgs, *dimension);
+  T3DMatrix X = as3DMatrix(dataf, *numPoints, *numArgs, *dimension);
+  // Delegate calculation of depths
+  BandDepth(x, X, *numObjects, *numPoints, *numArgs, *dimension, 
+            (bool)*modified, *J, depths);
+  // Clean the memory
+  for (int i = 0; i < *numPoints; i++){
+    delete[] X[i];
+  }
+  delete[] X;
+  for (int i = 0; i < *numObjects; i++){
+    delete[] x[i];
+  }
+  delete[] x;
+}
+
 #ifdef __cplusplus
 }
 #endif

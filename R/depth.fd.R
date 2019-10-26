@@ -985,7 +985,8 @@ DiffDepth = function(A,B,approx=0){
     diag(PHD) = NA
     return(list(	Simpl_FD = FD$funsdep, Half_FD = FD$funhdep,
                  Simpl_ID = FD$funsdepm, Half_ID = FD$funhdepm,
-                 PSD = PSD, PHD = PHD))
+                 PSD = PSD, PHD = PHD,
+                 Simpl_IA = S_IA, Half_IA = H_IA))
   }
   if ((m==1)&(approx>0)){
     PSD = matrix(FD$Psdep,ncol=d)
@@ -996,7 +997,8 @@ DiffDepth = function(A,B,approx=0){
     PHD[PHD==-1] = NA
     return(list(	Simpl_FD = FD$funsdep, Half_FD = FD$funhdep, 
                  Simpl_ID = FD$funsdepm, Half_ID = FD$funhdepm,
-                 PSD = PSD, PHD = PHD))
+                 PSD = PSD, PHD = PHD,
+                 Simpl_IA = S_IA, Half_IA = H_IA))
   }
 }
 

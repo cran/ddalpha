@@ -45,6 +45,7 @@ using namespace std;
 #include "ProjectionDepth.h"
 #include "DKnn.h"
 #include "LensDepth.h"
+#include "BandDepth.h"
 
 // global rEngine is defined in ddalpha.cpp, extern rEngine defined in stdafx.h
 #define ran(x) rEngine()%x

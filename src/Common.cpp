@@ -12,6 +12,19 @@
 extern boost::random::rand48 rEngine;
 extern boost::random::normal_distribution<double> normDist;
 
+// 3D-array structures
+T3DMatrix as3DMatrix(double* arr, int n, int t, int d){
+  T3DMatrix mat = new double**[n];
+  for (int i = 0; i < n; i++){
+    mat[i] = new double*[t];
+    for (int j = 0; j < t; j++)
+    {
+      mat[i][j] = arr + i*t*d + j*d;
+    }
+  }
+  return mat;
+}
+
 // by rows
 TDMatrix asMatrix(double* arr, int n, int d){
 	TDMatrix mat = new double*[n];

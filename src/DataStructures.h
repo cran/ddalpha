@@ -21,9 +21,11 @@ typedef vector<vector<int> > TIntMatrix;
 typedef vector<int> TVariables;
 
 typedef double** TDMatrix;
+typedef double*** T3DMatrix;
 
 // by rows
 TDMatrix asMatrix(double* arr, int n, int d);
+T3DMatrix as3DMatrix(double* arr, int n, int t, int d);
 
 double** newM(int n, int d);
 void deleteM(TDMatrix X);

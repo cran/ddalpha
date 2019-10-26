@@ -1,5 +1,5 @@
-8b9fadd8e4df35325c3e9902840d3829 *DESCRIPTION
-4bb0deb980e21ac0c5088208011de39f *NAMESPACE
+a703fefd50803c888020a45ed51a6ccc *DESCRIPTION
+4891cde8cb1c85c9a27b687a66b86353 *NAMESPACE
 81e86fdb9d96737404836ed611799ae2 *R/compclassf.r
 2b1dc04c31bdba56a97812aa584fe5ab *R/dataf.geneexp.r
 8176cd2ab66c95bd8c707ec8a283833f *R/dataf.growth.r
@@ -18,7 +18,7 @@ da8e0f853b7b11cbc19e81a0075708eb *R/ddalpha.test.r
 db47b45e2f7b9dd55ff303b1c124de07 *R/depth.L2.r
 7eef619fc64c5a9012697f49f21223d4 *R/depth.betaSkeleton.r
 226e00cda755a1a791ad23aa201c26b8 *R/depth.contours.r
-338cb55c8fa4adb4095bc28a96e6c13b *R/depth.fd.R
+b2648b7222eb7c9b1e6227f642e9dd47 *R/depth.fd.R
 d3642dc15508c3e5b8d609143d44280e *R/depth.graph.r
 a266a2fd08f235018a01214b982cedc4 *R/depth.halfspace.r
 56aa887d9dfaa73def26f94a8e6acfb9 *R/depth.potential.r
@@ -31,6 +31,7 @@ faccca44d8906fda6e17b12cb53148c0 *R/depth.projection.r
 170efabed7b85f473d21715d6c774f6e *R/depth.spatial.r
 d44fa5d8796d6ef25624c151861eae60 *R/depth.zonoid.r
 dcea368950ddbd6069915149b9058c27 *R/depthf.r
+68f5076ccd94fce2751327b4df586b2c *R/depthf.simplicialBand.R
 c8b3ba2f38ee525805ab489cd56258a6 *R/dknn.R
 89b4b07eedc196d392516650514295c1 *R/draw.ddplot.r
 1ac3cc033e9681db49f1260b6b586be2 *R/getdata.R
@@ -98,7 +99,7 @@ ff797af8193615bce99fbc1b338566a5 *data/tecator.rda
 f00ffe449bd008d028a2a7f1a3e1b130 *data/wine_1vs2.txt.gz
 d4e6b368252e7b2c40b8bcbabbc97cd8 *data/wine_1vs3.txt.gz
 285c2a26aaff446ba2e3aea50278801f *data/wine_2vs3.txt.gz
-a64312f2dabeecac67fc667e6f94e5c8 *inst/CITATION
+681485ae64aa0d69ccfbc75381e637d8 *inst/CITATION
 1efd56e83b3f48a22fe6e03dfa4910a8 *man/Cmetric.Rd
 f7d675e4b1d55bdf63c624bbc942935d *man/CustomMethods.Rd
 efa17d97fa4897ac5f7848448fdbd6a8 *man/FKS.Rd
@@ -116,7 +117,7 @@ b7b8dc7ba0dab649ae93b6f7ec9e56f0 *man/dataf.population2010.Rd
 805f3f0a524ba6f4388e43b6ba4f7a76 *man/dataf.sim.2.CFF07.Rd
 b6a1265c76b8030e08244ddd728482cb *man/dataf.tecator.Rd
 dbc923645aebf7e6be2a6c3fba124d99 *man/dataf2rawfd.Rd
-7ac053645baac548362e2bb345866e7a *man/ddalpha-package.Rd
+884d1441930759aa104eab39bb4f866b *man/ddalpha-package.Rd
 0696730fe876b622bd70549f3b39131b *man/ddalpha.classify.Rd
 2b1b7cc4433374af973733782c45e225 *man/ddalpha.getErrorRateCV.Rd
 5acb9396ca92a50d5fa54ed68895e23f *man/ddalpha.getErrorRatePart.Rd
@@ -162,6 +163,7 @@ ce69c9ce3defa04372a287875b5354a1 *man/depthf.RP1.Rd
 c833b209e4faeffa4361721313551582 *man/depthf.fd2.Rd
 8847d34370c60cf0e4894310d93dc72c *man/depthf.hM.Rd
 03535315765d34c30297b8c1999b0bfe *man/depthf.hM2.Rd
+4aceda091dc7994d0fd3171764ef7491 *man/depthf.simplicialBand.Rd
 cf7ef2703375fbac526661a8df75a1a5 *man/derivatives.est.Rd
 7ae891638b40364965d25dac46124d33 *man/dknn.classify.Rd
 6f093a53f8cd3cb37952e31bf6458290 *man/dknn.classify.trained.Rd
@@ -179,11 +181,13 @@ abbd84a3e47a05b34f645dad854497e6 *man/plot.ddalphaf.Rd
 dab20231031fcfaf7fa980e02439a46e *man/shape.fd.outliers.Rd
 10446d2c21fb0e77c64d393b90b51d97 *src/AlphaProcedure.cpp
 5217e4fd435c93e77ff105b5e18c043d *src/AlphaProcedure.h
-b1d08dcdcab92fee5be5732d780e0f25 *src/Common.cpp
+4bc2241e24f829d976deeccbb3815a32 *src/BandDepth.cpp
+e1f741f22d959f35646313155140a934 *src/BandDepth.h
+6196159119b48ac5b600f87273a5ea7c *src/Common.cpp
 63e1a2efc143a927969416b3a82efae9 *src/Common.h
 dc05054d255fffb592b983e5f4b74411 *src/DKnn.cpp
 5b938ab6a1cab8338d8875d046a403df *src/DKnn.h
-6b081eef24a9e6bc4ed34289c9a9f756 *src/DataStructures.h
+ff3b5b7fad17cde9ba1382c306c7ce60 *src/DataStructures.h
 1b70503076f696bed602c6c823a97048 *src/HD.cpp
 0e7c7f1fa9a8bf7590b7d1e8d620e5cf *src/HD.h
 8b6f3f3a8ca8b70aeeb769e8a40c6c13 *src/Knn.cpp
@@ -208,8 +212,8 @@ bc75f84467fefa46f8d813fb920302fd *src/ZonoidDepth.cpp
 b6b9054c37bab86d07c8baea10f481f5 *src/ZonoidDepth.h
 99b1f54b9e63662b9a1fb8fd015cdf84 *src/asa047.cpp
 0d15945f463fd3dcc4483620d5f2ab8f *src/asa047.h
-02b6377c1cc45ae4f23107292cc76804 *src/ddalpha.cpp
+aa896b8130fc6d0d1e3c8f3b291132e6 *src/ddalpha.cpp
 3fca9e5fac9be017aa2d26d1c75f446c *src/depth.fd.f
-32f281156e93caae159c9ad6e357e03e *src/init.c
+34a81d4b07e387942a747e00dfcd8567 *src/init.c
 cfd1dd4fc0ba896d5199e8ff217da727 *src/stdafx.cpp
-90ba51384fd7de24da1c241257fc9e16 *src/stdafx.h
+e1e2be14c4e5dd8695d12cc3c59c1265 *src/stdafx.h
