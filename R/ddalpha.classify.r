@@ -166,6 +166,13 @@ ddalpha.classify <- function(ddalpha,
   else if(length(resultsDepths) == 0)
     results <- resultsOutsiders
   else{
+    
+    if(is.factor(resultsOutsiders[[1]]) && !is.factor(resultsDepths[[1]]))
+      resultsOutsiders = lapply(resultsOutsiders, as.character)
+    
+    if(is.numeric(resultsDepths[[1]]) && !is.numeric(resultsOutsiders[[1]]))
+      resultsOutsiders = as.numeric(resultsOutsiders)
+    
     results <- list()
     counterDepths <- 1
     counterOutsiders <- 1

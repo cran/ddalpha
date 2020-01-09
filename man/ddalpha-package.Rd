@@ -15,8 +15,8 @@ The package implements the DD\eqn{\alpha}-classifier (Lange, Mosler and Mozharov
 \tabular{ll}{
 Package: \tab ddalpha\cr
 Type: \tab Package\cr
-Version: \tab 1.3.10\cr
-Date: \tab 2019-10-24\cr
+Version: \tab 1.3.11\cr
+Date: \tab 2020-01-09\cr
 License: \tab GPL-2\cr
 }
 Use \code{\link{ddalpha.train}} to train the DD-classifier and \code{\link{ddalpha.classify}} to classify with it. 
@@ -41,7 +41,7 @@ Pavlo Mozharovskyi, <pavlo.mozharovskyi at ensai.fr>
 
 Rainer Dyckerhoff, <rainer.dyckerhoff at statistik.uni-koeln.de>
 
-Stanislav Nagy, <nagy at karlin.mff.cuni.cz> 
+Stanislav Nagy, <nagy at karlin.mff.cuni.cz>
 }
 \references{
 Pokotylo, O., Mozharovskyi, P., Dyckerhoff, R. (2019). Depth and depth-based classification with R-package ddalpha. \emph{Journal of Statistical Software} \bold{91} 1--46.

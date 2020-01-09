@@ -1,4 +1,4 @@
-a703fefd50803c888020a45ed51a6ccc *DESCRIPTION
+15fe7ebc2921b057222e88412e4709b7 *DESCRIPTION
 4891cde8cb1c85c9a27b687a66b86353 *NAMESPACE
 81e86fdb9d96737404836ed611799ae2 *R/compclassf.r
 2b1dc04c31bdba56a97812aa584fe5ab *R/dataf.geneexp.r
@@ -9,8 +9,8 @@ cbcccec8a110abb83ea38bfb9ed45e21 *R/dataf.population2010.r
 c9813a86671d2dccea09631cf777cf09 *R/dataf.r
 46e95ccbd59054017d1af41d97ef5811 *R/dataf.sim.r
 c0a66cf08d28675c7245bb358a8cf9db *R/dataf.tecator.r
-659213ae50520e1e4ddb623fbb8158df *R/ddalpha-internal.r
-8287d32bb6c470b743e99de669783aa5 *R/ddalpha.classify.r
+658b2f57eb5e506dce8fc53ef4955fad *R/ddalpha-internal.r
+e1b5085356ad71b3ca6a28d8cd27868e *R/ddalpha.classify.r
 da8e0f853b7b11cbc19e81a0075708eb *R/ddalpha.test.r
 01f52b6b63e78f435d01216c91197e5f *R/ddalpha.train.r
 8c3c58075b1c47159e28f9845aaa1db9 *R/ddalphaf.r
@@ -41,7 +41,7 @@ f52e72f811f9fdc6a292499501ab8fba *R/knnaff.r
 7313a981d378f0a972f2edfcd3754380 *R/mahalanobis.scaling.r
 275633cad9af8e6e1751b686b9596b03 *R/plot.functional.r
 6429f1288f6ae2ee1c87840587fa6124 *R/qda.r
-3a13bb8b071fa301f816096b5e5b53ab *R/routines.r
+b581addf157ac8a56b19fee8de0dcd42 *R/routines.r
 0f31c8fcc4540f3b1a1f0fa1741291f0 *R/separator.polynomial.r
 420701b3922eaa282b7cd8c26c01b789 *data/baby.txt.gz
 ccfe61945a3f683276ce92a6e8d4dc47 *data/banknoten.txt.gz
@@ -117,7 +117,7 @@ b7b8dc7ba0dab649ae93b6f7ec9e56f0 *man/dataf.population2010.Rd
 805f3f0a524ba6f4388e43b6ba4f7a76 *man/dataf.sim.2.CFF07.Rd
 b6a1265c76b8030e08244ddd728482cb *man/dataf.tecator.Rd
 dbc923645aebf7e6be2a6c3fba124d99 *man/dataf2rawfd.Rd
-884d1441930759aa104eab39bb4f866b *man/ddalpha-package.Rd
+949ff38367384743a66e789a7cf6110a *man/ddalpha-package.Rd
 0696730fe876b622bd70549f3b39131b *man/ddalpha.classify.Rd
 2b1b7cc4433374af973733782c45e225 *man/ddalpha.getErrorRateCV.Rd
 5acb9396ca92a50d5fa54ed68895e23f *man/ddalpha.getErrorRatePart.Rd
