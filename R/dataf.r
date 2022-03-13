@@ -5,7 +5,7 @@ dataf <- function(fdatas, labels)
     dataf = lapply(funcs, function(func) list(args = fdata$argvals, vals = func))
   }
   
-  if (class(fdatas) == "fdata") {
+  if (inherits(fdatas, "fdata")) {
     if (nrow(fdatas$data) != length(labels))
       stop("the length of 'labels' must correspond to the number of functions in 'fdatas'")
     if (!is.null(fdatas$fdata2d) && fdatas$fdata2d)

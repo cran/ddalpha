@@ -57,7 +57,7 @@
 Data for Classification
 }
 \description{
-50 multivariate data sets for binary classification. For more details refer {\url{http://www.wisostat.uni-koeln.de/de/forschung/software-und-daten/data-for-classification/}}
+50 multivariate data sets for binary classification. For more details refer {\url{https://wisostat.uni-koeln.de/de/forschung/software-und-daten/data-for-classification/}}
 
 The \code{getdata} function gets the data set from the package, and returns it. The dataset itself does not appear in the global environment and the existing variables with the same name remain unchanged.
 }
@@ -104,11 +104,11 @@ Mozharovskyi, P., Mosler, K., and Lange, T. (2015). Classifying real-world data 
 
 The general list of sources consists of:
 
-UCI Machine Learning Repository {\url{http://archive.ics.uci.edu/ml}}\cr
+UCI Machine Learning Repository {\url{https://archive.ics.uci.edu/ml/}}\cr
 R-packages {\url{https://CRAN.R-project.org/}} \cr
-{\url{http://stat.cmu.edu}} \cr
-{\url{http://stat.ethz.ch/Teaching/Datasets}} \cr
-{\url{http://www.stats.ox.ac.uk/pub/PRNN}} 
+{\url{https://www.stat.cmu.edu/}} \cr
+{\url{https://stat.ethz.ch/Teaching/Datasets/}} \cr
+{\url{https://www.stats.ox.ac.uk/pub/PRNN/}} 
 }
 
 \seealso{

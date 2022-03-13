@@ -261,7 +261,7 @@
         classifier$index1         = i
         classifier$index2         = j
         
-        if(class(classifier)=="list")
+        if(inherits(classifier, "list"))
           class(classifier) <- paste0("ddalpha.", ddalpha$methodSeparator)
         else
           class(classifier) <- c(class(classifier), paste0("ddalpha.", ddalpha$methodSeparator))
@@ -290,7 +290,7 @@
       classifier$index1         = i
       classifier$index2         = -i
       
-      if(class(classifier)=="list")
+      if(inherits(classifier, "list"))
         class(classifier) <- paste0("ddalpha.", ddalpha$methodSeparator)
       else
         class(classifier) <- c(class(classifier), paste0("ddalpha.", ddalpha$methodSeparator))
@@ -383,7 +383,7 @@
     stop("Wrong or absent function: ", fname)
   
   classifier <- learn(ddalpha)
-  if(class(classifier)=="list")
+  if(inherits(classifier, "list"))
     class(classifier) <- paste0("ddalpha.", ddalpha$methodSeparator)
   else
     class(classifier) <- c(class(classifier), paste0("ddalpha.", ddalpha$methodSeparator))
