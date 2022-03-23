@@ -55,7 +55,7 @@ derivatives.est(dataf,deriv=c(0,1,2))
 \code{\link[sfsmisc:D2ss]{D2ss}} in package \pkg{sfsmisc}
 }
 \author{
-Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 }
 \keyword{derivatives}
 \keyword{functional}

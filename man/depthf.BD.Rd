@@ -46,7 +46,7 @@ Lopez-Pintado, S. and Romo, J. (2009), On the concept of depth for functional da
 \code{\link{depthf.ABD}}, \code{\link{depthf.fd1}}
 }
 \author{
-Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 }
 \keyword{depth}
 \keyword{functional}

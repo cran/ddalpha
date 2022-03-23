@@ -72,7 +72,7 @@ Cuesta-Albertos, J.A. and Nieto-Reyes, A. (2008).
 \code{\link{depthf.RP2}}
 }
 \author{
-Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 }
 \keyword{depth}
 \keyword{functional}

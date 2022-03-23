@@ -82,7 +82,7 @@ Depth-based recognition of shape outlying functions.
 \code{\link{depthf.fd1}}, \code{\link{shape.fd.analysis}}
 }
 \author{
-Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 }
 \keyword{depth}
 \keyword{functional}

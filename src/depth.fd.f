@@ -1,6 +1,6 @@
 c----------------------------------------------------------------------
 c     Stanislav Nagy
-c     nagy at karlin.mff.cuni.cz
+c     nagy@karlin.mff.cuni.cz
 c     27/06/2016
 c
 c     Fortran implementation of functional depths and kernel smoothing

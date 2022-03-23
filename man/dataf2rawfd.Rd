@@ -56,6 +56,6 @@ dataf2rawfd(R,range=c(-1,1),d=50)
 \code{\link{depthf.fd2}}
 }
 \author{
-Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 }
 \keyword{functional}

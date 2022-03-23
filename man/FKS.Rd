@@ -57,7 +57,7 @@ data.sms = structure(list(dataf=data.sm,labels=1:length(data.sm)),class="functio
 plot(data.sms)
 }
 \author{
-Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 }
 \keyword{functional}
 \keyword{kernel}

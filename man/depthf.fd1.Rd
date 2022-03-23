@@ -90,7 +90,7 @@ Depth-based recognition of shape outlying functions.
 \code{\link{depthf.fd2}}, \code{\link{infimalRank}}
 }
 \author{
-Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 }
 \keyword{depth}
 \keyword{functional}

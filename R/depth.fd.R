@@ -2,7 +2,7 @@
 # R call for the F procedures
 # functional depth computation
 # Stanislav Nagy
-# nagy at karlin.mff.cuni.cz
+# nagy@karlin.mff.cuni.cz
 # 09/10/2018
 #
 # Stanislav Nagy, Irene Gijbels & Daniel Hlubinka (2017) Depth-Based Recognition of Shape Outlying Functions, Journal of Computational and Graphical Statistics, 26:4, 883-893, DOI: 10.1080/10618600.2017.1336445
@@ -45,7 +45,7 @@ if(FALSE){
 #' From a (possibly multivariate) functional data object \code{dataf} constructs an array of the functional values
 #' evaluated at an equi-distant grid of points.
 #' 
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords functional
 #'
 #' @param dataf Functions to be transformed, represented by a (possibly multivariate) \code{dataf} object of their arguments
@@ -177,7 +177,7 @@ dataf2rawfd = function(dataf, range = NULL, d = 101){
 #' evaluated at an equi-distant grid of points, and transforms it into a \code{dataf} object more suitable 
 #' for work in the \code{ddalpha} package.
 #' 
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords functional
 #'
 #' @param X Either a matrix of size \code{n*d}, or an array of dimension \code{n*d*k} of functional values. Here \code{n}
@@ -238,7 +238,7 @@ rawfd2dataf = function(X, range){
 #' Produces a kernel smoothed version of a function based on
 #' the vectors given in the input. Bandwidth is selected using cross-validation.		
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords smoothing kernel functional
 #'
 #' @details
@@ -375,7 +375,7 @@ FKS = function(dataf,Tout,kernel=c("uniform","triangular","Epanechnikov","biweig
 #' Faster implementation of the halfspace and the simplicial depth. Computes the depth 
 #' of a whole random sample of a univariate or a bivariate data in one run.	
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords depth
 #'
 #' @details
@@ -454,7 +454,7 @@ depth.sample = function(A,B){
 #' Usual, and order extended integrated and infimal depths for real-valued functional data based on the
 #' halfspace and simplicial depth.		
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords depth functional
 #'
 #' @details
@@ -576,7 +576,7 @@ depthf.fd1 = function(datafA,datafB,range=NULL,d=101,order=1,approx=0){
 #' @description
 #' Returns the matrix of \eqn{L^2} distances between two sets of functional data.		
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords metric functional
 #'
 #' @details
@@ -634,7 +634,7 @@ depthf.M = function(A,B,q=.2){
 #' @description
 #' Returns the matrix of \eqn{C} (uniform) distances between two sets of functional data.		
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords metric functional
 #'
 #' @details
@@ -692,7 +692,7 @@ depthf.MC = function(A,B,q=.2){
 #' @description
 #' The h-mode depth of functional real-valued data.		
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords depth functional
 #'
 #' @details
@@ -855,7 +855,7 @@ AdjBDsampleC = function(A,B,J=3,K=1){
 #' of functional real-valued data based on either the
 #' \eqn{C} (uniform) norm, or on the \eqn{L^2} norm of functions.		
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords depth functional
 #'
 #' @details
@@ -1028,7 +1028,7 @@ DiffDepth3D = function(A,B,approx=101){
 #' or \eqn{X:[a,b] \to R} and the derivative of \eqn{X}) based on the
 #' \eqn{L^2} metric of functions.		
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords depth functional derivatives
 #'
 #' @details
@@ -1133,7 +1133,7 @@ depthf.hM2 = function(datafA,datafB,range=NULL,d=101,q=.2){
 #' @description
 #' Random projection depth and random functional depth for functional data.	
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords depth functional
 #'
 #' @details
@@ -1237,7 +1237,7 @@ depthf.RP1 = function(datafA,datafB,range=NULL,d=101,nproj=50,nproj2=5){
 #' or \eqn{X:[a,b] \to R} and the derivative of \eqn{X}) based on the
 #' bivariate halfspace and simplicial depths.		
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords depth functional derivatives
 #'
 #' @details
@@ -1340,7 +1340,7 @@ depthf.fd2 = function(datafA,datafB,range=NULL,d=101){
 #' Double random projection depths of functional bivariate data (that is, data of the form \eqn{X:[a,b] \to R^2},
 #' or \eqn{X:[a,b] \to R} and the derivative of \eqn{X}).	
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords depth functional derivatives
 #'
 #' @details
@@ -1449,7 +1449,7 @@ depthf.RP2 = function(datafA,datafB,range=NULL,d=101,nproj=51){
 #' The half-region depth 
 #' for functional real-valued data.		
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords depth functional
 #'
 #' @details
@@ -1509,7 +1509,7 @@ depthf.HR = function(datafA,datafB,range=NULL,d=101){
 #' The (unadjusted) band depth 
 #' for functional real-valued data of order \code{J=2}.		
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords depth functional
 #'
 #' @details
@@ -1570,7 +1570,7 @@ depthf.BD = function(datafA,datafB,range=NULL,d=101){
 #' @description
 #' Returns a vector of adjusted depth-based ranks for infimal depth for functional data.		
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords rank depth functional
 #'
 #' @details
@@ -1629,7 +1629,7 @@ infimalRank = function(ID,IA,ties.method="max"){
 #' @description
 #' Returns the estimated values of derivatives of functional data.		
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords derivatives kernel functional
 #' 
 #' @details
@@ -1718,7 +1718,7 @@ derivatives.est = function(dataf,range=NULL,d=101,spar=NULL,deriv=c(0,1)){
 #' @description
 #' Produce the diagnostic plot based on the fist or second order extended integrated / infimal depths.		
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords depth shape outlier plot functional
 #'
 #' @details
@@ -1862,7 +1862,7 @@ shape.fd.analysis = function(datafA,datafB,range=NULL,d=101,order=1,method=c("ha
 #' @description
 #' Detects functional outliers of first three orders, based on the order extended integrated depth for functional data.		
 #'
-#' @author Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+#' @author Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 #' @keywords depth
 #' @keywords outlier
 #' @keywords functional

@@ -72,7 +72,7 @@ Robust estimation and classification for functional data via projection-based de
 \code{\link{depthf.hM}}
 }
 \author{
-Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 }
 \keyword{depth}
 \keyword{derivatives}

@@ -43,7 +43,7 @@ A half-region depth for functional data.
 \emph{Computational Statistics & Data Analysis} \bold{55} (4), 1679--1695.
 }
 \author{
-Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 }
 \keyword{depth}
 \keyword{functional}

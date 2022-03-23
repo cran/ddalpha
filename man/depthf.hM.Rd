@@ -59,7 +59,7 @@ Weak convergence of discretely observed functional data with applications.
 \emph{Journal of Multivariate Analysis}, \bold{146}, 46--62.
 }
 \author{
-Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 }
 \keyword{depth}
 \keyword{functional}

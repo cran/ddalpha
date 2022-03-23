@@ -43,7 +43,7 @@ Depth-based recognition of shape outlying functions.
 \emph{Journal of Computational and Graphical Statistics}, \bold{26} (4), 883--893.
 }
 \author{
-Stanislav Nagy, \email{nagy at karlin.mff.cuni.cz}
+Stanislav Nagy, \email{nagy@karlin.mff.cuni.cz}
 }
 \keyword{depth}
 \keyword{functional}
