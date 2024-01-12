@@ -55,10 +55,10 @@ compclassf.train <- function(dataf, labels, subset,
     classifier <- knnaff.train(data, i = 0, ...)
   }
   if (classifier.type == "lda"){
-    classifier <- lda.train(data, ...)
+    classifier <- lda_train(data, ...)
   }
   if (classifier.type == "qda"){
-    classifier <- qda.train(data, ...)
+    classifier <- qda_train(data, ...)
   }
   # Create the eventual output structure
   compclassf <- structure(
@@ -133,10 +133,10 @@ compclassf.classify <- function(compclassf, objectsf, subset, ...){
     output <- knnaff.classify(objects = input, compclassf$classifier, ...)
   }
   if (compclassf$classifier.type == "lda"){
-    output <- lda.classify(objects = input, compclassf$classifier, ...)
+    output <- lda_classify(objects = input, compclassf$classifier, ...)
   }
   if (compclassf$classifier.type == "qda"){
-    output <- qda.classify(objects = input, compclassf$classifier, ...)
+    output <- qda_classify(objects = input, compclassf$classifier, ...)
   }
   classes <- list()
   for (i in 1:length(output)){
@@ -262,12 +262,12 @@ getBestSpaceDHB12 <- function(data,
             results <- knnaff.classify(data[take.off,combinations[,i]], classifier)
           }
           if (classifier.type == "lda"){
-            classifier <- lda.train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
-            results <- lda.classify(data[take.off,combinations[,i]], classifier)
+            classifier <- lda_train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
+            results <- lda_classify(data[take.off,combinations[,i]], classifier)
           }
           if (classifier.type == "qda"){
-            classifier <- qda.train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
-            results <- qda.classify(data[take.off,combinations[,i]], classifier)
+            classifier <- qda_train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
+            results <- qda_classify(data[take.off,combinations[,i]], classifier)
           }
           # Collect errors
           errors[i] <- errors[i] + sum(unlist(results) != data[take.off,indices.num + 1])
@@ -311,12 +311,12 @@ getBestSpaceDHB12 <- function(data,
             results <- knnaff.classify(data[take.off,indices.cur], classifier)
           }
           if (classifier.type == "lda"){
-            classifier <- lda.train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
-            results <- lda.classify(data[take.off,combinations[,i]], classifier)
+            classifier <- lda_train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
+            results <- lda_classify(data[take.off,combinations[,i]], classifier)
           }
           if (classifier.type == "qda"){
-            classifier <- qda.train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
-            results <- qda.classify(data[take.off,combinations[,i]], classifier)
+            classifier <- qda_train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
+            results <- qda_classify(data[take.off,combinations[,i]], classifier)
           }
           # Collect errors
           errors[i] <- errors[i] + sum(unlist(results) != data[take.off,indices.num + 1])
@@ -371,12 +371,12 @@ getBestSpaceDHB12 <- function(data,
             results <- knnaff.classify(data[take.off,combinations[,i]], classifier)
           }
           if (classifier.type == "lda"){
-            classifier <- lda.train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
-            results <- lda.classify(data[take.off,combinations[,i]], classifier)
+            classifier <- lda_train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
+            results <- lda_classify(data[take.off,combinations[,i]], classifier)
           }
           if (classifier.type == "qda"){
-            classifier <- qda.train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
-            results <- qda.classify(data[take.off,combinations[,i]], classifier)
+            classifier <- qda_train(data[-take.off,c(combinations[,i], indices.num + 1)], ...)
+            results <- qda_classify(data[take.off,combinations[,i]], classifier)
           }
           # Collect errors
           errors[i] <- errors[i] + sum(unlist(results) != data[take.off,indices.num + 1])

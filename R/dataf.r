@@ -34,7 +34,7 @@ dataf <- function(fdatas, labels)
     fdata = fdatas[[i]]
     lab = labels[[i]]
     
-    if (class(fdata) != "fdata")
+    if (!inherits(fdata, "fdata"))
       stop("elements of 'fdatas' must be of the 'fdata' class")
     if (!is.null(fdata$fdata2d) && fdata$fdata2d)
       stop("fdata2d = TRUE is not supported")

@@ -106,7 +106,7 @@ The general list of sources consists of:
 
 UCI Machine Learning Repository {\url{https://archive.ics.uci.edu/ml/}}\cr
 R-packages {\url{https://CRAN.R-project.org/}} \cr
-{\url{https://www.stat.cmu.edu/}} \cr
+{\url{https://www.cmu.edu/dietrich/statistics-datascience/}} \cr
 {\url{https://stat.ethz.ch/Teaching/Datasets/}} \cr
 {\url{https://www.stats.ox.ac.uk/pub/PRNN/}} 
 }

@@ -12,7 +12,7 @@ gcolors = c("red", "blue", "green", "orange", "violet")
 
 depth.contours.ddalpha <- function(ddalpha, main = "", xlab="", ylab = "", drawplot = T, frequency=100, levels = 10, drawsep = T, ...){
   
-  if(class(ddalpha)!="ddalpha")
+  if(!inherits(ddalpha, "ddalpha"))
     stop("Not a 'ddalpha' classifier")
   
   if (ddalpha$dimension != 2)

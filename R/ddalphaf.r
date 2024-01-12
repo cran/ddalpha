@@ -97,10 +97,10 @@ ddalphaf.train <- function(dataf, labels, subset,
     classifier <- knnaff.train(points$data, i = 0, ...)
   }
   if (classifier.type == "lda"){
-    classifier <- lda.train(points$data, ...)
+    classifier <- lda_train(points$data, ...)
   }
   if (classifier.type == "qda"){
-    classifier <- qda.train(points$data, ...)
+    classifier <- qda_train(points$data, ...)
   }
   # Create the eventual output structure
   ddalphaf <- 
@@ -173,10 +173,10 @@ ddalphaf.classify <- function(ddalphaf, objectsf, subset, ...){
     output <- knnaff.classify(input, ddalphaf$classifier, ...)
   }
   if (ddalphaf$classifier.type == "lda"){
-    output <- lda.classify(input, ddalphaf$classifier, ...)
+    output <- lda_classify(input, ddalphaf$classifier, ...)
   }
   if (ddalphaf$classifier.type == "qda"){
-    output <- qda.classify(input, ddalphaf$classifier, ...)
+    output <- qda_classify(input, ddalphaf$classifier, ...)
   }
   classes <- list()
   for (i in 1:length(output)){
@@ -599,8 +599,8 @@ getAvrGrid <- function(dataf, numFcn, numDer){
 getVapnikBound <- function(points, dim = NULL){
   n <- nrow(points)
   d <- ncol(points) - 1
-  lda <- lda.train(points)
-  result <- lda.classify(points[,1:d], lda)
+  lda <- lda_train(points)
+  result <- lda_classify(points[,1:d], lda)
   empRisk <- sum(result != points[,d + 1])/n
   # Calculate the deviation from the empirical risk
   nu <- 1/n
@@ -871,12 +871,12 @@ getBestSpace <- function(dataf, labels, adc.method = "equalCover",
         results <- knnaff.classify(points.all[take.off,1:d], classifier)
       }
       if (classifier.type == "lda"){
-        classifier <- lda.train(points.all[-take.off,], ...)
-        results <- lda.classify(points.all[take.off,1:d], classifier)
+        classifier <- lda_train(points.all[-take.off,], ...)
+        results <- lda_classify(points.all[take.off,1:d], classifier)
       }
       if (classifier.type == "qda"){
-        classifier <- qda.train(points.all[-take.off,], ...)
-        results <- qda.classify(points.all[take.off,1:d], classifier)
+        classifier <- qda_train(points.all[-take.off,], ...)
+        results <- qda_classify(points.all[take.off,1:d], classifier)
       }
       # Collect errors
       errors[i] <- errors[i] + sum(
@@ -928,12 +928,12 @@ getBestSpaceCV <- function(dataf, labels, adc.method = "equalCover",
         results <- knnaff.classify(points.all[take.off,1:d], classifier)
       }
       if (classifier.type == "lda"){
-        classifier <- lda.train(points.all[-take.off,], ...)
-        results <- lda.classify(points.all[take.off,1:d], classifier)
+        classifier <- lda_train(points.all[-take.off,], ...)
+        results <- lda_classify(points.all[take.off,1:d], classifier)
       }
       if (classifier.type == "qda"){
-        classifier <- qda.train(points.all[-take.off,], ...)
-        results <- qda.classify(points.all[take.off,1:d], classifier)
+        classifier <- qda_train(points.all[-take.off,], ...)
+        results <- qda_classify(points.all[take.off,1:d], classifier)
       }
       # Collect errors
       errors[i] <- errors[i] + sum(

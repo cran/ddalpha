@@ -11,7 +11,7 @@ draw.ddplot <- function(ddalpha, depth.space, cardinalities,
     col = c(col, rep(colors[c], ddalpha$patterns[[c]]$cardinality))
     }
     
-    if (class(xlab) != "expression" && class(ylab) != "expression" &&
+    if (!inherits(xlab, "expression") && !inherits(ylab, "expression") &&
         xlab == "C1" && ylab == "C2"){
       xlab = ddalpha$patterns[[1]]$name
       ylab = ddalpha$patterns[[2]]$name
@@ -85,7 +85,7 @@ plot.ddalphaf <- function(x, type = c("functional.data", "ddplot", "depth.contou
   if(type == "functional.data")
     plot.functional(list(dataf = x$dataf, labels = lapply(x$data[,ncol(x$data)], function(o){x$labels[[o]]})), ...)
   
-  if(class(x$classifier)!="ddalpha")
+  if(!inherits(x$classifier, "ddalpha"))
     stop(type, " is available only for the ddalpha classifier")
   if(type == "ddplot") 
     draw.ddplot(x$classifier, ...)
