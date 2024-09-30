@@ -49,7 +49,7 @@ You may use traditional moments or Minimum Covariance Determinant (MCD) estimate
   May be a single value for all classes, or a vector of values for each of the classes.
 }
   \item{mah.parMcd}{
-is the value of the argument \code{alpha} for the function \code{\link{covMcd}}; is used when \code{pretransform = "*MCD"}.
+is the value of the argument \code{alpha} for the function \code{\link[robustbase]{covMcd}}; is used when \code{pretransform = "*MCD"}.
 }
 }
 \details{

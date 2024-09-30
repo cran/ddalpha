@@ -40,7 +40,7 @@ The method of data scaling.
   the single bandwidth parameter of the kernel. If \code{NULL} - the Scott's rule of thumb is used.
 }
   \item{mah.parMcd}{
-is the value of the argument \code{alpha} for the function \code{\link{covMcd}}; is used when \code{pretransform = "*MCD"}.
+is the value of the argument \code{alpha} for the function \code{\link[robustbase]{covMcd}}; is used when \code{pretransform = "*MCD"}.
 }
 }
 \details{

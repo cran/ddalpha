@@ -305,19 +305,6 @@ c     used in the h-mode depth
 
 c----------------------------------------------------------------------
 
-      double precision FUNCTION MAX(A,B)
-c     maximum of two numbers A and B
-
-      double precision A,B
-      
-      IF (A.LE.B) THEN
-            MAX = B
-      ELSE
-            MAX = A
-      ENDIF
-      RETURN
-      END 
-
       double precision FUNCTION AdjLPindicator(EVAL,J,B,V)
 c     adjusted band depth core function, smoothing (exp(-u)), L2 metric
 c     b is a vector of length eval

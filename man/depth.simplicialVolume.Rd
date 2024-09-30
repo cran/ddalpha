@@ -24,10 +24,10 @@ Matrix of data where each row contains a \eqn{d}-variate point, w.r.t. which the
 Number (\eqn{k>1}) or portion (if \eqn{0<k<1}) of simplices that are considered if \code{exact=F}. If \eqn{k>1}, then the algorithmic complexity is polynomial in \eqn{d} but is independent of the number of observations in \code{data}, given \eqn{k}. If \eqn{0<k<1}, then the algorithmic complexity is exponential in the number of observations in \code{data}, but the calculation precision stays approximately the same.
 }
   \item{mah.estimate}{
-A character string specifying affine-invariance adjustment; can be \code{"none"}, \code{"moment"} or \code{"MCD"}, determining whether no affine-invariance adjustemt or moment or Minimum Covariance Determinant (MCD) (see \code{\link{covMcd}}) estimates of the covariance are used. By default \code{"moment"} is used.
+A character string specifying affine-invariance adjustment; can be \code{"none"}, \code{"moment"} or \code{"MCD"}, determining whether no affine-invariance adjustemt or moment or Minimum Covariance Determinant (MCD) (see \code{\link[robustbase]{covMcd}}) estimates of the covariance are used. By default \code{"moment"} is used.
 }
   \item{mah.parMcd}{
-The value of the argument \code{alpha} for the function \code{\link{covMcd}}; is used when \code{mah.estimate =} \code{"MCD"}.
+The value of the argument \code{alpha} for the function \code{\link[robustbase]{covMcd}}; is used when \code{mah.estimate =} \code{"MCD"}.
 }
   \item{seed}{
 The random seed. The default value \code{seed=0} makes no changes.

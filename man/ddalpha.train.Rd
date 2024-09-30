@@ -74,7 +74,7 @@ the data is transformed with the common covariance matrix of the whole data
   \item{"NMom", "NMCD"}{
 the data is transformed w.r.t. each class using its covariance martix. The depths w.r.t. each class are calculated using the transformed data.
   }
-  for the values \code{"1MCD", "NMCD"} \code{\link{covMcd}} is used to calculate the covariance matrix, and the parameter \code{mah.parMcd} is used.
+  for the values \code{"1MCD", "NMCD"} \code{\link[robustbase]{covMcd}} is used to calculate the covariance matrix, and the parameter \code{mah.parMcd} is used.
   }
   
 }
@@ -180,7 +180,7 @@ The \code{maximum depth} separator classifies an object to the class that provid
 \subsection{Outsider treatment}{
 
 An outsider treatment is a supplementary classifier for data that lie outside the convex hulls of all \eqn{q} training classes.
-Available methods are: Linear Discriminant Analysis (referred to as "LDA"), see \code{\link{lda}}; \eqn{k}-Nearest-Neighbor Classifier ("kNN"), see \code{\link{knn}}, \code{\link{knn.cv}}; Affine-Invariant kNN ("kNNAff"), an affine-invariant version of the kNN, suited only for binary classification (some aggregation is used with multiple classes) and not accounting for ties (at all), but very fast by that; Maximum Mahalanobis Depth Classifier ("depth.Mahalanobis"), the outsider is referred to a class w.r.t. which it has the highest depth value scaled by (approximated) priors; Proportional Randomization ("RandProp"), the outsider is referred to a class randomly with probability equal to it (approximated) prior; Equal Randomization ("RandEqual"), the outsider is referred to a class randomly, chances for each class are equal; Ignoring ("Ignore"), the outsider is not classified, the string "Ignored" is returned instead.
+Available methods are: Linear Discriminant Analysis (referred to as "LDA"), see \code{\link[MASS]{lda}}; \eqn{k}-Nearest-Neighbor Classifier ("kNN"), see \code{\link[class]{knn}}, \code{\link[class]{knn.cv}}; Affine-Invariant kNN ("kNNAff"), an affine-invariant version of the kNN, suited only for binary classification (some aggregation is used with multiple classes) and not accounting for ties (at all), but very fast by that; Maximum Mahalanobis Depth Classifier ("depth.Mahalanobis"), the outsider is referred to a class w.r.t. which it has the highest depth value scaled by (approximated) priors; Proportional Randomization ("RandProp"), the outsider is referred to a class randomly with probability equal to it (approximated) prior; Equal Randomization ("RandEqual"), the outsider is referred to a class randomly, chances for each class are equal; Ignoring ("Ignore"), the outsider is not classified, the string "Ignored" is returned instead.
 
 An outsider treatment is specified by a list containing a name and parameters:
 
@@ -200,9 +200,9 @@ An outsider treatment is specified by a list containing a name and parameters:
 
 \code{knnAff.range} is the upper bound on the range over which the leave-one-out cross-validation is performed (the lower bound is \eqn{1}); should be \eqn{>1} and smaller than the total number of points in the two smallest classes when \code{knnAff.methodAggregation =} \code{"majority"}, and \eqn{>1} and smaller than the total number of points in the training sample when \code{knnAff.methodAggregation =} \code{"sequent"}. Set to \eqn{-1} to be calculated automatically accounting for number of points and dimension. \code{knnAff.range} is used in method "kNNAff".
 
-\code{mah.estimate} is a character string specifying which estimates to use when calculating the Mahalanobis depth; can be \code{"moment"} or \code{"MCD"}, determining whether traditional moment or Minimum Covariance Determinant (MCD) (see \code{\link{covMcd}}) estimates for mean and covariance are used. \code{mah.estimate} is used in method "depth.Mahalanobis".
+\code{mah.estimate} is a character string specifying which estimates to use when calculating the Mahalanobis depth; can be \code{"moment"} or \code{"MCD"}, determining whether traditional moment or Minimum Covariance Determinant (MCD) (see \code{\link[robustbase]{covMcd}}) estimates for mean and covariance are used. \code{mah.estimate} is used in method "depth.Mahalanobis".
 
-\code{mcd.alpha} is the value of the argument \code{alpha} for the function \code{\link{covMcd}}; is used in method "depth.Mahalanobis" when \code{mah.estimate =} \code{"MCD"}.
+\code{mcd.alpha} is the value of the argument \code{alpha} for the function \code{\link[robustbase]{covMcd}}; is used in method "depth.Mahalanobis" when \code{mah.estimate =} \code{"MCD"}.
 }
 }
 \value{

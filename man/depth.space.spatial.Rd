@@ -16,10 +16,10 @@ Matrix containing training sample where each row is a \eqn{d}-dimensional object
   \item{cardinalities}{
 Numerical vector of cardinalities of each class in \code{data}, each entry corresponds to one class.
 }
-  \item{mah.estimate}{ is a character string specifying which estimates to use when calculating sample covariance matrix; can be \code{"none"}, \code{"moment"} or \code{"MCD"}, determining whether traditional moment or Minimum Covariance Determinant (MCD) (see \code{\link{covMcd}}) estimates for mean and covariance are used. By default \code{"moment"} is used. With \code{"none"} the non-affine invariant version of Spatial depth is calculated
+  \item{mah.estimate}{ is a character string specifying which estimates to use when calculating sample covariance matrix; can be \code{"none"}, \code{"moment"} or \code{"MCD"}, determining whether traditional moment or Minimum Covariance Determinant (MCD) (see \code{\link[robustbase]{covMcd}}) estimates for mean and covariance are used. By default \code{"moment"} is used. With \code{"none"} the non-affine invariant version of Spatial depth is calculated
 }
   \item{mah.parMcd}{
-is the value of the argument \code{alpha} for the function \code{\link{covMcd}}; is used when \code{mah.estimate =} \code{"MCD"}.
+is the value of the argument \code{alpha} for the function \code{\link[robustbase]{covMcd}}; is used when \code{mah.estimate =} \code{"MCD"}.
 }
 }
 \details{

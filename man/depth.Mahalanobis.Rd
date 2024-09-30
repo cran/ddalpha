@@ -16,10 +16,10 @@ Matrix of objects (numerical vector as one object) whose depth is to be calculat
   \item{data}{
 Matrix of data where each row contains a \eqn{d}-variate point, w.r.t. which the depth is to be calculated.
 }
-  \item{mah.estimate}{ is a character string specifying which estimates to use when calculating the Mahalanobis depth; can be \code{"moment"} or \code{"MCD"}, determining whether traditional moment or Minimum Covariance Determinant (MCD) (see \code{\link{covMcd}}) estimates for mean and covariance are used. By default \code{"moment"} is used.
+  \item{mah.estimate}{ is a character string specifying which estimates to use when calculating the Mahalanobis depth; can be \code{"moment"} or \code{"MCD"}, determining whether traditional moment or Minimum Covariance Determinant (MCD) (see \code{\link[robustbase]{covMcd}}) estimates for mean and covariance are used. By default \code{"moment"} is used.
 }
   \item{mah.parMcd}{
-is the value of the argument \code{alpha} for the function \code{\link{covMcd}}; is used when \code{mah.estimate =} \code{"MCD"}.
+is the value of the argument \code{alpha} for the function \code{\link[robustbase]{covMcd}}; is used when \code{mah.estimate =} \code{"MCD"}.
 }
 }
 \details{

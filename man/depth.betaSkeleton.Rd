@@ -21,9 +21,9 @@ depth.betaSkeleton(x, data, beta = 2, distance = "Lp", Lp.p = 2,
   }
   \item{Lp.p}{A non-negative number defining the distance's power equal \code{2} by default (Euclidean distance); is used only when \code{distance = "Lp"}.
   }
-  \item{mah.estimate}{A character string specifying which estimates to use when calculating sample covariance matrix; can be \code{"none"}, \code{"moment"} or \code{"MCD"}, determining whether traditional moment or Minimum Covariance Determinant (MCD) (see \code{\link{covMcd}}) estimates for mean and covariance are used. By default \code{"moment"} is used. Is used only when \code{distance = "Mahalanobis"}.
+  \item{mah.estimate}{A character string specifying which estimates to use when calculating sample covariance matrix; can be \code{"none"}, \code{"moment"} or \code{"MCD"}, determining whether traditional moment or Minimum Covariance Determinant (MCD) (see \code{\link[robustbase]{covMcd}}) estimates for mean and covariance are used. By default \code{"moment"} is used. Is used only when \code{distance = "Mahalanobis"}.
 }
-  \item{mah.parMcd}{The value of the argument \code{alpha} for the function \code{\link{covMcd}}; is used when \code{distance = "Mahalanobis"} and \code{mah.estimate = "MCD"}.
+  \item{mah.parMcd}{The value of the argument \code{alpha} for the function \code{\link[robustbase]{covMcd}}; is used when \code{distance = "Mahalanobis"} and \code{mah.estimate = "MCD"}.
 }
 }
 \details{
